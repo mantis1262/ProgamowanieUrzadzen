@@ -1,4 +1,4 @@
-# ProgamowanieUrzadzen
+# ProgramowanieUrządzeńMobilnych
 
 Fabian Frontczak 234052
 
