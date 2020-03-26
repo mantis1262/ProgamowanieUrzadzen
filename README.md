@@ -1,5 +1,5 @@
-# ProgramowanieUrządzeńMobilnych
+# Programowanie Urządzeń Mobilnych
 
-Fabian Frontczak 234052
+F.F. 234052
 
-Mateusz Karolak 234070
+M. K. 234070
