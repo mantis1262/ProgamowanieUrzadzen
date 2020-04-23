@@ -1,16 +1,15 @@
-﻿using Data.Model.Contact;
-using Data.Model.Orders;
-using Logic.Dto;
+﻿using Data.Model;
+using Data.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Logic.Mapper
+namespace Data.Helpers
 {
-    public static class ModelMapper
+    public static class ModelDtoMapper
     {
-        public static ClientApiDto ClientToApiDto(Client client)
+        public static ClientApiDto ClientToApiDto(ClientContactInfo client)
         {
             return new ClientApiDto(
                     client.Name,
@@ -21,16 +20,7 @@ namespace Logic.Mapper
                 );
         }
 
-        public static SupplierApiDto SupplierToApiDto(Supplier supplier)
-        {
-            return new SupplierApiDto(
-                    supplier.Name,
-                    supplier.Address,
-                    supplier.Nip
-                );
-        }
-
-        public static EntryApiDto EntryToApiDto(Entry entry)
+        public static EntryApiDto EntryToApiDto(Entry entry, double totalBruttoPrice)
         {
             return new EntryApiDto(
                     entry.Number,
@@ -38,23 +28,14 @@ namespace Logic.Mapper
                     entry.Merchandise.Description,
                     entry.Merchandise.Type.ToString(),
                     entry.Merchandise.Unit.ToString(),
-                    entry.Merchandise.Supplier.Name,
                     entry.Amount,
                     entry.BruttoPrice,
-                    entry.Amount * entry.BruttoPrice
+                    totalBruttoPrice
                 );
         }
 
-        public static OrderApiDto OrderToApiDto(Order order)
+        public static OrderApiDto OrderToApiDto(Order order, List<EntryApiDto> entries, double totalBruttoPrice)
         {
-            List<EntryApiDto> entries = new List<EntryApiDto>();
-            double totalBruttoPrice = 0;
-            foreach (Entry entry in order.Entries)
-            {
-                totalBruttoPrice += entry.BruttoPrice;
-                entries.Add(EntryToApiDto(entry));
-            }
-
             return new OrderApiDto(
                     order.Code,
                     ClientToApiDto(order.Client),

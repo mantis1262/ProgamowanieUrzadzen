@@ -1,9 +1,9 @@
-﻿using Data.Model.Enum;
+﻿using Data.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Logic.Dto
+namespace Data.Dto
 {
     public class EntryApiDto
     {
@@ -32,14 +32,13 @@ namespace Logic.Dto
 
         }
 
-        public EntryApiDto(int number, string name, string description, string type, string unit, string supplier, int amount, double bruttoPrice, double totalBruttoPrice)
+        public EntryApiDto(int number, string name, string description, string type, string unit, int amount, double bruttoPrice, double totalBruttoPrice)
         {
             _number = number;
             _name = name;
             _description = description;
             _type = type;
             _unit = unit;
-            _supplier = supplier;
             _amount = amount;
             _bruttoPrice = bruttoPrice;
             _totalBruttoPrice = totalBruttoPrice;

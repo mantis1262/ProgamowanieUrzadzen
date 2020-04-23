@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Logic.Dto
+namespace Data.Dto
 {
     public class OrderApiDto
     {

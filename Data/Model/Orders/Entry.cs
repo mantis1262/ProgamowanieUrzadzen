@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Data.Model.Orders
+namespace Data.Model
 {
     public class Entry
     {
