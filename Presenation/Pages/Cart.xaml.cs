@@ -25,7 +25,7 @@ namespace Presenation.Pages
         public Cart()
         {
             InitializeComponent();
-            this.CartProdact.Children.Add(new CartProdouct());
+            this.CartProduct.Children.Add(new CartProdouct());
         }
     }
 }

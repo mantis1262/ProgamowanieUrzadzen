@@ -3,9 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:Logic.Contexts;assembly=Logic"
              xmlns:local="clr-namespace:Presenation.Controlers"
              mc:Ignorable="d" d:DesignWidth="800" Height="162">
-    <Grid Height="100" Margin="0,43,22,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="728">
+
+        <Grid Height="100" Margin="0,43,22,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="728">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="41*"/>
             <ColumnDefinition Width="78*"/>
