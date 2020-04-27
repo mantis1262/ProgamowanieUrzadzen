@@ -5,12 +5,16 @@ using System.Text;
 
 namespace Data.Api
 {
-    interface ClientDataLayer
+    public interface ClientDataLayer
     {
+        ClientContactInfo GetClientInfo(string id);
+
+        List<Merchandise> GetMerchandises();
+
         Order GetOrder(string id);
 
-        string SendOrder(Order order);
+        string SubmitOrder(Order order);
 
-        void ConfirmDelivery(string id, DateTime dateTime);
+        string ConfirmDelivery(string id, DateTime dateTime);
     }
 }
