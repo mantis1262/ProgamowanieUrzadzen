@@ -5,12 +5,20 @@ using System.Text;
 
 namespace Data.Api
 {
-    interface ServerDataLayer
+    public interface ServerDataLayer
     {
-        Order GetOrder(string id);
+        ClientContactInfo SendClientInfo(string id);
+
+        List<Merchandise> SendMerchandises();
+
+        Order SendOrder(string id);
+
+        string SaveClientInfo(ClientContactInfo client);
 
         string SaveOrder(Order order);
 
-        void ModifyOrder(Order order);
+        string CloseOrder(string id, DateTime dateTime);
+
+        void SendStatsOfDay(DailyStats dailyStats);
     }
 }
