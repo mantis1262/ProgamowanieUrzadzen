@@ -7,14 +7,15 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="567.6" Width="800">
     <Grid>
-        <TabControl HorizontalAlignment="Left" Height="505" VerticalAlignment="Top" Width="794" Margin="0,0,-0.4,-0.2">
-            <TabItem Header="Basket">
+        <TabControl HorizontalAlignment="Left" Height="538" VerticalAlignment="Top" Width="794" Margin="0,0,-0.4,0">
+            <TabItem Header="Order">
                 <Grid Background="#FFE5E5E5" Margin="0,0,0,-36.2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="5*"/>
-                        <ColumnDefinition Width="783*"/>
+                        <ColumnDefinition Width="69*"/>
+                        <ColumnDefinition Width="714*"/>
                     </Grid.ColumnDefinitions>
-                    <ListView HorizontalAlignment="Left" Height="215" VerticalAlignment="Top" Width="788" Grid.ColumnSpan="2">
+                    <ListView HorizontalAlignment="Left" Height="190" VerticalAlignment="Top" Width="788" Grid.ColumnSpan="3" Margin="0,25,0,0">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Code" Width="60"/>
@@ -27,9 +28,9 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <Button Content="Add" HorizontalAlignment="Left" Margin="122.2,245,0,0" VerticalAlignment="Top" Width="75" Grid.Column="1"/>
-                    <Button Content="Remove" HorizontalAlignment="Left" Margin="218.2,245,0,0" VerticalAlignment="Top" Width="75" Grid.Column="1"/>
-                    <ListView HorizontalAlignment="Left" Height="223" Margin="0,291,0,-35" VerticalAlignment="Top" Width="788" Grid.ColumnSpan="2" SelectionChanged="ListView_SelectionChanged_1">
+                    <Button Content="Add" HorizontalAlignment="Left" Margin="52.8,245,0,0" VerticalAlignment="Top" Width="75" Grid.Column="2"/>
+                    <Button Content="Remove" HorizontalAlignment="Left" Margin="148.8,245,0,0" VerticalAlignment="Top" Width="75" Grid.Column="2"/>
+                    <ListView HorizontalAlignment="Left" Height="223" Margin="0,291,0,-1" VerticalAlignment="Top" Width="788" Grid.ColumnSpan="3" SelectionChanged="ListView_SelectionChanged_1">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="No." Width="50"/>
@@ -45,14 +46,70 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <Button Content="Clear" Grid.Column="1" HorizontalAlignment="Left" Margin="313.2,245,0,0" VerticalAlignment="Top" Width="75"/>
-                    <Button Content="Confirm" Grid.Column="1" HorizontalAlignment="Left" Margin="409.2,245,0,0" VerticalAlignment="Top" Width="75"/>
-                    <Label Content="Total brutto:" Grid.Column="1" HorizontalAlignment="Left" Margin="648.2,260,0,0" VerticalAlignment="Top"/>
-                    <Label Content="0" Grid.Column="1" HorizontalAlignment="Left" Margin="727.2,260,0,0" VerticalAlignment="Top" RenderTransformOrigin="3.512,0.406" Width="56"/>
+                    <Button Content="Clear" Grid.Column="2" HorizontalAlignment="Left" Margin="243.8,245,0,0" VerticalAlignment="Top" Width="75"/>
+                    <Button Content="Confirm" Grid.Column="2" HorizontalAlignment="Left" Margin="339.8,245,0,0" VerticalAlignment="Top" Width="75"/>
+                    <Label Content="Total brutto:" Grid.Column="2" HorizontalAlignment="Left" Margin="579.4,265,0,0" VerticalAlignment="Top"/>
+                    <Label Content="0" Grid.Column="2" HorizontalAlignment="Left" Margin="658.4,265,0,0" VerticalAlignment="Top" RenderTransformOrigin="3.512,0.406" Width="56"/>
+                    <Label Content="Products" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <Label Content="Basket" Grid.Column="1" HorizontalAlignment="Left" Margin="0.2,265,0,0" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Search">
-                <Grid Background="#FFE5E5E5"/>
+                <Grid Background="#FFE5E5E5" Margin="0,0,0,-3.4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="13*"/>
+                        <ColumnDefinition Width="63*"/>
+                        <ColumnDefinition Width="712*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Order code" HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top" Grid.ColumnSpan="3"/>
+                    <TextBox HorizontalAlignment="Left" Height="26" Margin="26,12,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" FontSize="14" Grid.Column="2"/>
+                    <ListView HorizontalAlignment="Left" Height="134" Margin="0,86,0,0" VerticalAlignment="Top" Width="788" Grid.ColumnSpan="3">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="ID" Width="70"/>
+                                <GridViewColumn Header="Name" Width="150"/>
+                                <GridViewColumn Header="Address" Width="230"/>
+                                <GridViewColumn Header="Phone number" Width="120"/>
+                                <GridViewColumn Header="NIP" Width="100"/>
+                                <GridViewColumn Header="Pesel" Width="120"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <Button Content="Find order" Grid.Column="2" HorizontalAlignment="Left" Margin="184,15,0,0" VerticalAlignment="Top" Width="75"/>
+                    <Label Content="Client info" HorizontalAlignment="Left" Margin="10,55,0,0" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="73"/>
+                    <Label Content="Order summary" HorizontalAlignment="Left" Margin="10,240,0,0" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="97"/>
+                    <ListView Grid.ColumnSpan="3" HorizontalAlignment="Left" Height="157" Margin="0,356,0,0" VerticalAlignment="Top" Width="788">
+                        <ListView.View>
+                            <GridView>
+                                <GridView.ColumnHeaderContextMenu>
+                                    <ContextMenu/>
+                                </GridView.ColumnHeaderContextMenu>
+                                <GridViewColumn Header="No. " Width="50"/>
+                                <GridViewColumn Header="Name" Width="100"/>
+                                <GridViewColumn Header="Description" Width="150"/>
+                                <GridViewColumn Header="Type" Width="60"/>
+                                <GridViewColumn Header="Unit" Width="60"/>
+                                <GridViewColumn Header="Netto" Width="70"/>
+                                <GridViewColumn Header="Vat" Width="70"/>
+                                <GridViewColumn Header="Brutto" Width="70"/>
+                                <GridViewColumn Header="Amount" Width="60"/>
+                                <GridViewColumn Header="Total brutto" Width="100"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <ListView Grid.ColumnSpan="3" HorizontalAlignment="Left" Height="55" Margin="0,266,0,0" VerticalAlignment="Top" Width="788">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="ID" Width="100"/>
+                                <GridViewColumn Header="Status" Width="150"/>
+                                <GridViewColumn Header="Total brutto" Width="160"/>
+                                <GridViewColumn Header="Submitted" Width="190"/>
+                                <GridViewColumn Header="Delivered" Width="190"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <Label Content="Products" Grid.Column="1" HorizontalAlignment="Left" Margin="0.2,330,0,0" VerticalAlignment="Top"/>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>
