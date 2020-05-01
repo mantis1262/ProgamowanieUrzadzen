@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Data.Model
 {
-    public class ClientContactInfo
+    public class Customer
     {
         private string _id;
         private string _name;
@@ -20,11 +20,11 @@ namespace Data.Model
         public string Nip { get => _nip; set => _nip = value; }
         public string Pesel { get => _pesel; set => _pesel = value; }
 
-        public ClientContactInfo()
+        public Customer()
         {
         }
 
-        public ClientContactInfo(string id, string name, string address, int phoneNumber, string nip, string pesel)
+        public Customer(string id, string name, string address, int phoneNumber, string nip, string pesel)
         {
             _id = id;
             _name = name;
@@ -32,6 +32,23 @@ namespace Data.Model
             _phoneNumber = phoneNumber;
             _nip = nip;
             _pesel = pesel;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Customer client &&
+                   _id == client._id &&
+                   _name == client._name &&
+                   _phoneNumber == client._phoneNumber;
+        }
+
+        public override int GetHashCode()
+        {
+            int hashCode = 1164615363;
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(_id);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(_name);
+            hashCode = hashCode * -1521134295 + _phoneNumber.GetHashCode();
+            return hashCode;
         }
     }
 }

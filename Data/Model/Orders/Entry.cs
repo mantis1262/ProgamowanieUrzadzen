@@ -27,5 +27,20 @@ namespace Data.Model
             _amount = amount;
             _bruttoPrice = bruttoPrice;
         }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Entry entry &&
+                   _id == entry._id &&
+                   EqualityComparer<Merchandise>.Default.Equals(_merchandise, entry._merchandise);
+        }
+
+        public override int GetHashCode()
+        {
+            int hashCode = -1317184676;
+            hashCode = hashCode * -1521134295 + _id.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<Merchandise>.Default.GetHashCode(_merchandise);
+            return hashCode;
+        }
     }
 }

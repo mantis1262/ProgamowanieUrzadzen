@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Logic;
-using Logic.Contexts;
 
 namespace ServerApi
 {
@@ -13,8 +12,7 @@ namespace ServerApi
 
         static void Main(string[] args)
         {
-            ServerLogicContext serverLogicContext; 
-            serverLogicContext = new ServerLogicContext();
+            
         }
     }
 }

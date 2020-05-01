@@ -7,7 +7,7 @@ namespace Data.Model
 {
     public class Merchandise
     {
-        private int _id;
+        private string _id;
         private string _name;
         private string  _description;
         private ArticleType _type;
@@ -15,7 +15,7 @@ namespace Data.Model
         private double _nettoPrice;
         private double _vat;
 
-        public int Id { get => _id; set => _id = value; }
+        public string Id { get => _id; set => _id = value; }
         public string Name { get => _name; set => _name = value; }
         public string Description { get => _description; set => _description = value; }
         public ArticleType Type { get => _type; set => _type = value; }
@@ -27,7 +27,7 @@ namespace Data.Model
         {
         }
 
-        public Merchandise(int id, string name, string description, ArticleType type, ArticleUnit unit, double nettoPrice, double vat)
+        public Merchandise(string id, string name, string description, ArticleType type, ArticleUnit unit, double nettoPrice, double vat)
         {
             _id = id;
             _name = name;
@@ -36,6 +36,21 @@ namespace Data.Model
             _unit = unit;
             _nettoPrice = nettoPrice;
             _vat = vat;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Merchandise merchandise &&
+                   _id == merchandise._id &&
+                   _name == merchandise._name;
+        }
+
+        public override int GetHashCode()
+        {
+            int hashCode = 321773176;
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(_id);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(_name);
+            return hashCode;
         }
     }
 }
