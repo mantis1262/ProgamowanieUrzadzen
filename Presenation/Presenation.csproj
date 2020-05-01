@@ -55,7 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Model\Client.cs" />
+    <Compile Include="Model\Customer.cs" />
     <Compile Include="Model\OrderSummary.cs" />
     <Compile Include="Model\Product.cs" />
     <Compile Include="View\MainWindow.xaml.cs">

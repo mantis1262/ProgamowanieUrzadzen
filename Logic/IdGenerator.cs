@@ -20,7 +20,7 @@ namespace Logic
             _orderNum = 1;
         }
 
-        public string GetNextClientId()
+        public string GetNextCustomerId()
         {
             string id = CLIENT_ID_PREFIX + _clientNum.ToString();
             ++_clientNum;

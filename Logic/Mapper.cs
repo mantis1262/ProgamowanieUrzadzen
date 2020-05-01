@@ -7,11 +7,11 @@ using System.Text;
 
 namespace Logic
 {
-    public static class ModelDtoMapper
+    public static class Mapper
     {
-        public static ClientDto ToDto(this ClientContactInfo clientInfo)
+        public static CustomerDto ToDto(this Customer clientInfo)
         {
-            return new ClientDto
+            return new CustomerDto
                 (
                     clientInfo.Id, 
                     clientInfo.Name, 
@@ -91,9 +91,9 @@ namespace Logic
                 );
         }
 
-        public static ClientContactInfo FromDto(this ClientDto clientDto)
+        public static Customer FromDto(this CustomerDto clientDto)
         {
-            return new ClientContactInfo
+            return new Customer
                 (
                     clientDto.Id,
                     clientDto.Name,

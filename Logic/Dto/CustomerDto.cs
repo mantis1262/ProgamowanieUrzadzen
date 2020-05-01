@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Presenation.Model
+namespace Logic.Dto
 {
-    public class Client
+    public class CustomerDto
     {
         private string _id;
         private string _name;
@@ -22,11 +20,7 @@ namespace Presenation.Model
         public string Nip { get => _nip; set => _nip = value; }
         public string Pesel { get => _pesel; set => _pesel = value; }
 
-        public Client()
-        {
-        }
-
-        public Client(string id, string name, string address, int phoneNumber, string nip, string pesel)
+        public CustomerDto(string id, string name, string address, int phoneNumber, string nip, string pesel)
         {
             _id = id;
             _name = name;
