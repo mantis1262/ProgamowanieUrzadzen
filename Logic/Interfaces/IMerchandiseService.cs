@@ -8,6 +8,6 @@ namespace Logic.Interfaces
     public interface IMerchandiseService
     {
         MerchandiseDto GetMerchandise(string id);
-        IEnumerable<MerchandiseDto> GetMerchandises(string id);
+        IEnumerable<MerchandiseDto> GetMerchandises();
     }
 }

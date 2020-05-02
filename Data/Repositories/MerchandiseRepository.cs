@@ -10,6 +10,11 @@ namespace Data.Repositories
     {
         private readonly DataContext _dataContext;
 
+        public MerchandiseRepository()
+        {
+            _dataContext = new DataContext();
+        }
+
         public MerchandiseRepository(DataContext dataContext)
         {
             _dataContext = dataContext;

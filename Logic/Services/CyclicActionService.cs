@@ -5,7 +5,7 @@ using System.Reactive.Linq;
 
 namespace Logic.Services
 {
-    public class CyclicRaportService : IDisposable
+    public class CyclicActionService : IDisposable
     {
         private IDisposable m_TimerSubscription = null;
         private bool disposedValue = false;
@@ -14,7 +14,7 @@ namespace Logic.Services
 
         public event EventHandler<CyclicEvent> Tick;
 
-        public CyclicRaportService(TimeSpan period)
+        public CyclicActionService(TimeSpan period)
         {
             Period = period;
         }

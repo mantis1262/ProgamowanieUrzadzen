@@ -16,6 +16,13 @@ namespace Logic.Services
         private readonly IRepository<Customer> _customerRepository;
         private readonly object m_SyncObject = new object();
 
+
+        public CustomerService()
+        {
+            _idGenerator = new IdGenerator();
+            _customerRepository = new CustomerRepository();
+        }
+
         public CustomerService(IRepository<Customer> customerRepository)
         {
             _idGenerator = new IdGenerator();
