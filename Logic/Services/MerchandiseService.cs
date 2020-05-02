@@ -1,5 +1,6 @@
 ﻿using Data.Interfaces;
 using Data.Model;
+using Data.Repositories;
 using Logic.Dto;
 using Logic.Interfaces;
 using System;
@@ -13,6 +14,11 @@ namespace Logic.Services
     {
         private readonly IRepository<Merchandise> _merchandiseRepository;
         private readonly object m_SyncObject = new object();
+
+        public MerchandiseService()
+        {
+            _merchandiseRepository = new MerchandiseRepository();
+        }
 
         public MerchandiseService(IRepository<Merchandise> merchandiseRepository)
         {
@@ -28,7 +34,7 @@ namespace Logic.Services
             }
         }
 
-        public IEnumerable<MerchandiseDto> GetMerchandises(string id)
+        public IEnumerable<MerchandiseDto> GetMerchandises()
         {
             lock (m_SyncObject) //komunikacja sieciowa
             {

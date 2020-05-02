@@ -1,5 +1,6 @@
 ﻿using Data.Interfaces;
 using Data.Model;
+using Data.Repositories;
 using Logic.Dto;
 using Logic.Interfaces;
 using System;
@@ -13,11 +14,22 @@ namespace Logic.Services
     {
         private readonly IdGenerator _idGenerator;
         private readonly IRepository<Order> _orderRepository;
-        private readonly CustomerService _customerService;
-        private readonly MerchandiseService _merchandiseService;
+        private readonly ICustomerService _customerService;
+        private readonly IMerchandiseService _merchandiseService;
         private readonly object m_SyncObject = new object();
 
-        public OrderService(IRepository<Order> orderRepository, CustomerService customerService, MerchandiseService merchandiseService)
+        public ICustomerService CustomerService => _customerService;
+
+        public IMerchandiseService MerchandiseService => _merchandiseService;
+
+        public OrderService()
+        {
+            _customerService = new CustomerService();
+            _merchandiseService = new MerchandiseService();
+            _orderRepository = new OrderRepository();
+        }
+
+        public OrderService(IRepository<Order> orderRepository, ICustomerService customerService, IMerchandiseService merchandiseService)
         {
             _idGenerator = new IdGenerator();
             _orderRepository = orderRepository;
