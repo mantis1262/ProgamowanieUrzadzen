@@ -37,29 +37,34 @@ namespace DataTest
         [TestMethod]
         public void AddTest()
         {
+
             Order order = new Order
             { Id = "0",
-                 
+                AcceptanceDate = new DateTime(2020, 01, 05),
+                Client = new Customer(),
+                DeliveringDate = new DateTime(),
+                Entries = new List<Entry>(),
+                Status = Status.IN_PROGRESS
             };
 
-            OrderRepository.Add(customer);
+            OrderRepository.Add(order);
             Assert.IsNotNull(OrderRepository.Get("0"));
         }
         [TestMethod]
         public void DeleteTest()
         {
 
-            Customer customer = new Customer
+            Order order = new Order
             {
                 Id = "0",
-                Name = "Jan Kowaslki",
-                Address = "Pierwszego 2/4",
-                Nip = "1234567890",
-                Pesel = "12345678900",
-                PhoneNumber = 123456789
+                AcceptanceDate = new DateTime(2020, 01, 05),
+                Client = new Customer(),
+                DeliveringDate = new DateTime(),
+                Entries = new List<Entry>(),
+                Status = Status.IN_PROGRESS
             };
 
-            OrderRepository.Add(customer);
+            OrderRepository.Add(order);
             OrderRepository.Delete("0");
 
             Assert.AreEqual(0, OrderRepository.Get().ToList().Count());
@@ -68,31 +73,30 @@ namespace DataTest
         [TestMethod]
         public void UpdateTest()
         {
-            Customer customer = new Customer
+            Order order = new Order
             {
                 Id = "0",
-                Name = "Jan Kowaslki",
-                Address = "Pierwszego 2/4",
-                Nip = "1234567890",
-                Pesel = "12345678900",
-                PhoneNumber = 123456789
+                AcceptanceDate = new DateTime(2020, 01, 05),
+                Client = new Customer(),
+                DeliveringDate = new DateTime(),
+                Entries = new List<Entry>(),
+                Status = Status.IN_PROGRESS
             };
 
-            OrderRepository.Add(customer);
+            OrderRepository.Add(order);
 
-            int newPhone = 987654321;
-            Customer customer2 = new Customer
+            Order order2 = new Order
             {
                 Id = "0",
-                Name = "Jan Kowaslki",
-                Address = "Pierwszego 2/4",
-                Nip = "1234567890",
-                Pesel = "12345678900",
-                PhoneNumber = newPhone
+                AcceptanceDate = new DateTime(2020, 01, 05),
+                Client = new Customer(),
+                DeliveringDate = new DateTime(),
+                Entries = new List<Entry>(),
+                Status = Status.ACCEPTED
             };
 
-            OrderRepository.Update("0", customer2);
-            Assert.AreEqual(newPhone, OrderRepository.Get("0").PhoneNumber);
+            OrderRepository.Update("0", order2);
+            Assert.AreEqual(Status.ACCEPTED, OrderRepository.Get("0").Status);
         }
     }
 }
