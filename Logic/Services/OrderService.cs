@@ -24,6 +24,7 @@ namespace Logic.Services
 
         public OrderService()
         {
+            _idGenerator = new IdGenerator();
             _customerService = new CustomerService();
             _merchandiseService = new MerchandiseService();
             _orderRepository = new OrderRepository();
@@ -48,10 +49,18 @@ namespace Logic.Services
 
         public void SaveOrder(OrderDto order)
         {
-            string newCustomerId = _idGenerator.GetNextOrderId();
-            order.Id = newCustomerId;
-            Order orderToSave = order.FromDto();
-            _orderRepository.Add(orderToSave);
+            if (string.IsNullOrEmpty(order.Id))
+            {
+                string newCustomerId = _idGenerator.GetNextOrderId();
+                order.Id = newCustomerId;
+                Order orderToSave = order.FromDto();
+                _orderRepository.Add(orderToSave);
+            }
+            else
+            {
+                Order orderToSave = order.FromDto();
+                _orderRepository.Add(orderToSave);
+            }
         }
 
         public void CancelOrder(string id)

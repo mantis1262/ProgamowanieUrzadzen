@@ -1,6 +1,7 @@
 ﻿using Data.Interfaces;
 using Data.Model;
 using Data.Repositories;
+using System.Linq;
 using Logic.Dto;
 using Logic.Interfaces;
 using System;
@@ -38,9 +39,15 @@ namespace Logic.Services
         {
             lock (m_SyncObject) //komunikacja sieciowa
             {
-                List<Merchandise> merchandises = _merchandiseRepository.Get() as List<Merchandise>;
+                List<Merchandise> merchandises = _merchandiseRepository.Get().ToList();
                 return merchandises.ToDto();
             }
+        }
+
+        public void SaveMerchanise(MerchandiseDto merchandise)
+        {
+                Merchandise merchandiseToSet = merchandise.FromDto();
+                _merchandiseRepository.Add(merchandiseToSet);
         }
     }
 }
