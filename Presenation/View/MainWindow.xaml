@@ -4,9 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Presenation.View"
+        xmlns:vm="clr-namespace:Presenation.ViewModel"
         mc:Ignorable="d"
         Title="MainWindow" Height="567.6" Width="800">
-    <Grid>
+    <Window.Resources>
+        <vm:MainViewModel x:Key="UserViewModel" />
+    </Window.Resources>
+    <Grid DataContext="{StaticResource UserViewModel}">
         <TabControl HorizontalAlignment="Left" Height="538" VerticalAlignment="Top" Width="794" Margin="0,0,-0.4,0">
             <TabItem Header="Order" HorizontalAlignment="Right" Margin="-2,-2,-1.6,-0.2" Width="46">
                 <Grid Background="#FFE5E5E5" Margin="0,0,0,-36.2">
@@ -19,7 +23,7 @@
                         <ColumnDefinition Width="69*"/>
                         <ColumnDefinition Width="714*"/>
                     </Grid.ColumnDefinitions>
-                    <ListView HorizontalAlignment="Left" Height="190" VerticalAlignment="Top" Width="788" Grid.ColumnSpan="3" Margin="0,25,0,0" Grid.RowSpan="2">
+                    <ListView HorizontalAlignment="Left" Height="190" VerticalAlignment="Top" Width="788" Grid.ColumnSpan="3" Margin="0,25,0,0" Grid.RowSpan="2" SelectionMode="Single" ItemsSource="{Binding ProductsForBasket}" SelectedItem="{Binding CurrentBasketProduct}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Code" Width="60"/>
@@ -40,7 +44,7 @@
                     <Label Content="0" Grid.Column="2" HorizontalAlignment="Left" Margin="658.4,198.4,0,0" VerticalAlignment="Top" RenderTransformOrigin="3.512,0.406" Width="56" Grid.Row="1"/>
                     <Label Content="Products" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <Label Content="Basket" Grid.Column="1" HorizontalAlignment="Left" Margin="0.2,198.4,0,0" VerticalAlignment="Top" Grid.Row="1"/>
-                    <ListView Grid.ColumnSpan="3" HorizontalAlignment="Left" Height="221" Margin="0,223.8,0,0" VerticalAlignment="Top" Width="788" Grid.Row="1">
+                    <ListView Grid.ColumnSpan="3" HorizontalAlignment="Left" Height="221" Margin="0,223.8,0,0" VerticalAlignment="Top" Width="788" Grid.Row="1" SelectionMode="Single" ItemsSource="{Binding BasketEntries}" SelectedItem="{Binding CurrentBasketEntry}">
                         <ListView.View>
                             <GridView>
                                 <GridView.ColumnHeaderContextMenu>
@@ -72,7 +76,7 @@
                     </Grid.ColumnDefinitions>
                     <Label Content="Order code" HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top" Grid.ColumnSpan="4"/>
                     <TextBox HorizontalAlignment="Left" Height="26" Margin="26,12,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" FontSize="14" Grid.Column="3"/>
-                    <ListView HorizontalAlignment="Left" Height="134" Margin="0,86,0,0" VerticalAlignment="Top" Width="788" Grid.ColumnSpan="4">
+                    <ListView HorizontalAlignment="Left" Height="134" Margin="0,86,0,0" VerticalAlignment="Top" Width="788" Grid.ColumnSpan="4" SelectionMode="Single" ItemsSource="{Binding SearchCustomers}" SelectedItem="{Binding CurrentSearchCustomer}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="ID" Width="70"/>
@@ -87,7 +91,7 @@
                     <Button Content="Find order" Grid.Column="3" HorizontalAlignment="Left" Margin="184,15,0,0" VerticalAlignment="Top" Width="75"/>
                     <Label Content="Client info" HorizontalAlignment="Left" Margin="10,55,0,0" VerticalAlignment="Top" Grid.ColumnSpan="4" Width="73"/>
                     <Label Content="Order summary" HorizontalAlignment="Left" Margin="10,240,0,0" VerticalAlignment="Top" Grid.ColumnSpan="4" Width="97"/>
-                    <ListView Grid.ColumnSpan="4" HorizontalAlignment="Left" Height="157" Margin="0,356,0,0" VerticalAlignment="Top" Width="788">
+                    <ListView Grid.ColumnSpan="4" HorizontalAlignment="Left" Height="157" Margin="0,356,0,0" VerticalAlignment="Top" Width="788" SelectionMode="Single" ItemsSource="{Binding SearchEntries}" SelectedItem="{Binding CurrentSearchEntry}">
                         <ListView.View>
                             <GridView>
                                 <GridView.ColumnHeaderContextMenu>
@@ -107,7 +111,7 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <ListView Grid.ColumnSpan="4" HorizontalAlignment="Left" Height="55" Margin="0,266,0,0" VerticalAlignment="Top" Width="788">
+                    <ListView Grid.ColumnSpan="4" HorizontalAlignment="Left" Height="55" Margin="0,266,0,0" VerticalAlignment="Top" Width="788" SelectionMode="Single" ItemsSource="{Binding SearchOrders}" SelectedItem="{Binding CurrentSearchOrderSummary}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="ID" Width="100"/>

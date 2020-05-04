@@ -21,11 +21,15 @@ namespace Presenation.ViewModel
     {
         private Product _currentBasketProduct;
         private Entry _currentBasketEntry;
+        private Entry _currentSearchEntry;
         private Customer _currentSearchCustomer;
         private OrderSummary _currentSearchOrderSummary;
+        private string _searchOrderCode;
         private ObservableCollection<Product> _productsForBasket;
         private ObservableCollection<Entry> _basketEntries;
         private ObservableCollection<Entry> _searchEntries;
+        private ObservableCollection<Customer> _searchCustomers;
+        private ObservableCollection<OrderSummary> _searchOrders;
         private OrderService _orderService;
 
         private CyclicActionService _cyclicActionService;
@@ -52,13 +56,33 @@ namespace Presenation.ViewModel
                 RaisePropertyChanged();
             }
         }
-        
+
+        public Entry CurrentSearchEntry
+        {
+            get => _currentSearchEntry;
+            set
+            {
+                _currentSearchEntry = value;
+                RaisePropertyChanged();
+            }
+        }
+
         public Customer CurrentSearchCustomer 
         { 
             get => _currentSearchCustomer; 
             set
             {
                 _currentSearchCustomer = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public string SearchOrderCode
+        {
+            get => _searchOrderCode;
+            set
+            {
+                _searchOrderCode = value;
                 RaisePropertyChanged();
             }
         }
@@ -102,6 +126,26 @@ namespace Presenation.ViewModel
             }
         }
 
+        public ObservableCollection<Customer> SearchCustomers
+        {
+            get => _searchCustomers;
+            set
+            {
+                _searchCustomers = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public ObservableCollection<OrderSummary> SearchOrders
+        {
+            get => _searchOrders;
+            set
+            {
+                _searchOrders = value;
+                RaisePropertyChanged();
+            }
+        }
+
         public MainViewModel()
         {
             _orderService = new OrderService();
@@ -110,6 +154,10 @@ namespace Presenation.ViewModel
             _currentSearchCustomer = null;
             _currentSearchOrderSummary = null;
             AddProductToBasketCommand = new RelayCommand(AddProductToBasket);
+            RemoveProductFromBasketCommand = new RelayCommand(RemoveProductFromBasket);
+            ClearBasketCommand = new RelayCommand(ClearBasket);
+            ConfirmBasketCommand = new RelayCommand(ConfirmBasket);
+            SearchOrderCommand = new RelayCommand(SearchOrder);
             _productsForBasket = new ObservableCollection<Product>(_orderService.MerchandiseService.GetMerchandises().ToList().FromDto());
         }
 
@@ -151,13 +199,15 @@ namespace Presenation.ViewModel
                 }
                 else
                 {
+                    int entryNum = entries.Max(entry => entry.Id) + 1;
+                    int.TryParse(input, out int amountNum);
+
                     if (foundEntry == null)
-                    {
-                        int entryNum = entries.Max(entry => entry.Id) + 1;
+                    {  
                         double netto = _currentBasketProduct.NettoPrice;
                         double vat = _currentBasketProduct.Vat;
                         double brutto = CalcHelper.GetBruttoPrice(netto, vat);
-                        double totalBrutto = CalcHelper.GetTotalBrutto(brutto, entryNum);
+                        double totalBrutto = CalcHelper.GetTotalBrutto(brutto, amountNum);
                         Entry newEntry = new Entry
                         (
                             entryNum,
@@ -168,7 +218,7 @@ namespace Presenation.ViewModel
                             _currentBasketProduct.Unit,
                             netto,
                             vat,
-                            entryNum,
+                            amountNum,
                             brutto,
                             totalBrutto
                         );
@@ -176,10 +226,51 @@ namespace Presenation.ViewModel
                     }
                     else
                     {
-                        int.TryParse(input, out int amountNum);
                         foundEntry.Amount += amountNum;
                     }
                 }
+            }
+        }
+        
+        public void RemoveProductFromBasket()
+        {
+            if (_currentBasketEntry != null && _basketEntries.Contains(_currentBasketEntry))
+            {
+                _basketEntries.Remove(_currentBasketEntry);
+            }
+        }
+
+        public void ClearBasket()
+        {
+            _basketEntries.Clear();
+        }
+
+        public void ConfirmBasket()
+        {
+            // TODO otworzenie okna CustomerInfoWindow i przekazanie tam danych _entries, _orderSummary
+        }
+
+        public void SearchOrder()
+        {
+            try
+            {
+                OrderDto orderDto = _orderService.GetOrder(_searchOrderCode);
+                OrderSummary orderSummary = orderDto.FromDto();
+                Customer customer = orderDto.ClientInfo.FromDto();
+                List<Entry> entries = orderDto.Entries.FromDto();
+                _searchCustomers.Clear();
+                _searchOrders.Clear();
+                _searchEntries.Clear();
+                _searchCustomers.Add(customer);
+                _searchOrders.Add(orderSummary);
+                foreach (Entry entry in entries)
+                {
+                    _searchEntries.Add(entry);
+                }
+            }
+            catch(Exception e)
+            {
+                ShowErrorPopupWindow(e.Message);
             }
         }
 
