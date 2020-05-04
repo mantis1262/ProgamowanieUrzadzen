@@ -29,5 +29,14 @@ namespace Logic.Dto
             _nip = nip;
             _pesel = pesel;
         }
+
+        public CustomerDto(string name, string address, int phoneNumber, string nip, string pesel)
+        {
+            _name = name;
+            _address = address;
+            _phoneNumber = phoneNumber;
+            _nip = nip;
+            _pesel = pesel;
+        }
     }
 }

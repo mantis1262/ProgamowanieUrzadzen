@@ -25,6 +25,16 @@ namespace Logic.Dto
             _deliveringDate = deliveringDate;
         }
 
+        public OrderDto(CustomerDto clientInfo, List<EntryDto> entries, string status, double totalBruttoPrice, long acceptanceDate, long deliveringDate)
+        {
+            _clientInfo = clientInfo;
+            _entries = entries;
+            _status = status;
+            _totalBruttoPrice = totalBruttoPrice;
+            _acceptanceDate = acceptanceDate;
+            _deliveringDate = deliveringDate;
+        }
+
         public string Id { get => _id; set => _id = value; }
         public CustomerDto ClientInfo { get => _clientInfo; set => _clientInfo = value; }
         public List<EntryDto> Entries { get => _entries; set => _entries = value; }
