@@ -32,8 +32,8 @@ namespace Presenation.ViewModel
         private ObservableCollection<OrderSummary> _searchOrders;
         private OrderService _orderService;
 
-        private CyclicActionService _cyclicActionService;
-        private IObservable<EventPattern<CyclicEvent>> _tickObservable;
+        private CyclicDiscountService _cyclicActionService;
+        private IObservable<EventPattern<DiscountEvent>> _tickObservable;
         private IDisposable _observer;
 
         public Product CurrentBasketProduct 

@@ -31,26 +31,26 @@ namespace Logic.Services
 
         public CustomerDto GetCustomer(string id)
         {
-            lock (m_SyncObject) //komunikacja sieciowa
-            {
-                Customer customer = _customerRepository.Get(id);
-                return customer.ToDto();
-            }
+            Customer customer = _customerRepository.Get(id);
+            return customer.ToDto();
         }
 
         public void SaveCustomer(CustomerDto customer)
         {
-            if (string.IsNullOrEmpty(customer.Id))
+            lock (m_SyncObject)
             {
-                string newCustomerId = _idGenerator.GetNextCustomerId();
-                customer.Id = newCustomerId;
-                Customer customerToSave = customer.FromDto();
-                _customerRepository.Add(customerToSave);
-            }
-            else
-            {
-                Customer customerToSave = customer.FromDto();
-                _customerRepository.Add(customerToSave);
+                if (string.IsNullOrEmpty(customer.Id))
+                {
+                    string newCustomerId = _idGenerator.GetNextCustomerId();
+                    customer.Id = newCustomerId;
+                    Customer customerToSave = customer.FromDto();
+                    _customerRepository.Add(customerToSave);
+                }
+                else
+                {
+                    Customer customerToSave = customer.FromDto();
+                    _customerRepository.Add(customerToSave);
+                }
             }
         }
     }
