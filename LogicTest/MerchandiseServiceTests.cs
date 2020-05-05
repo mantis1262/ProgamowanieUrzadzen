@@ -23,7 +23,7 @@ namespace LogicTest
         {
             MerchandiseService merchandiseService = new MerchandiseService();
             MerchandiseDto merchandiseDto = new MerchandiseDto("0","Jajao","Produkt wiejski",ArticleType.GROCERIES.ToString(),ArticleUnit.PACK.ToString(),13.20,0.01);
-            merchandiseService.SaveMerchanise(merchandiseDto);
+            merchandiseService.SaveMerchandise(merchandiseDto);
             Assert.AreEqual(1,merchandiseService.GetMerchandises().Count());
         }
 
@@ -32,7 +32,7 @@ namespace LogicTest
         {
             MerchandiseService merchandiseService = new MerchandiseService();
             MerchandiseDto merchandiseDto = new MerchandiseDto("0", "Jajao", "Produkt wiejski", ArticleType.GROCERIES.ToString(), ArticleUnit.PACK.ToString(), 13.20, 0.01);
-            merchandiseService.SaveMerchanise(merchandiseDto);
+            merchandiseService.SaveMerchandise(merchandiseDto);
             Assert.IsNotNull(merchandiseService.GetMerchandise("0"));
         }
     }

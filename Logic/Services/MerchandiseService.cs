@@ -28,26 +28,32 @@ namespace Logic.Services
 
         public MerchandiseDto GetMerchandise(string id)
         {
-            lock (m_SyncObject) //komunikacja sieciowa
-            {
-                Merchandise merchandise = _merchandiseRepository.Get(id);
-                return merchandise.ToDto();
-            }
+            Merchandise merchandise = _merchandiseRepository.Get(id);
+            return merchandise.ToDto();
         }
 
         public IEnumerable<MerchandiseDto> GetMerchandises()
         {
-            lock (m_SyncObject) //komunikacja sieciowa
-            {
-                List<Merchandise> merchandises = _merchandiseRepository.Get().ToList();
-                return merchandises.ToDto();
-            }
+            List<Merchandise> merchandises = _merchandiseRepository.Get().ToList();
+            return merchandises.ToDto();
         }
 
-        public void SaveMerchanise(MerchandiseDto merchandise)
+        public void SaveMerchandise(MerchandiseDto merchandise)
         {
+            lock (m_SyncObject)
+            {
                 Merchandise merchandiseToSet = merchandise.FromDto();
                 _merchandiseRepository.Add(merchandiseToSet);
+            }  
+        }
+
+        public void UpdateMerchandise(MerchandiseDto merchandise)
+        {
+            lock (m_SyncObject)
+            {
+                Merchandise merchandiseToSet = merchandise.FromDto();
+                _merchandiseRepository.Update(merchandiseToSet.Id, merchandiseToSet);
+            }
         }
     }
 }

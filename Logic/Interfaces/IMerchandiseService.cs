@@ -9,5 +9,7 @@ namespace Logic.Interfaces
     {
         MerchandiseDto GetMerchandise(string id);
         IEnumerable<MerchandiseDto> GetMerchandises();
+        void SaveMerchandise(MerchandiseDto merchandise);
+        void UpdateMerchandise(MerchandiseDto merchandise);
     }
 }
