@@ -25,6 +25,13 @@ namespace Presenation.ViewModel
         private Customer _currentSearchCustomer;
         private OrderSummary _currentSearchOrderSummary;
         private string _searchOrderCode;
+        private double _totalBruttoPrice;
+        private string _customerId;
+        private string _customerName;
+        private string _customerAddress;
+        private string _customerPhone;
+        private string _customerNip;
+        private string _customerPesel;
         private ObservableCollection<Product> _productsForBasket;
         private ObservableCollection<Entry> _basketEntries;
         private ObservableCollection<Entry> _searchEntries;
@@ -86,7 +93,67 @@ namespace Presenation.ViewModel
                 RaisePropertyChanged();
             }
         }
-        
+
+        public string CustomerId
+        {
+            get => _customerId;
+            set
+            {
+                _customerId = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public string CustomerName
+        {
+            get => _customerName;
+            set
+            {
+                _customerName = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public string CustomerAddress
+        {
+            get => _customerAddress;
+            set
+            {
+                _customerAddress = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public string CustomerPhone
+        {
+            get => _customerPhone;
+            set
+            {
+                _customerPhone = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public string CustomerNip
+        {
+            get => _customerNip;
+            set
+            {
+                _customerNip = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public string CustomerPesel
+        {
+            get => _customerPesel;
+            set
+            {
+                _customerPesel = value;
+                RaisePropertyChanged();
+            }
+        }
+
         public OrderSummary CurrentSearchOrderSummary 
         { 
             get => _currentSearchOrderSummary; 
@@ -157,6 +224,7 @@ namespace Presenation.ViewModel
             RemoveProductFromBasketCommand = new RelayCommand(RemoveProductFromBasket);
             ClearBasketCommand = new RelayCommand(ClearBasket);
             ConfirmBasketCommand = new RelayCommand(ConfirmBasket);
+            SearchCustomerCommand = new RelayCommand(SearchCustomer);
             SearchOrderCommand = new RelayCommand(SearchOrder);
             _productsForBasket = new ObservableCollection<Product>(_orderService.MerchandiseService.GetMerchandises().ToList().FromDto());
         }
@@ -182,6 +250,16 @@ namespace Presenation.ViewModel
         }
 
         public RelayCommand SearchOrderCommand
+        {
+            get; private set;
+        }
+
+        public RelayCommand SearchCustomerCommand
+        {
+            get; private set;
+        }
+
+        public RelayCommand ConfirmCommand
         {
             get; private set;
         }
@@ -247,7 +325,32 @@ namespace Presenation.ViewModel
 
         public void ConfirmBasket()
         {
-            // TODO otworzenie okna CustomerInfoWindow i przekazanie tam danych _entries, _orderSummary
+            int.TryParse(_customerPhone, out int phone);
+            Customer customer = new Customer(_customerId, _customerName, _customerAddress, phone, _customerNip, _customerPesel);
+            List<Entry> basketEntries = _basketEntries.ToList();
+            List<EntryDto> basketEntriesDto = basketEntries.ToDto();
+            OrderSummary orderSummary = new OrderSummary();
+            orderSummary.TotalBrutto = CalcHelper.GetTotalBrutto(basketEntriesDto);
+            OrderDto orderDto = orderSummary.ToDto(customer, basketEntries);
+            _orderService.SaveOrder(orderDto);
+        }
+
+        public void SearchCustomer()
+        {
+            try
+            {
+                Customer customer = _orderService.CustomerService.GetCustomer(_customerId).FromDto();
+                _customerName = customer.Name;
+                _customerAddress = customer.Address;
+                _customerPhone = customer.ToString();
+                _customerNip = customer.Nip;
+                _customerPesel = customer.Pesel;
+            }
+            catch (Exception e)
+            {
+                ShowErrorPopupWindow(e.Message);
+            }
+
         }
 
         public void SearchOrder()

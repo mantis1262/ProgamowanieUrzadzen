@@ -75,11 +75,7 @@
     <Compile Include="Model\Entry.cs" />
     <Compile Include="Model\OrderSummary.cs" />
     <Compile Include="Model\Product.cs" />
-    <Compile Include="ViewModel\CustomerInfoViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="View\CustomerInfoWindow.xaml.cs">
-      <DependentUpon>CustomerInfoWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -87,10 +83,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="View\CustomerInfoWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
