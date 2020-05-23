@@ -24,7 +24,7 @@ namespace Server
             server.Start();
             Console.WriteLine("[{0}] Server nasłuchuje na " + httpListenerPrefix + " ...", DateTime.Now.ToString("HH:mm:ss.fff"));
 
-            _orderService = new OrderService();
+            _orderService = new OrderService(true);
 
             while (true)
             {
