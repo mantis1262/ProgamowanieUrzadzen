@@ -9,7 +9,7 @@ namespace Logic.Interfaces
     public interface IOrderService
     {
         OrderDto GetOrder(string id);
-        void SaveOrder(OrderDto order);
+        string SaveOrder(OrderDto order);
         void CancelOrder(string id);
         void GiveDiscount(object sender, DiscountEvent e);
     }

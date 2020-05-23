@@ -55,13 +55,14 @@ namespace Logic.Services
             return order.ToDto();  
         }
 
-        public void SaveOrder(OrderDto order)
+        public string SaveOrder(OrderDto order)
         {
+            string newCustomerId = "";
             lock (m_SyncObject)
             {
                 if (string.IsNullOrEmpty(order.Id))
                 {
-                    string newCustomerId = _idGenerator.GetNextOrderId();
+                    newCustomerId = _idGenerator.GetNextOrderId();
                     order.Id = newCustomerId;
                     Order orderToSave = order.FromDto();
                     _orderRepository.Add(orderToSave);
@@ -71,7 +72,8 @@ namespace Logic.Services
                     Order orderToSave = order.FromDto();
                     _orderRepository.Add(orderToSave);
                 }
-            } 
+            }
+            return newCustomerId;
         }
 
         public void CancelOrder(string id)
