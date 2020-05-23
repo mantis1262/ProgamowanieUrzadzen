@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Logic.Services
 {
@@ -15,7 +16,6 @@ namespace Logic.Services
         private readonly IdGenerator _idGenerator;
         private readonly IRepository<Customer> _customerRepository;
         private readonly object m_SyncObject = new object();
-
 
         public CustomerService()
         {
@@ -29,29 +29,32 @@ namespace Logic.Services
             _customerRepository = customerRepository;
         }
 
-        public CustomerDto GetCustomer(string id)
+        public async Task<CustomerDto> GetCustomer(string id)
         {
-            Customer customer = _customerRepository.Get(id);
+            Customer customer = await Task.Factory.StartNew(() => _customerRepository.Get(id));
             return customer.ToDto();
         }
 
-        public void SaveCustomer(CustomerDto customer)
+        public async Task SaveCustomer(CustomerDto customer)
         {
-            lock (m_SyncObject)
+            await Task.Factory.StartNew(() => 
             {
-                if (string.IsNullOrEmpty(customer.Id))
+                lock (m_SyncObject)
                 {
-                    string newCustomerId = _idGenerator.GetNextCustomerId();
-                    customer.Id = newCustomerId;
-                    Customer customerToSave = customer.FromDto();
-                    _customerRepository.Add(customerToSave);
+                    if (string.IsNullOrEmpty(customer.Id))
+                    {
+                        string newCustomerId = _idGenerator.GetNextCustomerId();
+                        customer.Id = newCustomerId;
+                        Customer customerToSave = customer.FromDto();
+                        _customerRepository.Add(customerToSave);
+                    }
+                    else
+                    {
+                        Customer customerToSave = customer.FromDto();
+                        _customerRepository.Add(customerToSave);
+                    }
                 }
-                else
-                {
-                    Customer customerToSave = customer.FromDto();
-                    _customerRepository.Add(customerToSave);
-                }
-            }
+            });
         }
     }
 }

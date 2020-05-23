@@ -37,7 +37,7 @@ namespace Presenation.ViewModel
         private ObservableCollection<Entry> _searchEntries;
         private ObservableCollection<Customer> _searchCustomers;
         private ObservableCollection<OrderSummary> _searchOrders;
-        private OrderService _orderService;
+        //private OrderService _orderService;
 
         private CyclicDiscountService _cyclicActionService;
         private IObservable<EventPattern<DiscountEvent>> _tickObservable;
@@ -215,7 +215,7 @@ namespace Presenation.ViewModel
 
         public MainViewModel()
         {
-            _orderService = new OrderService();
+            //_orderService = new OrderService();
             _currentBasketProduct = null;
             _currentBasketEntry = null;
             _currentSearchCustomer = null;
@@ -226,7 +226,7 @@ namespace Presenation.ViewModel
             ConfirmBasketCommand = new RelayCommand(ConfirmBasket);
             SearchCustomerCommand = new RelayCommand(SearchCustomer);
             SearchOrderCommand = new RelayCommand(SearchOrder);
-            _productsForBasket = new ObservableCollection<Product>(_orderService.MerchandiseService.GetMerchandises().ToList().FromDto());
+            //_productsForBasket = new ObservableCollection<Product>(_orderService.MerchandiseService.GetMerchandises().ToList().FromDto());
         }
 
         public RelayCommand AddProductToBasketCommand
@@ -332,19 +332,19 @@ namespace Presenation.ViewModel
             OrderSummary orderSummary = new OrderSummary();
             orderSummary.TotalBrutto = CalcHelper.GetTotalBrutto(basketEntriesDto);
             OrderDto orderDto = orderSummary.ToDto(customer, basketEntries);
-            _orderService.SaveOrder(orderDto);
+            //_orderService.SaveOrder(orderDto);
         }
 
         public void SearchCustomer()
         {
             try
             {
-                Customer customer = _orderService.CustomerService.GetCustomer(_customerId).FromDto();
-                _customerName = customer.Name;
-                _customerAddress = customer.Address;
-                _customerPhone = customer.ToString();
-                _customerNip = customer.Nip;
-                _customerPesel = customer.Pesel;
+                //Customer customer = _orderService.CustomerService.GetCustomer(_customerId).FromDto();
+                //_customerName = customer.Name;
+                //_customerAddress = customer.Address;
+                //_customerPhone = customer.ToString();
+                //_customerNip = customer.Nip;
+                //_customerPesel = customer.Pesel;
             }
             catch (Exception e)
             {
@@ -357,19 +357,19 @@ namespace Presenation.ViewModel
         {
             try
             {
-                OrderDto orderDto = _orderService.GetOrder(_searchOrderCode);
-                OrderSummary orderSummary = orderDto.FromDto();
-                Customer customer = orderDto.ClientInfo.FromDto();
-                List<Entry> entries = orderDto.Entries.FromDto();
-                _searchCustomers.Clear();
-                _searchOrders.Clear();
-                _searchEntries.Clear();
-                _searchCustomers.Add(customer);
-                _searchOrders.Add(orderSummary);
-                foreach (Entry entry in entries)
-                {
-                    _searchEntries.Add(entry);
-                }
+                //OrderDto orderDto = _orderService.GetOrder(_searchOrderCode);
+                //OrderSummary orderSummary = orderDto.FromDto();
+                //Customer customer = orderDto.ClientInfo.FromDto();
+                //List<Entry> entries = orderDto.Entries.FromDto();
+                //_searchCustomers.Clear();
+                //_searchOrders.Clear();
+                //_searchEntries.Clear();
+                //_searchCustomers.Add(customer);
+                //_searchOrders.Add(orderSummary);
+                //foreach (Entry entry in entries)
+                //{
+                //    _searchEntries.Add(entry);
+                //}
             }
             catch(Exception e)
             {

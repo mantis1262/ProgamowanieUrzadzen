@@ -73,7 +73,7 @@ namespace Server
                     }
                     else
                     {
-                        string response = ProcessData(Encoding.UTF8.GetString(receiveBuffer).TrimEnd('\0'), ipAddress);
+                        string response = await ProcessData(Encoding.UTF8.GetString(receiveBuffer).TrimEnd('\0'), ipAddress);
                         ArraySegment<byte> outb = new ArraySegment<byte>(Encoding.UTF8.GetBytes(response));
                         await webSocket.SendAsync(outb, WebSocketMessageType.Binary, receiveResult.EndOfMessage, CancellationToken.None);
                     }
@@ -92,7 +92,7 @@ namespace Server
             }
         }
 
-        private string ProcessData(string rawData, string ipAddress)
+        private async Task<string> ProcessData(string rawData, string ipAddress)
         {
             WebMessageBase request = JsonConvert.DeserializeObject<WebMessageBase>(rawData);
             Console.WriteLine("[{0}] Serwer otrzymał zapytanie: \"{1}\" od {2}, status: {3}", DateTime.Now.ToString("HH:mm:ss.fff"), request.Tag, ipAddress, request.Status);
@@ -103,25 +103,25 @@ namespace Server
                 case "get_customer":
                     {
                         GetCustomerRequest customerRequest = JsonConvert.DeserializeObject<GetCustomerRequest>(rawData);
-                        output = ProcessGetCustomerRequest(customerRequest);
+                        output = await ProcessGetCustomerRequest(customerRequest);
                         break;
                     }
                 case "get_merchandises":
                     {
                         GetMerchandisesRequest merchandiseRequest = JsonConvert.DeserializeObject<GetMerchandisesRequest>(rawData);
-                        output = ProcessGetMerchandisesRequest(merchandiseRequest);
+                        output = await ProcessGetMerchandisesRequest(merchandiseRequest);
                         break;
                     }
                 case "get_order":
                     {
                         GetOrderRequest ordeRequest = JsonConvert.DeserializeObject<GetOrderRequest>(rawData);
-                        output = ProcessGetOrderRequest(ordeRequest);
+                        output = await ProcessGetOrderRequest(ordeRequest);
                         break;
                     }
                 case "make_order":
                     {
                         OrderRequestResponse orderRequest = JsonConvert.DeserializeObject<OrderRequestResponse>(rawData);
-                        output = ProcessMakeOrderRequest(orderRequest);
+                        output = await ProcessMakeOrderRequest(orderRequest);
                         break;
                     }
             }
@@ -129,9 +129,9 @@ namespace Server
             return output;
         }
 
-        private string ProcessGetCustomerRequest(GetCustomerRequest request)
+        private async Task<string> ProcessGetCustomerRequest(GetCustomerRequest request)
         {
-            CustomerDto customerDto = _orderService.CustomerService.GetCustomer(request.Customer);
+            CustomerDto customerDto = await _orderService.CustomerService.GetCustomer(request.Customer);
             string result;
 
             if (customerDto == null)
@@ -148,17 +148,17 @@ namespace Server
             return result;
         }
 
-        private string ProcessGetMerchandisesRequest(GetMerchandisesRequest request)
+        private async Task<string> ProcessGetMerchandisesRequest(GetMerchandisesRequest request)
         {
-            List<MerchandiseDto> merchandiseDtos = _orderService.MerchandiseService.GetMerchandises().ToList();
+            List<MerchandiseDto> merchandiseDtos = (await _orderService.MerchandiseService.GetMerchandises()).ToList();
             GetMerchandisesResponse merchandisesResponse = new GetMerchandisesResponse("get_merchandises", merchandiseDtos);
             string result = JsonConvert.SerializeObject(merchandisesResponse, Formatting.Indented);
             return result;
         }
 
-        private string ProcessGetOrderRequest(GetOrderRequest request)
+        private async Task<string> ProcessGetOrderRequest(GetOrderRequest request)
         {
-            OrderDto orderDto = _orderService.GetOrder(request.Order);
+            OrderDto orderDto = await _orderService.GetOrder(request.Order);
             string result;
 
             if (orderDto == null)
@@ -175,10 +175,10 @@ namespace Server
             return result;
         }
 
-        private string ProcessMakeOrderRequest(OrderRequestResponse request)
+        private async Task<string> ProcessMakeOrderRequest(OrderRequestResponse request)
         {
-            string orderId = _orderService.SaveOrder(request.Order);
-            OrderDto orderDto = _orderService.GetOrder(orderId);
+            string orderId = await _orderService.SaveOrder(request.Order);
+            OrderDto orderDto = await _orderService.GetOrder(orderId);
             string result;
 
             if (orderDto == null)

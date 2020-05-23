@@ -33,12 +33,6 @@ namespace Data.Repositories
         public Customer Get(string id)
         {
             _dataContext.Customers.TryGetValue(id, out Customer client);
-
-            if (client == null)
-            {
-                throw new KeyNotFoundException("Client not found !");
-            }
-
             return client;
         }
 

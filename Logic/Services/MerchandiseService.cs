@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Logic.Services
 {
@@ -26,34 +27,40 @@ namespace Logic.Services
             _merchandiseRepository = merchandiseRepository;
         }
 
-        public MerchandiseDto GetMerchandise(string id)
+        public async Task<MerchandiseDto> GetMerchandise(string id)
         {
-            Merchandise merchandise = _merchandiseRepository.Get(id);
+            Merchandise merchandise = await Task.Factory.StartNew(() => _merchandiseRepository.Get(id));
             return merchandise.ToDto();
         }
 
-        public IEnumerable<MerchandiseDto> GetMerchandises()
-        {
-            List<Merchandise> merchandises = _merchandiseRepository.Get().ToList();
+        public async Task<IEnumerable<MerchandiseDto>> GetMerchandises()
+        {  
+            List<Merchandise> merchandises = await Task.Factory.StartNew(() => _merchandiseRepository.Get().ToList());
             return merchandises.ToDto();
         }
 
-        public void SaveMerchandise(MerchandiseDto merchandise)
+        public async Task SaveMerchandise(MerchandiseDto merchandise)
         {
-            lock (m_SyncObject)
+            await Task.Factory.StartNew(() => 
             {
-                Merchandise merchandiseToSet = merchandise.FromDto();
-                _merchandiseRepository.Add(merchandiseToSet);
-            }  
+                lock (m_SyncObject)
+                {
+                    Merchandise merchandiseToSet = merchandise.FromDto();
+                    _merchandiseRepository.Add(merchandiseToSet);
+                }
+            });
         }
 
-        public void UpdateMerchandise(MerchandiseDto merchandise)
+        public async Task UpdateMerchandise(MerchandiseDto merchandise)
         {
-            lock (m_SyncObject)
+            await Task.Factory.StartNew(() =>
             {
-                Merchandise merchandiseToSet = merchandise.FromDto();
-                _merchandiseRepository.Update(merchandiseToSet.Id, merchandiseToSet);
-            }
+                lock (m_SyncObject)
+                {
+                    Merchandise merchandiseToSet = merchandise.FromDto();
+                    _merchandiseRepository.Update(merchandiseToSet.Id, merchandiseToSet);
+                }
+            });
         }
     }
 }

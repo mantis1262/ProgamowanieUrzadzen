@@ -2,12 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Logic.Interfaces
 {
     public interface ICustomerService
     {
-        CustomerDto GetCustomer(string id);
-        void SaveCustomer(CustomerDto customer);
+        Task<CustomerDto> GetCustomer(string id);
+        Task SaveCustomer(CustomerDto customer);
     }
 }
