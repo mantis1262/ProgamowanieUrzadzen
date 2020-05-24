@@ -14,6 +14,11 @@ namespace Logic.Dto
         private long _acceptanceDate;
         private long _deliveringDate;
 
+        public OrderDto()
+        {
+
+        }
+
         public OrderDto(string id, CustomerDto clientInfo, List<EntryDto> entries, string status, double totalBruttoPrice, long acceptanceDate, long deliveringDate)
         {
             _id = id;

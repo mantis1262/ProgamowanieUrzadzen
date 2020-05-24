@@ -22,7 +22,7 @@ namespace Server
             HttpListener server = new HttpListener();
             server.Prefixes.Add(httpListenerPrefix);
             server.Start();
-            Console.WriteLine("[{0}] Server nasłuchuje na " + httpListenerPrefix + " ...", DateTime.Now.ToString("HH:mm:ss.fff"));
+            Console.WriteLine("[{0}] Server is listening on " + httpListenerPrefix + " ...", DateTime.Now.ToString("HH:mm:ss.fff"));
 
             _orderService = new OrderService(true);
 
@@ -46,7 +46,7 @@ namespace Server
             {
                 webSocketContext = await httpListenerContext.AcceptWebSocketAsync(null);
                 ipAddress = httpListenerContext.Request.RemoteEndPoint.Address.ToString();
-                Console.WriteLine("[{0}] Połączono z adresem: {1}", DateTime.Now.ToString("HH:mm:ss.fff"), ipAddress);
+                Console.WriteLine("[{0}] Connected with: {1}", DateTime.Now.ToString("HH:mm:ss.fff"), ipAddress);
             }
             catch (Exception e)
             {

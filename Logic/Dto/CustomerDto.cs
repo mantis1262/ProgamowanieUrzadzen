@@ -20,6 +20,11 @@ namespace Logic.Dto
         public string Nip { get => _nip; set => _nip = value; }
         public string Pesel { get => _pesel; set => _pesel = value; }
 
+        public CustomerDto()
+        {
+
+        }
+
         public CustomerDto(string id, string name, string address, int phoneNumber, string nip, string pesel)
         {
             _id = id;

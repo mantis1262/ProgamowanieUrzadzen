@@ -1,8 +1,11 @@
 ﻿using Logic;
 using Logic.Dto;
 using Logic.Events;
+using Logic.Requests;
 using Logic.Services;
+using Presenation;
 using Microsoft.VisualBasic;
+using Newtonsoft.Json;
 using Presenation.Model;
 using Presentation;
 using System;
@@ -37,7 +40,7 @@ namespace Presenation.ViewModel
         private ObservableCollection<Entry> _searchEntries;
         private ObservableCollection<Customer> _searchCustomers;
         private ObservableCollection<OrderSummary> _searchOrders;
-        //private OrderService _orderService;
+        private WebSocketClient _webSocketClient;
 
         private CyclicDiscountService _cyclicActionService;
         private IObservable<EventPattern<DiscountEvent>> _tickObservable;
@@ -170,6 +173,7 @@ namespace Presenation.ViewModel
             set
             {
                 _productsForBasket = value;
+                RaisePropertyChanged();
             }
         }
         
@@ -215,18 +219,74 @@ namespace Presenation.ViewModel
 
         public MainViewModel()
         {
-            //_orderService = new OrderService();
             _currentBasketProduct = null;
             _currentBasketEntry = null;
             _currentSearchCustomer = null;
             _currentSearchOrderSummary = null;
+            _productsForBasket = new ObservableCollection<Product>();
             AddProductToBasketCommand = new RelayCommand(AddProductToBasket);
             RemoveProductFromBasketCommand = new RelayCommand(RemoveProductFromBasket);
             ClearBasketCommand = new RelayCommand(ClearBasket);
             ConfirmBasketCommand = new RelayCommand(ConfirmBasket);
             SearchCustomerCommand = new RelayCommand(SearchCustomer);
             SearchOrderCommand = new RelayCommand(SearchOrder);
-            //_productsForBasket = new ObservableCollection<Product>(_orderService.MerchandiseService.GetMerchandises().ToList().FromDto());
+
+            _webSocketClient = new WebSocketClient();
+            _webSocketClient.OnMessage.Subscribe(ReceiveMessage);
+            _webSocketClient.Connect("ws://localhost/sklep/");
+            _webSocketClient.GetMerchandisesRequest();
+        }
+
+        public void ReceiveMessage(string message)
+        {
+            WebMessageBase request = JsonConvert.DeserializeObject<WebMessageBase>(message);
+            Console.WriteLine("[{0}] Client received response: {1} , status: {2}", DateTime.Now.ToString("HH:mm:ss.fff"), request.Tag, request.Status);
+            string outp = String.Empty;
+
+            if (request.Status == RequestStatus.FAIL)
+            {
+                MessageBox.Show(request.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            switch (request.Tag)
+            {
+                case "get_customer":
+                    {
+                        GetCustomerResponse response = response = JsonConvert.DeserializeObject<GetCustomerResponse>(message);
+                        CustomerDto customerDto = response.Customer;
+                        Customer customer = customerDto.FromDto();
+                        CustomerId = customer.Id;
+                        CustomerName = customer.Name;
+                        CustomerAddress = customer.Address;
+                        CustomerPhone = customer.ToString();
+                        CustomerNip = customer.Nip;
+                        CustomerPesel = customer.Pesel;
+                        MessageBox.Show("Loaded customer info", "Response", MessageBoxButton.OK, MessageBoxImage.Information);
+                        break;
+                    }
+                case "get_merchandises":
+                    {
+                        GetMerchandisesResponse response = JsonConvert.DeserializeObject<GetMerchandisesResponse>(message);
+                        List<MerchandiseDto> merchandisesDto = response.Merchandises;
+                        List<Product> products = merchandisesDto.FromDto();
+                        _productsForBasket.Clear();
+                        foreach (Product product in products)
+                        {
+                            _productsForBasket.Add(product);
+                        }
+                        _productsForBasket = new ObservableCollection<Product>(products);
+                        MessageBox.Show("Loaded product", "Response", MessageBoxButton.OK, MessageBoxImage.Information);
+                        break;
+                    }
+                    
+                case "get_order":
+                    MessageBox.Show("Get order message", "Response", MessageBoxButton.OK, MessageBoxImage.Information);
+                    break;
+                case "make_order":
+                    MessageBox.Show("Make order", "Response", MessageBoxButton.OK, MessageBoxImage.Information);
+                    break;
+            }
         }
 
         public RelayCommand AddProductToBasketCommand
@@ -337,20 +397,10 @@ namespace Presenation.ViewModel
 
         public void SearchCustomer()
         {
-            try
+            if (!string.IsNullOrEmpty(_customerId) && !string.IsNullOrWhiteSpace(_customerId))
             {
-                //Customer customer = _orderService.CustomerService.GetCustomer(_customerId).FromDto();
-                //_customerName = customer.Name;
-                //_customerAddress = customer.Address;
-                //_customerPhone = customer.ToString();
-                //_customerNip = customer.Nip;
-                //_customerPesel = customer.Pesel;
+                _webSocketClient.GetCustomerRequest(_customerId);
             }
-            catch (Exception e)
-            {
-                ShowErrorPopupWindow(e.Message);
-            }
-
         }
 
         public void SearchOrder()

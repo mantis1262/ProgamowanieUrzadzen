@@ -63,6 +63,9 @@ namespace Logic.Services
                 OrderRepository orderRepository = new OrderRepository(dataContext);
                 ICustomerService customerService = new CustomerService(customerRepository);
                 IMerchandiseService merchandiseService = new MerchandiseService(merchandiseRepository);
+                _orderRepository = orderRepository;
+                _customerService = customerService;
+                _merchandiseService = merchandiseService;
             }
             else
             {

@@ -22,6 +22,11 @@ namespace Logic.Dto
         public double NettoPrice { get => _nettoPrice; set => _nettoPrice = value; }
         public double Vat { get => _vat; set => _vat = value; }
 
+        public MerchandiseDto()
+        {
+
+        }
+
         public MerchandiseDto(string id, string name, string description, string type, string unit, double nettoPrice, double vat)
         {
             _id = id;

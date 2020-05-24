@@ -74,10 +74,6 @@
       <Project>{2503070e-ae3f-41c0-9c2b-cca94387f207}</Project>
       <Name>Logic</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Presenation\Presenation.csproj">
-      <Project>{5f6fc0d3-d393-4d5e-bdbe-6c5048ad8034}</Project>
-      <Name>Presenation</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">

@@ -26,10 +26,10 @@ namespace Data
 
             //Order order1 = new Order("ORDER_1", customer1, entries, Status.IN_PROGRESS, DateTime.Now, DateTime.Now.AddDays(4));
 
-            //dataContext.Customers.Add(customer1.Id, customer1);
-            //dataContext.Merchandises.Add(merchandise1.Id, merchandise1);
-            //dataContext.Merchandises.Add(merchandise2.Id, merchandise2);
-            //dataContext.Merchandises.Add(merchandise3.Id, merchandise3);
+            dataContext.Customers.Add(customer1.Id, customer1);
+            dataContext.Merchandises.Add(merchandise1.Id, merchandise1);
+            dataContext.Merchandises.Add(merchandise2.Id, merchandise2);
+            dataContext.Merchandises.Add(merchandise3.Id, merchandise3);
             //dataContext.Orders.Add(order1.Id, order1);
         }
     }

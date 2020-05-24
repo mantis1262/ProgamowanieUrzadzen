@@ -19,6 +19,11 @@ namespace Logic.Dto
         public double BruttoPrice { get => _bruttoPrice; set => _bruttoPrice = value; }
         public double TotalBruttoPrice { get => _totalBruttoPrice; set => _totalBruttoPrice = value; }
 
+        public EntryDto()
+        {
+
+        }
+
         public EntryDto(int id, MerchandiseDto merchandise, int amount, double bruttoPrice, double totalBruttoPrice)
         {
             _id = id;
