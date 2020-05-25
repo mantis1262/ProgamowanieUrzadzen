@@ -46,8 +46,8 @@
                     <Button Command="{Binding RemoveProductFromBasketCommand}" Content="Remove" HorizontalAlignment="Left" Margin="148.4,178.8,0,0" VerticalAlignment="Top" Width="75" Grid.Column="3" Grid.Row="1"/>
                     <Button Command="{Binding ClearBasketCommand}" Content="Clear" Grid.Column="3" HorizontalAlignment="Left" Margin="243.4,178.8,0,0" VerticalAlignment="Top" Width="75" Grid.Row="1"/>
                     <Button Command="{Binding ConfirmBasketCommand}" Content="Confirm" Grid.Column="3" HorizontalAlignment="Left" Margin="339.4,178.8,0,0" VerticalAlignment="Top" Width="75" Grid.Row="1"/>
-                    <Label Content="Total brutto:" Grid.Column="3" HorizontalAlignment="Left" Margin="579.4,198.8,0,0" VerticalAlignment="Top" Grid.Row="1"/>
-                    <Label Content="0" Grid.Column="3" HorizontalAlignment="Left" Margin="658.4,198.8,0,0" VerticalAlignment="Top" RenderTransformOrigin="3.512,0.406" Width="56" Grid.Row="1"/>
+                    <Label Content="Total brutto:" Grid.Column="3" HorizontalAlignment="Left" Margin="579.4,198.8,0,0" VerticalAlignment="Top" Grid.Row="1" />
+                    <Label Content="{Binding TotalBruttoPrice, Mode=TwoWay}" Grid.Column="3" HorizontalAlignment="Left" Margin="658.4,198.8,0,0" VerticalAlignment="Top" RenderTransformOrigin="3.512,0.406" Width="56" Grid.Row="1" />
                     <Label Content="Products" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <Label Content="Basket" Grid.Column="1" HorizontalAlignment="Left" Margin="0.6,198.8,0,0" VerticalAlignment="Top" Grid.Row="1"/>
                     <ListView Grid.ColumnSpan="4" HorizontalAlignment="Left" Height="221" Margin="0,223.8,0,0" VerticalAlignment="Top" Width="788" Grid.Row="1" SelectionMode="Single" ItemsSource="{Binding BasketEntries}" SelectedItem="{Binding CurrentBasketEntry}">

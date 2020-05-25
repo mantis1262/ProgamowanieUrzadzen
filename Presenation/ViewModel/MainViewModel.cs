@@ -29,7 +29,7 @@ namespace Presenation.ViewModel
         private Customer _currentSearchCustomer;
         private OrderSummary _currentSearchOrderSummary;
         private string _searchOrderCode;
-        private double _totalBruttoPrice;
+        private double _totalBruttoPrice = 0;
         private string _customerId;
         private string _customerName;
         private string _customerAddress;
@@ -154,6 +154,16 @@ namespace Presenation.ViewModel
             set
             {
                 _customerPesel = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public double TotalBruttoPrice
+        {
+            get => _totalBruttoPrice;
+            set
+            {
+                _totalBruttoPrice = value;
                 RaisePropertyChanged();
             }
         }
@@ -328,6 +338,7 @@ namespace Presenation.ViewModel
 
         public void AddProductToBasket()
         {
+            
             if (_currentBasketProduct != null)
             {
                 List<Entry> entries = _basketEntries.ToList();
@@ -367,11 +378,16 @@ namespace Presenation.ViewModel
                     }
                     else
                     {
-                        int index = _basketEntries.IndexOf(foundEntry);
-                        Debug.WriteLine(index);
                         foundEntry.Amount += amountNum;
-                        _basketEntries[index].Amount += amountNum;
+                        List<Entry> temp = _basketEntries.ToList<Entry>();
+                        _basketEntries.Clear();
+                        foreach (Entry entry in temp)
+                            _basketEntries.Add(entry);
                     }
+
+                    TotalBruttoPrice = 0;
+                    foreach (Entry entry in _basketEntries)
+                        TotalBruttoPrice += entry.TotalBruttoPrice;
                 }
             }
         }
@@ -382,11 +398,17 @@ namespace Presenation.ViewModel
             {
                 _basketEntries.Remove(_currentBasketEntry);
             }
+
+            TotalBruttoPrice = 0;
+            foreach (Entry entry in _basketEntries)
+                TotalBruttoPrice += entry.TotalBruttoPrice;
         }
 
         public void ClearBasket()
         {
             _basketEntries.Clear();
+            TotalBruttoPrice = 0;
+
         }
 
         public void ConfirmBasket()
