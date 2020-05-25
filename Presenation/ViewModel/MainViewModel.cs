@@ -1,6 +1,6 @@
 ﻿using Logic;
 using Logic.Dto;
-using Logic.Events;
+using Logic.Observer;
 using Logic.Requests;
 using Logic.Services;
 using Presenation;

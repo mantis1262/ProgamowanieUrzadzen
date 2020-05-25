@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Logic.Events
+namespace Logic.Observer
 {
     public class DiscountEvent : EventArgs
     {

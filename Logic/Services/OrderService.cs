@@ -1,9 +1,9 @@
 ﻿using Data;
 using Data.Interfaces;
 using Data.Model;
+using Logic.Observer;
 using Data.Repositories;
 using Logic.Dto;
-using Logic.Events;
 using Logic.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -19,6 +19,7 @@ namespace Logic.Services
         private readonly IRepository<Order> _orderRepository;
         private readonly ICustomerService _customerService;
         private readonly IMerchandiseService _merchandiseService;
+        private DiscountCreator _provider = new DiscountCreator();
         private readonly CyclicDiscountService _cyclicDiscountService;
         private readonly object m_SyncObject = new object();
 
@@ -33,8 +34,7 @@ namespace Logic.Services
             _customerService = new CustomerService();
             _merchandiseService = new MerchandiseService();
             _orderRepository = new OrderRepository();
-            _cyclicDiscountService = new CyclicDiscountService(0.3, TimeSpan.FromSeconds(5));
-            //_cyclicDiscountService.Handler += GiveDiscount;
+            _cyclicDiscountService = new CyclicDiscountService(0.3, TimeSpan.FromSeconds(20), _provider);
             _cyclicDiscountService.Start();
         }
 
@@ -44,7 +44,7 @@ namespace Logic.Services
             _customerService = customerService;
             _merchandiseService = merchandiseService;
             _cyclicDiscountService = cyclicDiscountService;
-            //_cyclicDiscountService.Handler += GiveDiscount;
+            _provider = _cyclicDiscountService.Provider;
             _cyclicDiscountService.Start();
         }
 
@@ -72,10 +72,9 @@ namespace Logic.Services
                 _customerService = new CustomerService();
                 _merchandiseService = new MerchandiseService();
                 _orderRepository = new OrderRepository();
-                //_cyclicDiscountService.Handler += GiveDiscount;
             }
-            _cyclicDiscountService = new CyclicDiscountService(0.3, TimeSpan.FromSeconds(5));
-            //_cyclicDiscountService.Start();
+            _cyclicDiscountService = new CyclicDiscountService(0.3, TimeSpan.FromSeconds(20), _provider);
+            _cyclicDiscountService.Start();
         }
 
         public async Task<OrderDto> GetOrder(string id)
@@ -126,19 +125,6 @@ namespace Logic.Services
                     }
                 }
             }); 
-        }
-
-        public async Task GiveDiscount(object sender, DiscountEvent e)
-        {
-            await Task.Factory.StartNew(async () => 
-            {
-                List<MerchandiseDto> merchandises = (await _merchandiseService.GetMerchandises()).ToList();
-                foreach (MerchandiseDto merchandise in merchandises)
-                {
-                    merchandise.NettoPrice = merchandise.NettoPrice - (merchandise.NettoPrice * e.Discount);
-                    await _merchandiseService.UpdateMerchandise(merchandise);
-                }
-            });
         }
     }
 }
