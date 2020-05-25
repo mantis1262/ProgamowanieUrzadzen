@@ -79,9 +79,9 @@ namespace Presenation.ViewModel
             Debug.WriteLine("[{0}] Client has sent request: {1}", DateTime.Now.ToString("HH:mm:ss.fff"), request.Tag);
         }
 
-        public async Task MakeOrderRequest(OrderDto order)
+        public async Task MakeOrderRequest(OrderDto order, CustomerDto customer)
         {
-            OrderRequestResponse request = new OrderRequestResponse("make_order", order);
+            OrderRequestResponse request = new OrderRequestResponse("make_order", order, customer);
             string requestJson = JsonConvert.SerializeObject(request, Formatting.Indented);
             await Send(requestJson);
             Debug.WriteLine("[{0}] Client has sent request: {1}", DateTime.Now.ToString("HH:mm:ss.fff"), request.Tag);

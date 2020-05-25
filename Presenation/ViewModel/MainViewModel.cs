@@ -298,7 +298,7 @@ namespace Presenation.ViewModel
                 case "save_order":
                     {
                         OrderRequestResponse response = JsonConvert.DeserializeObject<OrderRequestResponse>(message);
-                        MessageBox.Show("Make order " + response.Order.Id + "Total value: " + response.Order.TotalBruttoPrice, "Response", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show(response.Client.Id + " make order " + response.Order.Id + " on total value: " + response.Order.TotalBruttoPrice, "Response", MessageBoxButton.OK, MessageBoxImage.Information);
                         break;
                     }
             }
@@ -423,8 +423,8 @@ namespace Presenation.ViewModel
             OrderSummary orderSummary = new OrderSummary();
             orderSummary.TotalBrutto = CalcHelper.GetTotalBrutto(basketEntriesDto);
             OrderDto orderDto = orderSummary.ToDto(customer, basketEntries);
-            //_orderService.SaveOrder(orderDto);
-            _webSocketClient.MakeOrderRequest(orderDto);
+            CustomerDto customerDto = customer.ToDto();
+            _webSocketClient.MakeOrderRequest(orderDto, customerDto);
         }
 
         public void SearchCustomer()

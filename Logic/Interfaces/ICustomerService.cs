@@ -9,6 +9,6 @@ namespace Logic.Interfaces
     public interface ICustomerService
     {
         Task<CustomerDto> GetCustomer(string id);
-        Task SaveCustomer(CustomerDto customer);
+        Task<string> SaveCustomer(CustomerDto customer);
     }
 }

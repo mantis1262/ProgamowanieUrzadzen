@@ -11,6 +11,8 @@ namespace Logic.Requests
     {
         [JsonProperty("order")]
         public OrderDto Order;
+        [JsonProperty("client")]
+        public CustomerDto Client;
 
         public OrderRequestResponse() : base()
         {
@@ -19,6 +21,13 @@ namespace Logic.Requests
         public OrderRequestResponse(string tag, OrderDto order) : base(tag)
         {
             Order = order;
+        }
+
+        public OrderRequestResponse(string tag, OrderDto order, CustomerDto client) : base(tag)
+        {
+            Order = order;
+            Client = client;
+
         }
     }
 }

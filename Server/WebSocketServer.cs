@@ -178,19 +178,30 @@ namespace Server
         private async Task<string> ProcessMakeOrderRequest(OrderRequestResponse request)
         {
             string orderId = await _orderService.SaveOrder(request.Order);
+            string clientID = await _orderService.CustomerService.SaveCustomer(request.Client);
             OrderDto orderDto = await _orderService.GetOrder(orderId);
+            CustomerDto clientDto = await _orderService.CustomerService.GetCustomer(clientID);
             string result;
 
             if (orderDto == null)
             {
                 WebMessageBase response = new WebMessageBase("get_order");
                 response.Status = RequestStatus.FAIL;
-                response.Message = "Order with ID: " + request.Order + " not found";
+                response.Message = "Order with ID: " + request.Order.Id + " not found";
                 result = JsonConvert.SerializeObject(response, Formatting.Indented);
                 return result;
             }
 
-            OrderRequestResponse orderResponse = new OrderRequestResponse("save_order", orderDto);
+            if (clientDto == null)
+            {
+                WebMessageBase response = new WebMessageBase("get_customer");
+                response.Status = RequestStatus.FAIL;
+                response.Message = "Client with ID: " + request.Client.Id + " not found";
+                result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                return result;
+            }
+
+            OrderRequestResponse orderResponse = new OrderRequestResponse("save_order", orderDto, clientDto);
             result = JsonConvert.SerializeObject(orderResponse, Formatting.Indented);
             return result;
         }

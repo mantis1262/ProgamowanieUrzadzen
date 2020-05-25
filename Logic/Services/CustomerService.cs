@@ -13,19 +13,16 @@ namespace Logic.Services
 {
     public class CustomerService : ICustomerService
     {
-        private readonly IdGenerator _idGenerator;
         private readonly IRepository<Customer> _customerRepository;
         private readonly object m_SyncObject = new object();
 
         public CustomerService()
         {
-            _idGenerator = new IdGenerator();
             _customerRepository = new CustomerRepository();
         }
 
         public CustomerService(IRepository<Customer> customerRepository)
         {
-            _idGenerator = new IdGenerator();
             _customerRepository = customerRepository;
         }
 
@@ -35,7 +32,7 @@ namespace Logic.Services
             return customer.ToDto();
         }
 
-        public async Task SaveCustomer(CustomerDto customer)
+        public async Task<string> SaveCustomer(CustomerDto customer)
         {
             await Task.Factory.StartNew(() => 
             {
@@ -43,7 +40,7 @@ namespace Logic.Services
                 {
                     if (string.IsNullOrEmpty(customer.Id))
                     {
-                        string newCustomerId = _idGenerator.GetNextCustomerId();
+                        string newCustomerId = IdGenerator.GetNextCustomerId();
                         customer.Id = newCustomerId;
                         Customer customerToSave = customer.FromDto();
                         _customerRepository.Add(customerToSave);
@@ -54,7 +51,9 @@ namespace Logic.Services
                         _customerRepository.Add(customerToSave);
                     }
                 }
+
             });
+            return customer.Id;
         }
     }
 }

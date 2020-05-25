@@ -16,7 +16,6 @@ namespace Logic.Services
 {
     public class OrderService : IOrderService
     {
-        private readonly IdGenerator _idGenerator;
         private readonly IRepository<Order> _orderRepository;
         private readonly ICustomerService _customerService;
         private readonly IMerchandiseService _merchandiseService;
@@ -31,7 +30,6 @@ namespace Logic.Services
 
         public OrderService()
         {
-            _idGenerator = new IdGenerator();
             _customerService = new CustomerService();
             _merchandiseService = new MerchandiseService();
             _orderRepository = new OrderRepository();
@@ -42,7 +40,6 @@ namespace Logic.Services
 
         public OrderService(IRepository<Order> orderRepository, ICustomerService customerService, IMerchandiseService merchandiseService, CyclicDiscountService cyclicDiscountService)
         {
-            _idGenerator = new IdGenerator();
             _orderRepository = orderRepository;
             _customerService = customerService;
             _merchandiseService = merchandiseService;
@@ -53,13 +50,14 @@ namespace Logic.Services
 
         public OrderService(bool useDataFiller)
         {
-            _idGenerator = new IdGenerator();
 
             if (useDataFiller)
             {
                 DataContext dataContext = new DataContext();
                 IDataFiller dataFiller = new DataFactory();
                 dataFiller.Fill(dataContext);
+                IdGenerator.ClientNum = dataContext.Customers.Count+1;
+                IdGenerator.OrderNum = dataContext.Orders.Count+1;
                 CustomerRepository customerRepository = new CustomerRepository(dataContext);
                 MerchandiseRepository merchandiseRepository = new MerchandiseRepository(dataContext);
                 OrderRepository orderRepository = new OrderRepository(dataContext);
@@ -95,7 +93,7 @@ namespace Logic.Services
                 {
                     if (string.IsNullOrEmpty(order.Id))
                     {
-                        newOrderId = _idGenerator.GetNextOrderId();
+                        newOrderId = IdGenerator.GetNextOrderId();
                         order.Id = newOrderId;
                         Order orderToSave = order.FromDto();
                         _orderRepository.Add(orderToSave);
