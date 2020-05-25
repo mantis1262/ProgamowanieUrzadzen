@@ -17,6 +17,7 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Diagnostics;
 
 namespace Presenation.ViewModel
 {
@@ -224,6 +225,7 @@ namespace Presenation.ViewModel
             _currentSearchCustomer = null;
             _currentSearchOrderSummary = null;
             _productsForBasket = new ObservableCollection<Product>();
+            _basketEntries = new ObservableCollection<Entry>();
             AddProductToBasketCommand = new RelayCommand(AddProductToBasket);
             RemoveProductFromBasketCommand = new RelayCommand(RemoveProductFromBasket);
             ClearBasketCommand = new RelayCommand(ClearBasket);
@@ -331,14 +333,15 @@ namespace Presenation.ViewModel
                 List<Entry> entries = _basketEntries.ToList();
                 Entry foundEntry = entries.Where(item => item.Code == _currentBasketProduct.Id).FirstOrDefault();
                 string input = Interaction.InputBox("Enter product amount", "Amount", "");
-                if (!string.IsNullOrEmpty(input))
+                if (!int.TryParse(input, out int amountNum) )
                 {
                     ShowErrorPopupWindow("Amount cannot be empty");
                 }
                 else
                 {
-                    int entryNum = entries.Max(entry => entry.Id) + 1;
-                    int.TryParse(input, out int amountNum);
+                int entryNum = 1;
+                if (entries.Count!=0)
+                    entryNum = entries.Max(entry => entry.Id) + 1;
 
                     if (foundEntry == null)
                     {  
@@ -364,7 +367,10 @@ namespace Presenation.ViewModel
                     }
                     else
                     {
+                        int index = _basketEntries.IndexOf(foundEntry);
+                        Debug.WriteLine(index);
                         foundEntry.Amount += amountNum;
+                        _basketEntries[index].Amount += amountNum;
                     }
                 }
             }
@@ -393,6 +399,7 @@ namespace Presenation.ViewModel
             orderSummary.TotalBrutto = CalcHelper.GetTotalBrutto(basketEntriesDto);
             OrderDto orderDto = orderSummary.ToDto(customer, basketEntries);
             //_orderService.SaveOrder(orderDto);
+            _webSocketClient.MakeOrderRequest(orderDto);
         }
 
         public void SearchCustomer()
@@ -407,7 +414,11 @@ namespace Presenation.ViewModel
         {
             try
             {
-                //OrderDto orderDto = _orderService.GetOrder(_searchOrderCode);
+                if(!string.IsNullOrEmpty(_searchOrderCode) && !string.IsNullOrWhiteSpace(_searchOrderCode))
+                {
+
+                }
+               // OrderDto orderDto = _orderService.GetOrder(_searchOrderCode);
                 //OrderSummary orderSummary = orderDto.FromDto();
                 //Customer customer = orderDto.ClientInfo.FromDto();
                 //List<Entry> entries = orderDto.Entries.FromDto();

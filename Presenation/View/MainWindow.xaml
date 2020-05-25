@@ -56,17 +56,17 @@
                                 <GridView.ColumnHeaderContextMenu>
                                     <ContextMenu/>
                                 </GridView.ColumnHeaderContextMenu>
-                                <GridViewColumn Header="No. " Width="30"/>
-                                <GridViewColumn Header="Code" Width="50"/>
-                                <GridViewColumn Header="Name" Width="90"/>
-                                <GridViewColumn Header="Description" Width="130"/>
-                                <GridViewColumn Header="Type" Width="60"/>
-                                <GridViewColumn Header="Unit" Width="60"/>
-                                <GridViewColumn Header="Netto" Width="70"/>
-                                <GridViewColumn Header="Vat" Width="70"/>
-                                <GridViewColumn Header="Brutto" Width="70"/>
-                                <GridViewColumn Header="Amount" Width="60"/>
-                                <GridViewColumn Header="Total brutto" Width="100"/>
+                                <GridViewColumn Header="No. " Width="30" DisplayMemberBinding="{Binding Id}"/>
+                                <GridViewColumn Header="Code" Width="50" DisplayMemberBinding="{Binding Code}"/>
+                                <GridViewColumn Header="Name" Width="90" DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn Header="Description" Width="130" DisplayMemberBinding="{Binding Description}"/>
+                                <GridViewColumn Header="Type" Width="60" DisplayMemberBinding="{Binding Type}"/>
+                                <GridViewColumn Header="Unit" Width="60" DisplayMemberBinding="{Binding Unit}"/>
+                                <GridViewColumn Header="Netto" Width="70" DisplayMemberBinding="{Binding NettoPrice}"/>
+                                <GridViewColumn Header="Vat" Width="70" DisplayMemberBinding="{Binding Vat}"/>
+                                <GridViewColumn Header="Brutto" Width="70" DisplayMemberBinding="{Binding BruttoPrice}"/>
+                                <GridViewColumn Header="Amount" Width="60" DisplayMemberBinding="{Binding Amount}"/>
+                                <GridViewColumn Header="Total brutto" Width="100" DisplayMemberBinding="{Binding TotalBruttoPrice}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
