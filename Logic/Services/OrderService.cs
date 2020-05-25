@@ -53,6 +53,8 @@ namespace Logic.Services
 
         public OrderService(bool useDataFiller)
         {
+            _idGenerator = new IdGenerator();
+
             if (useDataFiller)
             {
                 DataContext dataContext = new DataContext();
@@ -69,14 +71,13 @@ namespace Logic.Services
             }
             else
             {
-                _idGenerator = new IdGenerator();
                 _customerService = new CustomerService();
                 _merchandiseService = new MerchandiseService();
                 _orderRepository = new OrderRepository();
-                _cyclicDiscountService = new CyclicDiscountService(0.3, TimeSpan.FromSeconds(5));
                 //_cyclicDiscountService.Handler += GiveDiscount;
-                _cyclicDiscountService.Start();
             }
+            _cyclicDiscountService = new CyclicDiscountService(0.3, TimeSpan.FromSeconds(5));
+            //_cyclicDiscountService.Start();
         }
 
         public async Task<OrderDto> GetOrder(string id)
@@ -87,15 +88,15 @@ namespace Logic.Services
 
         public async Task<string> SaveOrder(OrderDto order)
         {
-            string newCustomerId = "";
+            string newOrderId = "";
             await Task.Factory.StartNew(() => 
             {
                 lock (m_SyncObject)
                 {
                     if (string.IsNullOrEmpty(order.Id))
                     {
-                        newCustomerId = _idGenerator.GetNextOrderId();
-                        order.Id = newCustomerId;
+                        newOrderId = _idGenerator.GetNextOrderId();
+                        order.Id = newOrderId;
                         Order orderToSave = order.FromDto();
                         _orderRepository.Add(orderToSave);
                     }
@@ -106,7 +107,7 @@ namespace Logic.Services
                     }
                 }
             });
-            return newCustomerId;
+            return newOrderId;
         }
 
         public async Task CancelOrder(string id)

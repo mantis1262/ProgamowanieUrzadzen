@@ -265,7 +265,7 @@ namespace Presenation.ViewModel
             {
                 case "get_customer":
                     {
-                        GetCustomerResponse response = response = JsonConvert.DeserializeObject<GetCustomerResponse>(message);
+                        GetCustomerResponse response = JsonConvert.DeserializeObject<GetCustomerResponse>(message);
                         CustomerDto customerDto = response.Customer;
                         Customer customer = customerDto.FromDto();
                         CustomerId = customer.Id;
@@ -295,9 +295,12 @@ namespace Presenation.ViewModel
                 case "get_order":
                     MessageBox.Show("Get order message", "Response", MessageBoxButton.OK, MessageBoxImage.Information);
                     break;
-                case "make_order":
-                    MessageBox.Show("Make order", "Response", MessageBoxButton.OK, MessageBoxImage.Information);
-                    break;
+                case "save_order":
+                    {
+                        OrderRequestResponse response = JsonConvert.DeserializeObject<OrderRequestResponse>(message);
+                        MessageBox.Show("Make order " + response.Order.Id + "Total value: " + response.Order.TotalBruttoPrice, "Response", MessageBoxButton.OK, MessageBoxImage.Information);
+                        break;
+                    }
             }
         }
 
