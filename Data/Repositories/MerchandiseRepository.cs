@@ -34,12 +34,6 @@ namespace Data.Repositories
         public Merchandise Get(string id)
         {
             _dataContext.Merchandises.TryGetValue(id, out Merchandise merchandise);
-
-            if (merchandise == null)
-            {
-                throw new KeyNotFoundException("Merchandise not found !");
-            }
-
             return merchandise;
         }
 

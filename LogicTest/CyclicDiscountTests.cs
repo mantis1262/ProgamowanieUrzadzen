@@ -13,24 +13,24 @@ namespace LogicTest
     [TestClass]
     public class CyclicDiscountTests
     {
-        [TestMethod]
-        public void TimerTest()
-        {
-            using (CyclicDiscountService _timer = new CyclicDiscountService(10, TimeSpan.FromSeconds(1)))
-            {
-                int counter = 0;
-                IObservable<System.Reactive.EventPattern<DiscountEvent>> _tickObservable = Observable.FromEventPattern<DiscountEvent>(_timer, "Handler");
+        //[TestMethod]
+        //public void TimerTest()
+        //{
+        //    using (CyclicDiscountService _timer = new CyclicDiscountService(10, TimeSpan.FromSeconds(1)))
+        //    {
+        //        int counter = 0;
+        //        IObservable<System.Reactive.EventPattern<DiscountEvent>> _tickObservable = Observable.FromEventPattern<DiscountEvent>(_timer, "Handler");
 
-                Assert.AreEqual(0, counter);
+        //        Assert.AreEqual(0, counter);
 
-                using (IDisposable _observer = _tickObservable.Subscribe(x => counter++))
-                {
-                    _timer.Start();
-                    System.Threading.Thread.Sleep(2000);
-                }
+        //        using (IDisposable _observer = _tickObservable.Subscribe(x => counter++))
+        //        {
+        //            _timer.Start();
+        //            System.Threading.Thread.Sleep(2000);
+        //        }
 
-                Assert.AreNotEqual(0, counter);
-            }
-        }
+        //        Assert.AreNotEqual(0, counter);
+        //    }
+        //}
     }
 }

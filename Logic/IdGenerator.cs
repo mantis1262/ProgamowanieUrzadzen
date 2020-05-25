@@ -4,30 +4,26 @@ using System.Text;
 
 namespace Logic
 {
-    public class IdGenerator
+    public static class IdGenerator
     {
         private const string CLIENT_ID_PREFIX = "CLIENT_";
         private const string ORDER_ID_PREFIX = "ORDER_";
-        private int _clientNum;
-        private int _orderNum;
+        private static int _clientNum = 1;
+        private static int _orderNum = 1;
 
-        public int ClientNum { get => _clientNum; }
-        public int OrderNum { get => _orderNum; }
+        public static int ClientNum { get => _clientNum; set => _clientNum = value; }
+        public static int OrderNum { get => _orderNum; set => _orderNum = value; }
 
-        public IdGenerator()
-        {
-            _clientNum = 1;
-            _orderNum = 1;
-        }
+       
 
-        public string GetNextCustomerId()
+        public static string GetNextCustomerId()
         {
             string id = CLIENT_ID_PREFIX + _clientNum.ToString();
             ++_clientNum;
             return id;
         }
 
-        public string GetNextOrderId()
+        public static string GetNextOrderId()
         {
             string id = ORDER_ID_PREFIX + _orderNum.ToString();
             ++_orderNum;

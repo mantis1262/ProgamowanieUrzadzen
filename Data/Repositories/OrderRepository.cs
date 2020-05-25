@@ -34,12 +34,6 @@ namespace Data.Repositories
         public Order Get(string id)
         {
             _dataContext.Orders.TryGetValue(id, out Order order);
-
-            if (order == null)
-            {
-                throw new KeyNotFoundException("Order not found !");
-            }
-
             return order;
         }
 

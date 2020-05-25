@@ -5,6 +5,7 @@ using System.Linq;
 using Logic.Services;
 using Data.Model;
 using Logic.Dto;
+using System.Threading.Tasks;
 
 namespace LogicTest
 {
@@ -19,21 +20,22 @@ namespace LogicTest
         }
 
         [TestMethod]
-        public void SaveOrderTest()
+        public async Task SaveOrderTest()
         {
             OrderService orderService = new OrderService();
             OrderDto orderDto = new OrderDto
                 (
                 "0",
-                new CustomerDto("0","ola","lodzka 2",123456789,"1234567890","12345678900"),
+                new CustomerDto("0", "ola", "lodzka 2", 123456789, "1234567890", "12345678900"),
                 new List<EntryDto>(),
                 Status.SENT.ToString(),
                 40.04,
                 new DateTime(2020, 01, 01).Ticks,
                 new DateTime(2020, 03, 01).Ticks
             );
-            orderService.SaveOrder(orderDto);
-            Assert.IsNotNull(orderService.GetOrder("0"));
-        }        
+            await orderService.SaveOrder(orderDto);
+            OrderDto gotOrderDto = await orderService.GetOrder("0");
+            Assert.IsNotNull(gotOrderDto);
+        }
     }
 }

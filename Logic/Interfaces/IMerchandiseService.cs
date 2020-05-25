@@ -2,14 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Logic.Interfaces
 {
     public interface IMerchandiseService
     {
-        MerchandiseDto GetMerchandise(string id);
-        IEnumerable<MerchandiseDto> GetMerchandises();
-        void SaveMerchandise(MerchandiseDto merchandise);
-        void UpdateMerchandise(MerchandiseDto merchandise);
+        Task<MerchandiseDto> GetMerchandise(string id);
+        Task<IEnumerable<MerchandiseDto>> GetMerchandises();
+        Task SaveMerchandise(MerchandiseDto merchandise);
+        Task UpdateMerchandise(MerchandiseDto merchandise);
     }
 }
