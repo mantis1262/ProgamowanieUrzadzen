@@ -178,7 +178,11 @@ namespace Server
         private async Task<string> ProcessMakeOrderRequest(OrderRequestResponse request)
         {
             string orderId = await _orderService.SaveOrder(request.Order);
-            string clientID = await _orderService.CustomerService.SaveCustomer(request.Client);
+            string clientID;
+            if (string.IsNullOrEmpty(request.Client.Id) || string.IsNullOrWhiteSpace(request.Client.Id))
+                    clientID = await _orderService.CustomerService.SaveCustomer(request.Client);
+            else
+                clientID = request.Client.Id;
             OrderDto orderDto = await _orderService.GetOrder(orderId);
             CustomerDto clientDto = await _orderService.CustomerService.GetCustomer(clientID);
             string result;

@@ -299,6 +299,8 @@ namespace Presenation.ViewModel
                     {
                         OrderRequestResponse response = JsonConvert.DeserializeObject<OrderRequestResponse>(message);
                         MessageBox.Show(response.Client.Id + " make order " + response.Order.Id + " on total value: " + response.Order.TotalBruttoPrice, "Response", MessageBoxButton.OK, MessageBoxImage.Information);
+                        CustomerId = response.Client.Id;
+                        _basketEntries.Clear();
                         break;
                     }
             }
