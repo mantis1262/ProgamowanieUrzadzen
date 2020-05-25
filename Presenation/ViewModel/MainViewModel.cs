@@ -236,6 +236,9 @@ namespace Presenation.ViewModel
             _currentSearchOrderSummary = null;
             _productsForBasket = new ObservableCollection<Product>();
             _basketEntries = new ObservableCollection<Entry>();
+            _searchCustomers = new ObservableCollection<Customer>();
+            _searchOrders = new ObservableCollection<OrderSummary>();
+            _searchEntries = new ObservableCollection<Entry>();
             AddProductToBasketCommand = new RelayCommand(AddProductToBasket);
             RemoveProductFromBasketCommand = new RelayCommand(RemoveProductFromBasket);
             ClearBasketCommand = new RelayCommand(ClearBasket);
@@ -257,7 +260,7 @@ namespace Presenation.ViewModel
 
             if (request.Status == RequestStatus.FAIL)
             {
-                MessageBox.Show(request.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ShowErrorPopupWindow(request.Message);
                 return;
             }
 
@@ -271,10 +274,11 @@ namespace Presenation.ViewModel
                         CustomerId = customer.Id;
                         CustomerName = customer.Name;
                         CustomerAddress = customer.Address;
-                        CustomerPhone = customer.ToString();
+                        CustomerPhone = customer.PhoneNumber.ToString();
                         CustomerNip = customer.Nip;
                         CustomerPesel = customer.Pesel;
-                        MessageBox.Show("Loaded customer info", "Response", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                        ShowInfoPopupWindow("Loaded customer info");
                         break;
                     }
                 case "get_merchandises":
@@ -288,19 +292,39 @@ namespace Presenation.ViewModel
                             _productsForBasket.Add(product);
                         }
                         _productsForBasket = new ObservableCollection<Product>(products);
-                        MessageBox.Show("Loaded product", "Response", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                        ShowInfoPopupWindow("Loaded product");
+                        break;
+                    }      
+                case "get_order":
+                    {
+                        OrderRequestResponse response = JsonConvert.DeserializeObject<OrderRequestResponse>(message);
+                        Customer customer = response.Order.ClientInfo.FromDto();
+                        OrderSummary orderSummary = response.Order.FromDto();
+                        List<Entry> entries = response.Order.Entries.FromDto();
+
+                        _searchCustomers.Clear();
+                        _searchOrders.Clear();
+                        _searchEntries.Clear();
+                        _searchCustomers.Add(customer);
+                        _searchOrders.Add(orderSummary);
+
+                        foreach (Entry entry in entries)
+                        {
+                            _searchEntries.Add(entry);
+                        }
+
+                        ShowInfoPopupWindow("Loaded order");
                         break;
                     }
-                    
-                case "get_order":
-                    MessageBox.Show("Get order message", "Response", MessageBoxButton.OK, MessageBoxImage.Information);
-                    break;
                 case "save_order":
                     {
                         OrderRequestResponse response = JsonConvert.DeserializeObject<OrderRequestResponse>(message);
-                        MessageBox.Show(response.Client.Id + " make order " + response.Order.Id + " on total value: " + response.Order.TotalBruttoPrice, "Response", MessageBoxButton.OK, MessageBoxImage.Information);
-                        CustomerId = response.Client.Id;
+                        string clientId = response.Order.ClientInfo.Id;
+                        CustomerId = clientId;
                         _basketEntries.Clear();
+
+                        ShowInfoPopupWindow(clientId + " make order " + response.Order.Id + " on total value: " + response.Order.TotalBruttoPrice);
                         break;
                     }
             }
@@ -355,44 +379,47 @@ namespace Presenation.ViewModel
                 }
                 else
                 {
-                int entryNum = 1;
-                if (entries.Count!=0)
-                    entryNum = entries.Max(entry => entry.Id) + 1;
-
-                    if (foundEntry == null)
-                    {  
-                        double netto = _currentBasketProduct.NettoPrice;
-                        double vat = _currentBasketProduct.Vat;
-                        double brutto = CalcHelper.GetBruttoPrice(netto, vat);
-                        double totalBrutto = CalcHelper.GetTotalBrutto(brutto, amountNum);
-                        Entry newEntry = new Entry
-                        (
-                            entryNum,
-                            _currentBasketProduct.Id,
-                            _currentBasketProduct.Name,
-                            _currentBasketProduct.Description,
-                            _currentBasketProduct.Type,
-                            _currentBasketProduct.Unit,
-                            netto,
-                            vat,
-                            amountNum,
-                            brutto,
-                            totalBrutto
-                        );
-                        _basketEntries.Add(newEntry);
-                    }
-                    else
+                    if (amountNum > 0)
                     {
-                        foundEntry.Amount += amountNum;
-                        List<Entry> temp = _basketEntries.ToList<Entry>();
-                        _basketEntries.Clear();
-                        foreach (Entry entry in temp)
-                            _basketEntries.Add(entry);
-                    }
+                        int entryNum = 1;
+                        if (entries.Count > 1)
+                            entryNum = entries.Max(entry => entry.Id) + 1;
 
-                    TotalBruttoPrice = 0;
-                    foreach (Entry entry in _basketEntries)
-                        TotalBruttoPrice += entry.TotalBruttoPrice;
+                        if (foundEntry == null)
+                        {
+                            double netto = _currentBasketProduct.NettoPrice;
+                            double vat = _currentBasketProduct.Vat;
+                            double brutto = CalcHelper.GetBruttoPrice(netto, vat);
+                            double totalBrutto = CalcHelper.GetTotalBrutto(brutto, amountNum);
+                            Entry newEntry = new Entry
+                            (
+                                entryNum,
+                                _currentBasketProduct.Id,
+                                _currentBasketProduct.Name,
+                                _currentBasketProduct.Description,
+                                _currentBasketProduct.Type,
+                                _currentBasketProduct.Unit,
+                                netto,
+                                vat,
+                                amountNum,
+                                brutto,
+                                totalBrutto
+                            );
+                            _basketEntries.Add(newEntry);
+                        }
+                        else
+                        {
+                            foundEntry.Amount += amountNum;
+                            List<Entry> temp = _basketEntries.ToList<Entry>();
+                            _basketEntries.Clear();
+                            foreach (Entry entry in temp)
+                                _basketEntries.Add(entry);
+                        }
+
+                        TotalBruttoPrice = 0;
+                        foreach (Entry entry in _basketEntries)
+                            TotalBruttoPrice += entry.TotalBruttoPrice;
+                    }
                 }
             }
         }
@@ -418,15 +445,26 @@ namespace Presenation.ViewModel
 
         public void ConfirmBasket()
         {
-            int.TryParse(_customerPhone, out int phone);
-            Customer customer = new Customer(_customerId, _customerName, _customerAddress, phone, _customerNip, _customerPesel);
-            List<Entry> basketEntries = _basketEntries.ToList();
-            List<EntryDto> basketEntriesDto = basketEntries.ToDto();
-            OrderSummary orderSummary = new OrderSummary();
-            orderSummary.TotalBrutto = CalcHelper.GetTotalBrutto(basketEntriesDto);
-            OrderDto orderDto = orderSummary.ToDto(customer, basketEntries);
-            CustomerDto customerDto = customer.ToDto();
-            _webSocketClient.MakeOrderRequest(orderDto, customerDto);
+            if (_basketEntries.Count > 0)
+            {
+                int.TryParse(_customerPhone, out int phone);
+                if (!string.IsNullOrEmpty(_customerName) && !string.IsNullOrWhiteSpace(_customerName) &&
+                    !string.IsNullOrEmpty(_customerAddress) && !string.IsNullOrWhiteSpace(_customerAddress) &&
+                    phone > 0)
+                {
+                    Customer customer = new Customer(_customerId, _customerName, _customerAddress, phone, _customerNip, _customerPesel);
+                    List<Entry> basketEntries = _basketEntries.ToList();
+                    List<EntryDto> basketEntriesDto = basketEntries.ToDto();
+                    OrderSummary orderSummary = new OrderSummary();
+                    orderSummary.TotalBrutto = CalcHelper.GetTotalBrutto(basketEntriesDto);
+                    OrderDto orderDto = orderSummary.ToDto(customer, basketEntries);
+                    _webSocketClient.MakeOrderRequest(orderDto);
+                }
+            }
+            else
+            {
+                ShowInfoPopupWindow("Basket cannot be empty");
+            }
         }
 
         public void SearchCustomer()
@@ -443,21 +481,8 @@ namespace Presenation.ViewModel
             {
                 if(!string.IsNullOrEmpty(_searchOrderCode) && !string.IsNullOrWhiteSpace(_searchOrderCode))
                 {
-
+                    _webSocketClient.GetOrderRequest(_searchOrderCode);
                 }
-               // OrderDto orderDto = _orderService.GetOrder(_searchOrderCode);
-                //OrderSummary orderSummary = orderDto.FromDto();
-                //Customer customer = orderDto.ClientInfo.FromDto();
-                //List<Entry> entries = orderDto.Entries.FromDto();
-                //_searchCustomers.Clear();
-                //_searchOrders.Clear();
-                //_searchEntries.Clear();
-                //_searchCustomers.Add(customer);
-                //_searchOrders.Add(orderSummary);
-                //foreach (Entry entry in entries)
-                //{
-                //    _searchEntries.Add(entry);
-                //}
             }
             catch(Exception e)
             {

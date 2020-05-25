@@ -96,49 +96,49 @@
                     </Grid.ColumnDefinitions>
                     <Label Content="Order code" HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top" Grid.ColumnSpan="4"/>
                     <TextBox HorizontalAlignment="Left" Height="26" Margin="26,12,0,0" TextWrapping="Wrap" Text="{Binding SearchOrderCode}" VerticalAlignment="Top" Width="120" FontSize="14" Grid.Column="3"/>
-                    <ListView HorizontalAlignment="Left" Height="134" Margin="0,86,0,0" VerticalAlignment="Top" Width="788" Grid.ColumnSpan="4" SelectionMode="Single" ItemsSource="{Binding SearchCustomers}" SelectedItem="{Binding CurrentSearchCustomer}">
+                    <ListView HorizontalAlignment="Left" Height="82" Margin="0,86,0,0" VerticalAlignment="Top" Width="788" Grid.ColumnSpan="4" SelectionMode="Single" ItemsSource="{Binding SearchCustomers}" SelectedItem="{Binding CurrentSearchCustomer}">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="ID" Width="70"/>
-                                <GridViewColumn Header="Name" Width="150"/>
-                                <GridViewColumn Header="Address" Width="230"/>
-                                <GridViewColumn Header="Phone number" Width="120"/>
-                                <GridViewColumn Header="NIP" Width="100"/>
-                                <GridViewColumn Header="Pesel" Width="120"/>
+                                <GridViewColumn Header="ID" Width="70" DisplayMemberBinding="{Binding Id}"/>
+                                <GridViewColumn Header="Name" Width="150" DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn Header="Address" Width="230" DisplayMemberBinding="{Binding Address}"/>
+                                <GridViewColumn Header="Phone number" Width="120" DisplayMemberBinding="{Binding PhoneNumber}"/>
+                                <GridViewColumn Header="NIP" Width="100" DisplayMemberBinding="{Binding Nip}"/>
+                                <GridViewColumn Header="Pesel" Width="120" DisplayMemberBinding="{Binding Pesel}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
                     <Button Command="{Binding SearchOrderCommand}" Content="Find order" Grid.Column="3" HorizontalAlignment="Left" Margin="184,15,0,0" VerticalAlignment="Top" Width="75"/>
                     <Label Content="Client info" HorizontalAlignment="Left" Margin="10,55,0,0" VerticalAlignment="Top" Grid.ColumnSpan="4" Width="73"/>
-                    <Label Content="Order summary" HorizontalAlignment="Left" Margin="10,240,0,0" VerticalAlignment="Top" Grid.ColumnSpan="4" Width="97"/>
+                    <Label Content="Order summary" HorizontalAlignment="Left" Margin="10,193,0,0" VerticalAlignment="Top" Grid.ColumnSpan="4" Width="97"/>
                     <ListView Grid.ColumnSpan="4" HorizontalAlignment="Left" Height="157" Margin="0,356,0,0" VerticalAlignment="Top" Width="788" SelectionMode="Single" ItemsSource="{Binding SearchEntries}" SelectedItem="{Binding CurrentSearchEntry}">
                         <ListView.View>
                             <GridView>
                                 <GridView.ColumnHeaderContextMenu>
                                     <ContextMenu/>
                                 </GridView.ColumnHeaderContextMenu>
-                                <GridViewColumn Header="No. " Width="30"/>
-                                <GridViewColumn Header="Code" Width="50"/>
-                                <GridViewColumn Header="Name" Width="90"/>
-                                <GridViewColumn Header="Description" Width="130"/>
-                                <GridViewColumn Header="Type" Width="60"/>
-                                <GridViewColumn Header="Unit" Width="60"/>
-                                <GridViewColumn Header="Netto" Width="70"/>
-                                <GridViewColumn Header="Vat" Width="70"/>
-                                <GridViewColumn Header="Brutto" Width="70"/>
-                                <GridViewColumn Header="Amount" Width="60"/>
-                                <GridViewColumn Header="Total brutto" Width="100"/>
+                                <GridViewColumn Header="No. " Width="30" DisplayMemberBinding="{Binding Id}"/>
+                                <GridViewColumn Header="Code" Width="50" DisplayMemberBinding="{Binding Code}"/>
+                                <GridViewColumn Header="Name" Width="90" DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn Header="Description" Width="130" DisplayMemberBinding="{Binding Description}"/>
+                                <GridViewColumn Header="Type" Width="60" DisplayMemberBinding="{Binding Type}"/>
+                                <GridViewColumn Header="Unit" Width="60" DisplayMemberBinding="{Binding Unit}"/>
+                                <GridViewColumn Header="Netto" Width="70" DisplayMemberBinding="{Binding NettoPrice}"/>
+                                <GridViewColumn Header="Vat" Width="70" DisplayMemberBinding="{Binding Vat}"/>
+                                <GridViewColumn Header="Brutto" Width="70" DisplayMemberBinding="{Binding BruttoPrice}"/>
+                                <GridViewColumn Header="Amount" Width="60" DisplayMemberBinding="{Binding Amount}"/>
+                                <GridViewColumn Header="Total brutto" Width="100" DisplayMemberBinding="{Binding TotalBruttoPrice}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <ListView Grid.ColumnSpan="4" HorizontalAlignment="Left" Height="55" Margin="0,266,0,0" VerticalAlignment="Top" Width="788" SelectionMode="Single" ItemsSource="{Binding SearchOrders}" SelectedItem="{Binding CurrentSearchOrderSummary}">
+                    <ListView Grid.ColumnSpan="4" HorizontalAlignment="Left" Height="84" Margin="0,219,0,0" VerticalAlignment="Top" Width="788" SelectionMode="Single" ItemsSource="{Binding SearchOrders}" SelectedItem="{Binding CurrentSearchOrderSummary}">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="ID" Width="100"/>
-                                <GridViewColumn Header="Status" Width="150"/>
-                                <GridViewColumn Header="Total brutto" Width="160"/>
-                                <GridViewColumn Header="Submitted" Width="190"/>
-                                <GridViewColumn Header="Delivered" Width="190"/>
+                                <GridViewColumn Header="ID" Width="100" DisplayMemberBinding="{Binding Id}"/>
+                                <GridViewColumn Header="Status" Width="150" DisplayMemberBinding="{Binding Status}"/>
+                                <GridViewColumn Header="Total brutto" Width="160" DisplayMemberBinding="{Binding TotalBrutto}"/>
+                                <GridViewColumn Header="Submitted" Width="190" DisplayMemberBinding="{Binding SubmittedDate}"/>
+                                <GridViewColumn Header="Delivered" Width="190" DisplayMemberBinding="{Binding DeliveredDate}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>

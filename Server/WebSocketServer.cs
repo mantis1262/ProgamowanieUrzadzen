@@ -177,15 +177,26 @@ namespace Server
 
         private async Task<string> ProcessMakeOrderRequest(OrderRequestResponse request)
         {
-            string orderId = await _orderService.SaveOrder(request.Order);
-            string clientID;
-            if (string.IsNullOrEmpty(request.Client.Id) || string.IsNullOrWhiteSpace(request.Client.Id))
-                    clientID = await _orderService.CustomerService.SaveCustomer(request.Client);
-            else
-                clientID = request.Client.Id;
-            OrderDto orderDto = await _orderService.GetOrder(orderId);
+            string clientID = request.Order.ClientInfo.Id;
+            if (string.IsNullOrEmpty(clientID) || string.IsNullOrWhiteSpace(clientID))
+            {
+                clientID = await _orderService.CustomerService.SaveCustomer(request.Order.ClientInfo);
+            }
+
             CustomerDto clientDto = await _orderService.CustomerService.GetCustomer(clientID);
             string result;
+
+            if (clientDto == null)
+            {
+                WebMessageBase response = new WebMessageBase("get_customer");
+                response.Status = RequestStatus.FAIL;
+                response.Message = "Client with ID: " + clientID + " not found";
+                result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                return result;
+            }
+
+            string orderId = await _orderService.SaveOrder(request.Order);
+            OrderDto orderDto = await _orderService.GetOrder(orderId);  
 
             if (orderDto == null)
             {
@@ -196,16 +207,7 @@ namespace Server
                 return result;
             }
 
-            if (clientDto == null)
-            {
-                WebMessageBase response = new WebMessageBase("get_customer");
-                response.Status = RequestStatus.FAIL;
-                response.Message = "Client with ID: " + request.Client.Id + " not found";
-                result = JsonConvert.SerializeObject(response, Formatting.Indented);
-                return result;
-            }
-
-            OrderRequestResponse orderResponse = new OrderRequestResponse("save_order", orderDto, clientDto);
+            OrderRequestResponse orderResponse = new OrderRequestResponse("save_order", orderDto);
             result = JsonConvert.SerializeObject(orderResponse, Formatting.Indented);
             return result;
         }

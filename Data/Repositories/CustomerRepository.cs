@@ -63,11 +63,18 @@ namespace Data.Repositories
         public void Update(string id, Customer entity)
         {
             Customer client = Get(id);
-            client.Name = entity.Name;
-            client.Address = entity.Address;
-            client.PhoneNumber = entity.PhoneNumber;
-            client.Nip = entity.Nip;
-            client.Pesel = entity.Pesel;
+            if (client != null)
+            {
+                client.Name = entity.Name;
+                client.Address = entity.Address;
+                client.PhoneNumber = entity.PhoneNumber;
+                client.Nip = entity.Nip;
+                client.Pesel = entity.Pesel;
+            }
+            else
+            {
+                throw new Exception("You're trying to update client with non-existing id.");
+            }
         }
     }
 }

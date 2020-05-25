@@ -48,7 +48,7 @@ namespace Logic.Services
                     else
                     {
                         Customer customerToSave = customer.FromDto();
-                        _customerRepository.Add(customerToSave);
+                        _customerRepository.Update(customer.Id, customerToSave);
                     }
                 }
 
