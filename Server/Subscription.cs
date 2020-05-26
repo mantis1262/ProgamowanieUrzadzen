@@ -8,12 +8,17 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static Logic.Observer.DiscountCreator;
 
 namespace Server
 {
     public class Subscription : IObserver<DiscountEvent>
     {
         private WebSocket _websocket;
+        private IDisposable _unsubscriber;
+
+        public IDisposable Unsubscriber { get => _unsubscriber; set => _unsubscriber = value; }
+        public WebSocket Websocket { get => _websocket; set => _websocket = value; }
 
         public Subscription(WebSocket websocket)
         {
@@ -37,12 +42,12 @@ namespace Server
 
         public void OnError(Exception error)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Subscription error.");
         }
 
         public void OnCompleted()
         {
-            throw new NotImplementedException();
+            _unsubscriber.Dispose();
         }
     }
 }

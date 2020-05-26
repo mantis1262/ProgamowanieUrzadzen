@@ -1,4 +1,4 @@
-using Logic;
+﻿using Logic;
 using Logic.Dto;
 using Logic.Observer;
 using Logic.Requests;
@@ -43,6 +43,8 @@ namespace Presenation.ViewModel
         private ObservableCollection<Customer> _searchCustomers;
         private ObservableCollection<OrderSummary> _searchOrders;
         private WebSocketClient _webSocketClient;
+        private bool _subStatusBool;
+        private string _subStatus = "OFF";
 
         public Product CurrentBasketProduct 
         { 
@@ -225,6 +227,16 @@ namespace Presenation.ViewModel
             }
         }
 
+        public string SubStatus
+        {
+            get => _subStatus;
+            set
+            {
+                _subStatus = value;
+                RaisePropertyChanged();
+            }
+        }
+
         public MainViewModel()
         {
             _currentBasketProduct = null;
@@ -242,12 +254,12 @@ namespace Presenation.ViewModel
             ConfirmBasketCommand = new RelayCommand(ConfirmBasket);
             SearchCustomerCommand = new RelayCommand(SearchCustomer);
             SearchOrderCommand = new RelayCommand(SearchOrder);
+            SubscriptionCommand = new RelayCommand(SubscriptionStatusChange);
 
             _webSocketClient = new WebSocketClient();
             _webSocketClient.OnMessage.Subscribe(ReceiveMessage);
             _webSocketClient.Connect("ws://localhost/sklep/");
             _webSocketClient.GetMerchandisesRequest();
-            _webSocketClient.SubscribeDiscount();
         }
 
         public void ReceiveMessage(string message)
@@ -323,6 +335,20 @@ namespace Presenation.ViewModel
                         _basketEntries.Clear();
 
                         ShowInfoPopupWindow(clientId + " make order " + response.Order.Id + " on total value: " + response.Order.TotalBruttoPrice);
+                        break;
+                    }
+                case "subscription":
+                    {
+                        _subStatusBool = true;
+                        _subStatus = "ON";
+                        RaisePropertyChanged("SubStatus");
+                        break;
+                    }
+                case "unsubscription":
+                    {
+                        _subStatusBool = false;
+                        _subStatus = "OFF";
+                        RaisePropertyChanged("SubStatus");
                         break;
                     }
                 case "discount":
@@ -409,6 +435,11 @@ namespace Presenation.ViewModel
         }
 
         public RelayCommand ConfirmCommand
+        {
+            get; private set;
+        }
+
+        public RelayCommand SubscriptionCommand
         {
             get; private set;
         }
@@ -536,6 +567,19 @@ namespace Presenation.ViewModel
             {
                 ShowErrorPopupWindow(e.Message);
             }
+        }
+
+        public void SubscriptionStatusChange()
+        {
+            if (!_subStatusBool)
+            {
+                _webSocketClient.SubscribeDiscount();
+            }
+            else
+            {
+                _webSocketClient.UnSubscribeDiscount();
+            }
+
         }
 
         internal Func<string, string, MessageBoxButton, MessageBoxImage, MessageBoxResult> MessageBoxShowDelegate { get; set; } = MessageBox.Show;

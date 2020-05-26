@@ -14,6 +14,8 @@ namespace Logic.Observer
         private IList<IObserver<DiscountEvent>> observers;
         private IMerchandiseService _merchandiseService;
 
+        public IList<IObserver<DiscountEvent>> Observers { get => observers; set => observers = value; }
+
         public DiscountCreator(IMerchandiseService merchandiseService)
         {
             observers = new List<IObserver<DiscountEvent>>();
@@ -28,6 +30,7 @@ namespace Logic.Observer
             }
             return new Unsubscriber(observers, observer);
         }
+
 
         public class Unsubscriber : IDisposable
         {
