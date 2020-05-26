@@ -1,4 +1,6 @@
-﻿using Logic.Observer;
+﻿using Logic.Dto;
+using Logic.Interfaces;
+using Logic.Observer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +10,14 @@ namespace Logic.Observer
 {
     public class DiscountCreator : IObservable<DiscountEvent>
     {
+        private Random _rnd = new Random();
         private IList<IObserver<DiscountEvent>> observers;
+        private IMerchandiseService _merchandiseService;
 
-        public DiscountCreator()
+        public DiscountCreator(IMerchandiseService merchandiseService)
         {
             observers = new List<IObserver<DiscountEvent>>();
+            _merchandiseService = merchandiseService;
         }
 
         public IDisposable Subscribe(IObserver<DiscountEvent> observer)
@@ -59,8 +64,18 @@ namespace Logic.Observer
             }
         }
 
-        public void Discount(DiscountEvent discount)
+        public async void Discount(double maxDiscount)
         {
+            double discountValue = _rnd.NextDouble() * maxDiscount;
+            List<MerchandiseDto> merchandises = (await _merchandiseService.GetMerchandises()).ToList();
+
+            foreach (MerchandiseDto merchandise in merchandises)
+            {
+                merchandise.NettoPrice -= merchandise.NettoPrice * discountValue;
+            }
+
+            DiscountEvent discount = new DiscountEvent(discountValue, merchandises);
+
             foreach (IObserver<DiscountEvent> observer in observers)
             {
                 if (discount == null)

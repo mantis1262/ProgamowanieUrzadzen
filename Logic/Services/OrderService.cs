@@ -19,7 +19,7 @@ namespace Logic.Services
         private readonly IRepository<Order> _orderRepository;
         private readonly ICustomerService _customerService;
         private readonly IMerchandiseService _merchandiseService;
-        private DiscountCreator _provider = new DiscountCreator();
+        private DiscountCreator _provider;
         private readonly CyclicDiscountService _cyclicDiscountService;
         private readonly object m_SyncObject = new object();
 
@@ -34,6 +34,7 @@ namespace Logic.Services
             _customerService = new CustomerService();
             _merchandiseService = new MerchandiseService();
             _orderRepository = new OrderRepository();
+            _provider = new DiscountCreator(_merchandiseService);
             _cyclicDiscountService = new CyclicDiscountService(0.3, TimeSpan.FromSeconds(20), _provider);
             _cyclicDiscountService.Start();
         }
@@ -43,6 +44,7 @@ namespace Logic.Services
             _orderRepository = orderRepository;
             _customerService = customerService;
             _merchandiseService = merchandiseService;
+            _provider = new DiscountCreator(_merchandiseService);
             _cyclicDiscountService = cyclicDiscountService;
             _provider = _cyclicDiscountService.Provider;
             _cyclicDiscountService.Start();
@@ -66,6 +68,7 @@ namespace Logic.Services
                 _orderRepository = orderRepository;
                 _customerService = customerService;
                 _merchandiseService = merchandiseService;
+                _provider = new DiscountCreator(_merchandiseService);
             }
             else
             {

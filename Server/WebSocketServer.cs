@@ -19,11 +19,9 @@ namespace Server
     public class WebSocketServer
     {
         private OrderService _orderService;
-        private ObservableCollection<Subscription> _subscriptons;
 
         public async void Start(string httpListenerPrefix)
         {
-            _subscriptons = new ObservableCollection<Subscription>();
             HttpListener server = new HttpListener();
             server.Prefixes.Add(httpListenerPrefix);
             server.Start();
@@ -174,7 +172,6 @@ namespace Server
             try
             {
                 Subscription subscription = new Subscription(webSocket);
-                //  _subscriptons.Add(subscription);
                 _orderService.CyclicDiscountService.Provider.Subscribe(subscription);
                 WebMessageBase response = new WebMessageBase();
                 response.Status = RequestStatus.SUCCESS;

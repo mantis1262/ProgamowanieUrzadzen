@@ -11,7 +11,6 @@ namespace Logic.Services
     {
         public DiscountCreator Provider;
 
-        Random _rnd = new Random();
         private IDisposable _timerSubscription = null;
 
         public double MaxDiscount { get; private set; }
@@ -33,8 +32,7 @@ namespace Logic.Services
 
         private void GiveDiscount()
         {
-            double randomNumber = _rnd.NextDouble() * MaxDiscount;
-            Provider.Discount(new DiscountEvent(randomNumber));
+            Provider.Discount(MaxDiscount);
         }
 
         public void Dispose()

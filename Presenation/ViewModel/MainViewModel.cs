@@ -44,9 +44,6 @@ namespace Presenation.ViewModel
         private ObservableCollection<OrderSummary> _searchOrders;
         private WebSocketClient _webSocketClient;
 
-        private IObservable<EventPattern<DiscountEvent>> _tickObservable;
-        private IDisposable _observer;
-
         public Product CurrentBasketProduct 
         { 
             get => _currentBasketProduct; 
@@ -332,7 +329,7 @@ namespace Presenation.ViewModel
                     {
                         try
                         {
-                            discount(message);
+                            ProcessDiscountMessage(message);
                         } catch (Exception e)
                         {
                             Debug.WriteLine("Discount error");
@@ -342,25 +339,19 @@ namespace Presenation.ViewModel
             }
         }
 
-        private void discount(string message)
+        private void ProcessDiscountMessage(string message)
         {
             SubscriptionRequestResponse response = JsonConvert.DeserializeObject<SubscriptionRequestResponse>(message);
-            double discountValue = response.discountEvent.Discount;
+            List<Product> responseProducts = response.discountEvent.Merchandises.FromDto();
+            ProductsForBasket.Clear();
 
-            foreach (Product product in _productsForBasket)
+            foreach (Product product in responseProducts)
             {
-                product.NettoPrice = product.NettoPrice - product.NettoPrice * discountValue;
-                Debug.WriteLine(product.NettoPrice);
+                ProductsForBasket.Add(product);
             }
 
-            List<Product> tempProduct = _productsForBasket.ToList();
-            _productsForBasket.Clear();
-            foreach (Product product in tempProduct)
-                _productsForBasket.Add(product);
-
-
             RaisePropertyChanged("ProductsForBasket");
-                Debug.WriteLine("product discount sucess. Discount value: " + discountValue.ToString());
+            ShowInfoPopupWindow("Products have been updated. Discount percentage: " + response.discountEvent.Discount.ToString());
         }
 
         public RelayCommand AddProductToBasketCommand
