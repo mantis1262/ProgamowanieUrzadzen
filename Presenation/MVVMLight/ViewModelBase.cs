@@ -1,10 +1,11 @@
 ﻿
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Presentation
 {
-  internal class ViewModelBase : INotifyPropertyChanged
+  internal class ViewModelBase : INotifyPropertyChanged, IDisposable
   {
     #region INotifyPropertyChanged
     public event PropertyChangedEventHandler PropertyChanged;
@@ -23,5 +24,6 @@ namespace Presentation
     }
     #endregion
 
+    public virtual void Dispose() { }
   }
 }

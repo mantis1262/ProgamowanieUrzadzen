@@ -11,51 +11,53 @@ using System.Reactive.Subjects;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Forms;
 
 namespace Presenation.ViewModel
 {
-    public class WebSocketClient
+    public class WebSocketClient: IDisposable
     {
-        private UTF8Encoding encoding = new UTF8Encoding();
-        private ClientWebSocket webSocket = null;
+        private UTF8Encoding _encoding = new UTF8Encoding();
+        private ClientWebSocket _webSocket = null;
         public ISubject<string> OnMessage = new Subject<string>();
 
-        public async Task Connect(string uri)
+        public async void Connect(string uri)
         {
             Thread.Sleep(1000);
 
             try
             {
-                webSocket = new ClientWebSocket();
-                await webSocket.ConnectAsync(new Uri(uri), CancellationToken.None);
+                _webSocket = new ClientWebSocket();
+                await _webSocket.ConnectAsync(new Uri(uri), CancellationToken.None);
                 await Task.WhenAll(Receive());
             }
             catch (Exception e)
             {
-                Debug.WriteLine("Exception: {0}", e);
+                ShowErrorPopupWindow("Error: " + e.Message);
             }
             finally
             {
-                if (webSocket != null)
+                if (_webSocket != null)
                 {
-                    webSocket.Dispose();
+                    _webSocket.Dispose();
                 }
 
-                Debug.WriteLine("");
-                Debug.WriteLine("Websocket has been close.");
+                ShowInfoPopupWindow("Websocket has been closed.");
             }
         }
 
+        #region Requests
         private async Task Send(string stringToSend)
         {
-            if (webSocket.State == WebSocketState.Open)
+            if (_webSocket.State == WebSocketState.Open)
             {
-                byte[] buffer = encoding.GetBytes(stringToSend);
-                await webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Binary, false, CancellationToken.None);
+                byte[] buffer = _encoding.GetBytes(stringToSend);
+                await _webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Binary, false, CancellationToken.None);
             }
         }
 
-        public async Task GetCustomerRequest(string customerId)
+        public async void GetCustomerRequest(string customerId)
         {
             GetCustomerRequest request = new GetCustomerRequest("get_customer", customerId);
             string requestJson = JsonConvert.SerializeObject(request, Formatting.Indented);
@@ -63,7 +65,7 @@ namespace Presenation.ViewModel
             Debug.WriteLine("[{0}] Client has sent request: {1}", DateTime.Now.ToString("HH:mm:ss.fff"), request.Tag);
         }
 
-        public async Task GetMerchandisesRequest()
+        public async void GetMerchandisesRequest()
         {
             GetMerchandisesRequest request = new GetMerchandisesRequest("get_merchandises");
             string requestJson = JsonConvert.SerializeObject(request, Formatting.Indented);
@@ -71,7 +73,7 @@ namespace Presenation.ViewModel
             Debug.WriteLine("[{0}] Client has sent request: {1}", DateTime.Now.ToString("HH:mm:ss.fff"), request.Tag);
         }
 
-        public async Task GetOrderRequest(string orderId)
+        public async void GetOrderRequest(string orderId)
         {
             GetOrderRequest request = new GetOrderRequest("get_order", orderId);
             string requestJson = JsonConvert.SerializeObject(request, Formatting.Indented);
@@ -79,7 +81,7 @@ namespace Presenation.ViewModel
             Debug.WriteLine("[{0}] Client has sent request: {1}", DateTime.Now.ToString("HH:mm:ss.fff"), request.Tag);
         }
 
-        public async Task MakeOrderRequest(OrderDto order)
+        public async void MakeOrderRequest(OrderDto order)
         {
             OrderRequestResponse request = new OrderRequestResponse("make_order", order);
             string requestJson = JsonConvert.SerializeObject(request, Formatting.Indented);
@@ -87,7 +89,7 @@ namespace Presenation.ViewModel
             Debug.WriteLine("[{0}] Client has sent request: {1}", DateTime.Now.ToString("HH:mm:ss.fff"), request.Tag);
         }
 
-        public async Task SubscribeDiscount()
+        public async void SubscribeDiscount()
         {
             WebMessageBase request = new WebMessageBase("subscription");
             string requestJson = JsonConvert.SerializeObject(request, Formatting.Indented);
@@ -95,25 +97,27 @@ namespace Presenation.ViewModel
             Debug.WriteLine("[{0}] Client has sent request: {1}", DateTime.Now.ToString("HH:mm:ss.fff"), request.Tag);
         }
 
-        public async Task UnSubscribeDiscount()
+        public async void UnsubscribeDiscount()
         {
             WebMessageBase request = new WebMessageBase("unsubscription");
             string requestJson = JsonConvert.SerializeObject(request, Formatting.Indented);
             await Send(requestJson);
             Debug.WriteLine("[{0}] Client has sent request: {1}", DateTime.Now.ToString("HH:mm:ss.fff"), request.Tag);
         }
+        #endregion
 
         private async Task Receive()
         {
             int size = 8192;
             byte[] buffer = new byte[size];
-            while (webSocket.State == WebSocketState.Open)
+            while (_webSocket.State == WebSocketState.Open)
             {
                 Array.Clear(buffer, 0, buffer.Length);
-                WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                WebSocketReceiveResult result = await _webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
-                    await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                    await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                    ShowInfoPopupWindow("Websocket has been closed.");
                 }
                 else
                 {
@@ -122,5 +126,35 @@ namespace Presenation.ViewModel
                 }
             }
         }
+
+        #region MessageLog
+        internal Func<string, string, MessageBoxButton, MessageBoxImage, MessageBoxResult> MessageBoxShowDelegate { get; set; } = System.Windows.MessageBox.Show;
+
+        private void ShowErrorPopupWindow(string mesg)
+        {
+            MessageBoxShowDelegate(mesg, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private void ShowInfoPopupWindow(string mesg)
+        {
+            MessageBoxShowDelegate(mesg, "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        #endregion MessageLog
+
+        #region Dispose
+        public void Dispose()
+        {
+            if (_webSocket != null)
+            {
+                Dispose(true);
+            }
+        }
+
+        public async void Dispose(bool disposing)
+        {
+            await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+        }
+        #endregion
     }
 }
