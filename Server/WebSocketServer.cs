@@ -201,7 +201,7 @@ namespace Server
             {
                 foreach (Subscription subscription in _orderService.CyclicDiscountService.Provider.Observers)
                 {
-                    if (subscription.Websocket.State.Equals(webSocket))
+                    if (subscription.Websocket.Equals(webSocket))
                     {
                         subscription.Unsubscriber.Dispose();
                     }
