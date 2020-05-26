@@ -18,6 +18,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Diagnostics;
+using System.Security.Policy;
 
 namespace Presenation.ViewModel
 {
@@ -43,7 +44,6 @@ namespace Presenation.ViewModel
         private ObservableCollection<OrderSummary> _searchOrders;
         private WebSocketClient _webSocketClient;
 
-        private CyclicDiscountService _cyclicActionService;
         private IObservable<EventPattern<DiscountEvent>> _tickObservable;
         private IDisposable _observer;
 
@@ -250,6 +250,7 @@ namespace Presenation.ViewModel
             _webSocketClient.OnMessage.Subscribe(ReceiveMessage);
             _webSocketClient.Connect("ws://localhost/sklep/");
             _webSocketClient.GetMerchandisesRequest();
+            _webSocketClient.SubscribeDiscount();
         }
 
         public void ReceiveMessage(string message)
@@ -327,7 +328,33 @@ namespace Presenation.ViewModel
                         ShowInfoPopupWindow(clientId + " make order " + response.Order.Id + " on total value: " + response.Order.TotalBruttoPrice);
                         break;
                     }
+                case "discount":
+                    {
+                        try
+                        {
+                            discount(message);
+                        } catch (Exception e)
+                        {
+                            Debug.WriteLine("Discount error");
+                        }
+                        break;
+                    }
             }
+        }
+
+        private void discount(string message)
+        {
+            SubscriptionRequestResponse response = JsonConvert.DeserializeObject<SubscriptionRequestResponse>(message);
+            Double discountValue = response.discountEvent.Discount;
+            List<Product> tempProduct = ProductsForBasket.ToList();
+            ProductsForBasket.Clear();
+
+            foreach (Product product in tempProduct)
+            {
+                product.NettoPrice -= product.NettoPrice * discountValue;
+                ProductsForBasket.Add(product);
+            }
+            Debug.WriteLine("product discount sucess. Discount value: " + discountValue.ToString());
         }
 
         public RelayCommand AddProductToBasketCommand

@@ -4,9 +4,12 @@ using Logic.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Net.WebSockets;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,9 +19,11 @@ namespace Server
     public class WebSocketServer
     {
         private OrderService _orderService;
+        private ObservableCollection<Subscription> _subscriptons;
 
         public async void Start(string httpListenerPrefix)
         {
+            _subscriptons = new ObservableCollection<Subscription>();
             HttpListener server = new HttpListener();
             server.Prefixes.Add(httpListenerPrefix);
             server.Start();
@@ -73,7 +78,7 @@ namespace Server
                     }
                     else
                     {
-                        string response = await ProcessData(Encoding.UTF8.GetString(receiveBuffer).TrimEnd('\0'), ipAddress);
+                        string response = await ProcessData(Encoding.UTF8.GetString(receiveBuffer).TrimEnd('\0'), ipAddress, webSocket);
                         ArraySegment<byte> outb = new ArraySegment<byte>(Encoding.UTF8.GetBytes(response));
                         await webSocket.SendAsync(outb, WebSocketMessageType.Binary, receiveResult.EndOfMessage, CancellationToken.None);
                     }
@@ -92,7 +97,7 @@ namespace Server
             }
         }
 
-        private async Task<string> ProcessData(string rawData, string ipAddress)
+        private async Task<string> ProcessData(string rawData, string ipAddress, WebSocket webSocket)
         {
             WebMessageBase request = JsonConvert.DeserializeObject<WebMessageBase>(rawData);
             Console.WriteLine("[{0}] Serwer otrzymał zapytanie: \"{1}\" od {2}, status: {3}", DateTime.Now.ToString("HH:mm:ss.fff"), request.Tag, ipAddress, request.Status);
@@ -122,6 +127,12 @@ namespace Server
                     {
                         OrderRequestResponse orderRequest = JsonConvert.DeserializeObject<OrderRequestResponse>(rawData);
                         output = await ProcessMakeOrderRequest(orderRequest);
+                        break;
+                    }
+                case "subscription":
+                    {
+                        WebMessageBase subRequest = JsonConvert.DeserializeObject<WebMessageBase>(rawData);
+                        output = await ProcessSubscriptionRequest(subRequest, webSocket);
                         break;
                     }
             }
@@ -158,6 +169,28 @@ namespace Server
             }
         }
 
+        private async Task<string> ProcessSubscriptionRequest(WebMessageBase request, WebSocket webSocket )
+        {
+            try
+            {
+                Subscription subscription = new Subscription(webSocket);
+                //  _subscriptons.Add(subscription);
+                _orderService.CyclicDiscountService.Provider.Subscribe(subscription);
+                WebMessageBase response = new WebMessageBase();
+                response.Status = RequestStatus.SUCCESS;
+                response.Message = "Subsctipte request completed.";
+                string result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                return result;
+
+            } catch (Exception e)
+            {
+                WebMessageBase response = new WebMessageBase();
+                response.Status = RequestStatus.FAIL;
+                response.Message = "Subsctipte request error.";
+                string result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                return result;
+            }
+        }
         private async Task<string> ProcessGetMerchandisesRequest(GetMerchandisesRequest request)
         {
             try 

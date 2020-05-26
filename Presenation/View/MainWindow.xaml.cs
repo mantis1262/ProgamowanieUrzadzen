@@ -23,10 +23,5 @@ namespace Presenation.View
         {
             InitializeComponent();
         }
-
-        private void ListView_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
     }
 }
