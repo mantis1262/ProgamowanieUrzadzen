@@ -133,6 +133,12 @@ namespace Server
                         output = await ProcessSubscriptionRequest(subRequest, webSocket);
                         break;
                     }
+                case "unsubscription":
+                    {
+                        WebMessageBase unSubRequest = JsonConvert.DeserializeObject<WebMessageBase>(rawData);
+                        output = await ProcessUnSubscriptionRequest(unSubRequest, webSocket);
+                        break;
+                    }
             }
 
             return output;
@@ -172,14 +178,43 @@ namespace Server
             try
             {
                 Subscription subscription = new Subscription(webSocket);
-                _orderService.CyclicDiscountService.Provider.Subscribe(subscription);
+                subscription.Unsubscriber = _orderService.CyclicDiscountService.Provider.Subscribe(subscription);
+                WebMessageBase response = new WebMessageBase("subscription");
+                response.Status = RequestStatus.SUCCESS;
+                response.Message = "Subscription request completed.";
+                string result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                return result;
+
+            } catch (Exception e)
+            {
                 WebMessageBase response = new WebMessageBase();
+                response.Status = RequestStatus.FAIL;
+                response.Message = "Subscription request error.";
+                string result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                return result;
+            }
+        }
+
+        private async Task<string> ProcessUnSubscriptionRequest(WebMessageBase request, WebSocket webSocket)
+        {
+            try
+            {
+                foreach (Subscription subscription in _orderService.CyclicDiscountService.Provider.Observers)
+                {
+                    if (subscription.Websocket.State.Equals(webSocket))
+                    {
+                        subscription.Unsubscriber.Dispose();
+                    }
+                }
+                
+                WebMessageBase response = new WebMessageBase("unsubscription");
                 response.Status = RequestStatus.SUCCESS;
                 response.Message = "Subsctipte request completed.";
                 string result = JsonConvert.SerializeObject(response, Formatting.Indented);
                 return result;
 
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 WebMessageBase response = new WebMessageBase();
                 response.Status = RequestStatus.FAIL;
@@ -188,6 +223,7 @@ namespace Server
                 return result;
             }
         }
+
         private async Task<string> ProcessGetMerchandisesRequest(GetMerchandisesRequest request)
         {
             try 

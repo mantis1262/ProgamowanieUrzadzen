@@ -70,20 +70,22 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <Label Content="ID" HorizontalAlignment="Left" Margin="729.4,16.8,0,0" VerticalAlignment="Top" Grid.Column="3" Grid.Row="1"/>
-                    <Label Content="Name" HorizontalAlignment="Left" Margin="729.4,47.8,0,0" VerticalAlignment="Top" Grid.Column="3" Grid.Row="1"/>
-                    <Label Content="Address" HorizontalAlignment="Left" Margin="729.4,81.8,0,0" VerticalAlignment="Top" Grid.Column="3" Grid.Row="1"/>
-                    <Label Content="Phone" HorizontalAlignment="Left" Margin="729.4,114.8,0,0" VerticalAlignment="Top" Grid.Column="3" Grid.Row="1"/>
-                    <Label Content="NIP" HorizontalAlignment="Left" Margin="729.4,143.8,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.597,0.896" Grid.Column="3" Grid.Row="1"/>
-                    <Label Content="Pesel" HorizontalAlignment="Left" Margin="729.4,174.8,0,0" VerticalAlignment="Top" Grid.Column="3" Grid.Row="1"/>
-                    <TextBox HorizontalAlignment="Left" Height="23" Margin="792.4,19.8,0,0" TextWrapping="Wrap" Text="{Binding CustomerId}" VerticalAlignment="Top" Width="120" Grid.Column="3" Grid.Row="1"/>
-                    <TextBox HorizontalAlignment="Left" Height="23" Margin="792.4,50.8,0,0" TextWrapping="Wrap" Text="{Binding CustomerName}" VerticalAlignment="Top" Width="120" Grid.Column="3" Grid.Row="1"/>
-                    <TextBox HorizontalAlignment="Left" Height="23" Margin="792.4,81.8,0,0" TextWrapping="Wrap" Text="{Binding CustomerAddress}" VerticalAlignment="Top" Width="120" Grid.Column="3" Grid.Row="1"/>
-                    <TextBox HorizontalAlignment="Left" Height="23" Margin="792.4,112.8,0,0" TextWrapping="Wrap" Text="{Binding CustomerPhone}" VerticalAlignment="Top" Width="120" Grid.Column="3" Grid.Row="1"/>
-                    <TextBox HorizontalAlignment="Left" Height="23" Margin="792.4,143.8,0,0" TextWrapping="Wrap" Text="{Binding CustomerNip}" VerticalAlignment="Top" Width="120" Grid.Column="3" Grid.Row="1"/>
-                    <TextBox HorizontalAlignment="Left" Height="23" Margin="792.4,174.8,0,0" TextWrapping="Wrap" Text="{Binding CustomerPesel}" VerticalAlignment="Top" Width="120" Grid.Column="3" Grid.Row="1"/>
-                    <Button Command="{Binding SearchCustomerCommand}"  Content="Fill" HorizontalAlignment="Left" Margin="782.4,45,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.539,0.889" Height="22" Grid.Column="3"/>
-                    <Label Content="Customer info" Grid.Column="3" HorizontalAlignment="Left" Margin="782.4,10,0,0" VerticalAlignment="Top"/>
+                    <Label Content="ID" HorizontalAlignment="Left" Margin="720,122,0,0" VerticalAlignment="Top" Grid.Column="3" Grid.Row="1"/>
+                    <Label Content="Name" HorizontalAlignment="Left" Margin="720,153,0,0" VerticalAlignment="Top" Grid.Column="3" Grid.Row="1"/>
+                    <Label Content="Address" HorizontalAlignment="Left" Margin="720,187,0,0" VerticalAlignment="Top" Grid.Column="3" Grid.Row="1"/>
+                    <Label Content="Phone" HorizontalAlignment="Left" Margin="720,220,0,0" VerticalAlignment="Top" Grid.Column="3" Grid.Row="1"/>
+                    <Label Content="NIP" HorizontalAlignment="Left" Margin="720,249,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.597,0.896" Grid.Column="3" Grid.Row="1"/>
+                    <Label Content="Pesel" HorizontalAlignment="Left" Margin="720,280,0,0" VerticalAlignment="Top" Grid.Column="3" Grid.Row="1"/>
+                    <TextBox HorizontalAlignment="Left" Height="23" Margin="783,125,0,0" TextWrapping="Wrap" Text="{Binding CustomerId}" VerticalAlignment="Top" Width="120" Grid.Column="3" Grid.Row="1"/>
+                    <TextBox HorizontalAlignment="Left" Height="23" Margin="783,156,0,0" TextWrapping="Wrap" Text="{Binding CustomerName}" VerticalAlignment="Top" Width="120" Grid.Column="3" Grid.Row="1"/>
+                    <TextBox HorizontalAlignment="Left" Height="23" Margin="783,187,0,0" TextWrapping="Wrap" Text="{Binding CustomerAddress}" VerticalAlignment="Top" Width="120" Grid.Column="3" Grid.Row="1"/>
+                    <TextBox HorizontalAlignment="Left" Height="23" Margin="783,218,0,0" TextWrapping="Wrap" Text="{Binding CustomerPhone}" VerticalAlignment="Top" Width="120" Grid.Column="3" Grid.Row="1"/>
+                    <TextBox HorizontalAlignment="Left" Height="23" Margin="783,249,0,0" TextWrapping="Wrap" Text="{Binding CustomerNip}" VerticalAlignment="Top" Width="120" Grid.Column="3" Grid.Row="1"/>
+                    <TextBox HorizontalAlignment="Left" Height="23" Margin="783,280,0,0" TextWrapping="Wrap" Text="{Binding CustomerPesel}" VerticalAlignment="Top" Width="120" Grid.Column="3" Grid.Row="1"/>
+                    <Button Command="{Binding SearchCustomerCommand}"  Content="Fill" HorizontalAlignment="Left" Margin="773,83,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.539,0.889" Height="22" Grid.Column="3" Grid.Row="1"/>
+                    <Label Content="Customer info" Grid.Column="3" HorizontalAlignment="Left" Margin="773,48,0,0" VerticalAlignment="Top" Grid.Row="1"/>
+                    <Label Content="Subscription" Grid.Column="3" HorizontalAlignment="Left" Margin="783,8,0,0" VerticalAlignment="Top"/>
+                    <Button Command="{Binding SubscriptionCommand}" Content="{Binding SubStatus}" Grid.Column="3" HorizontalAlignment="Left" Margin="783,39,0,0" VerticalAlignment="Top" Width="75"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Search">
