@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Logic.Dto;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Logic.Events
+namespace Logic.Observer
 {
     public class DiscountEvent : EventArgs
     {
@@ -10,10 +11,13 @@ namespace Logic.Events
 
         public double Discount { get; private set; }
 
-        public DiscountEvent(double discount)
+        public List<MerchandiseDto> Merchandises { get; private set; }
+
+        public DiscountEvent(double discount, List<MerchandiseDto> merchandises)
         {
             Time = DateTime.Now;
             Discount = discount;
+            Merchandises = merchandises;
         }
     }
 }

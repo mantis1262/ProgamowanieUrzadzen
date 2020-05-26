@@ -4,9 +4,12 @@ using Logic.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Net.WebSockets;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -73,7 +76,7 @@ namespace Server
                     }
                     else
                     {
-                        string response = await ProcessData(Encoding.UTF8.GetString(receiveBuffer).TrimEnd('\0'), ipAddress);
+                        string response = await ProcessData(Encoding.UTF8.GetString(receiveBuffer).TrimEnd('\0'), ipAddress, webSocket);
                         ArraySegment<byte> outb = new ArraySegment<byte>(Encoding.UTF8.GetBytes(response));
                         await webSocket.SendAsync(outb, WebSocketMessageType.Binary, receiveResult.EndOfMessage, CancellationToken.None);
                     }
@@ -92,7 +95,7 @@ namespace Server
             }
         }
 
-        private async Task<string> ProcessData(string rawData, string ipAddress)
+        private async Task<string> ProcessData(string rawData, string ipAddress, WebSocket webSocket)
         {
             WebMessageBase request = JsonConvert.DeserializeObject<WebMessageBase>(rawData);
             Console.WriteLine("[{0}] Serwer otrzymał zapytanie: \"{1}\" od {2}, status: {3}", DateTime.Now.ToString("HH:mm:ss.fff"), request.Tag, ipAddress, request.Status);
@@ -124,6 +127,12 @@ namespace Server
                         output = await ProcessMakeOrderRequest(orderRequest);
                         break;
                     }
+                case "subscription":
+                    {
+                        WebMessageBase subRequest = JsonConvert.DeserializeObject<WebMessageBase>(rawData);
+                        output = await ProcessSubscriptionRequest(subRequest, webSocket);
+                        break;
+                    }
             }
 
             return output;
@@ -131,85 +140,148 @@ namespace Server
 
         private async Task<string> ProcessGetCustomerRequest(GetCustomerRequest request)
         {
-            CustomerDto customerDto = await _orderService.CustomerService.GetCustomer(request.Customer);
-            string result;
-
-            if (customerDto == null)
+            try
             {
-                WebMessageBase response = new WebMessageBase("get_customer");
+                CustomerDto customerDto = await _orderService.CustomerService.GetCustomer(request.Customer);
+                string result;
+
+                if (customerDto == null)
+                {
+                    WebMessageBase response = new WebMessageBase("get_customer");
+                    response.Status = RequestStatus.FAIL;
+                    response.Message = "Customer with ID: " + request.Customer + " not found";
+                    result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                    return result;
+                }
+
+                GetCustomerResponse customerResponse = new GetCustomerResponse("get_customer", customerDto);
+                result = JsonConvert.SerializeObject(customerResponse, Formatting.Indented);
+                return result;
+            } catch (Exception e)
+            {
+                WebMessageBase response = new WebMessageBase();
                 response.Status = RequestStatus.FAIL;
-                response.Message = "Customer with ID: " + request.Customer + " not found";
-                result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                response.Message = "Get customer request error.";
+                string result = JsonConvert.SerializeObject(response, Formatting.Indented);
                 return result;
             }
-
-            GetCustomerResponse customerResponse = new GetCustomerResponse("get_customer", customerDto);
-            result = JsonConvert.SerializeObject(customerResponse, Formatting.Indented);
-            return result;
         }
 
+        private async Task<string> ProcessSubscriptionRequest(WebMessageBase request, WebSocket webSocket )
+        {
+            try
+            {
+                Subscription subscription = new Subscription(webSocket);
+                _orderService.CyclicDiscountService.Provider.Subscribe(subscription);
+                WebMessageBase response = new WebMessageBase();
+                response.Status = RequestStatus.SUCCESS;
+                response.Message = "Subsctipte request completed.";
+                string result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                return result;
+
+            } catch (Exception e)
+            {
+                WebMessageBase response = new WebMessageBase();
+                response.Status = RequestStatus.FAIL;
+                response.Message = "Subsctipte request error.";
+                string result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                return result;
+            }
+        }
         private async Task<string> ProcessGetMerchandisesRequest(GetMerchandisesRequest request)
         {
-            List<MerchandiseDto> merchandiseDtos = (await _orderService.MerchandiseService.GetMerchandises()).ToList();
-            GetMerchandisesResponse merchandisesResponse = new GetMerchandisesResponse("get_merchandises", merchandiseDtos);
-            string result = JsonConvert.SerializeObject(merchandisesResponse, Formatting.Indented);
-            return result;
-        }
+            try 
+            { 
+                List<MerchandiseDto> merchandiseDtos = (await _orderService.MerchandiseService.GetMerchandises()).ToList();
+                GetMerchandisesResponse merchandisesResponse = new GetMerchandisesResponse("get_merchandises", merchandiseDtos);
+                string result = JsonConvert.SerializeObject(merchandisesResponse, Formatting.Indented);
+                return result;
+            } catch (Exception e)
+            {
+                WebMessageBase response = new WebMessageBase();
+                response.Status = RequestStatus.FAIL;
+                response.Message = "Get merchandise request error.";
+                string result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                return result;
+            }
+}
 
         private async Task<string> ProcessGetOrderRequest(GetOrderRequest request)
         {
-            OrderDto orderDto = await _orderService.GetOrder(request.Order);
-            string result;
+            try 
+            { 
+                OrderDto orderDto = await _orderService.GetOrder(request.Order);
+                string result;
 
-            if (orderDto == null)
-            {
-                WebMessageBase response = new WebMessageBase("get_order");
-                response.Status = RequestStatus.FAIL;
-                response.Message = "Order with ID: " + request.Order + " not found";
-                result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                if (orderDto == null)
+                {
+                    WebMessageBase response = new WebMessageBase("get_order");
+                    response.Status = RequestStatus.FAIL;
+                    response.Message = "Order with ID: " + request.Order + " not found";
+                    result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                    return result;
+                }
+
+                OrderRequestResponse orderResponse = new OrderRequestResponse("get_order", orderDto);
+                result = JsonConvert.SerializeObject(orderResponse, Formatting.Indented);
                 return result;
             }
-
-            OrderRequestResponse orderResponse = new OrderRequestResponse("get_order", orderDto);
-            result = JsonConvert.SerializeObject(orderResponse, Formatting.Indented);
-            return result;
+            catch (Exception e)
+            {
+                WebMessageBase response = new WebMessageBase();
+                response.Status = RequestStatus.FAIL;
+                response.Message = "Get order request error.";
+                string result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                return result;
+            }
         }
 
         private async Task<string> ProcessMakeOrderRequest(OrderRequestResponse request)
         {
-            string clientID = request.Order.ClientInfo.Id;
-            if (string.IsNullOrEmpty(clientID) || string.IsNullOrWhiteSpace(clientID))
-            {
-                clientID = await _orderService.CustomerService.SaveCustomer(request.Order.ClientInfo);
-            }
+            try
+            { 
+                string clientID = request.Order.ClientInfo.Id;
+                if (string.IsNullOrEmpty(clientID) || string.IsNullOrWhiteSpace(clientID))
+                {
+                    clientID = await _orderService.CustomerService.SaveCustomer(request.Order.ClientInfo);
+                }
 
-            CustomerDto clientDto = await _orderService.CustomerService.GetCustomer(clientID);
-            string result;
+                CustomerDto clientDto = await _orderService.CustomerService.GetCustomer(clientID);
+                string result;
 
-            if (clientDto == null)
-            {
-                WebMessageBase response = new WebMessageBase("get_customer");
-                response.Status = RequestStatus.FAIL;
-                response.Message = "Client with ID: " + clientID + " not found";
-                result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                if (clientDto == null)
+                {
+                    WebMessageBase response = new WebMessageBase("get_customer");
+                    response.Status = RequestStatus.FAIL;
+                    response.Message = "Client with ID: " + clientID + " not found";
+                    result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                    return result;
+                }
+
+                string orderId = await _orderService.SaveOrder(request.Order);
+                OrderDto orderDto = await _orderService.GetOrder(orderId);  
+
+                if (orderDto == null)
+                {
+                    WebMessageBase response = new WebMessageBase("get_order");
+                    response.Status = RequestStatus.FAIL;
+                    response.Message = "Order with ID: " + request.Order.Id + " not found";
+                    result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                    return result;
+                }
+
+                OrderRequestResponse orderResponse = new OrderRequestResponse("save_order", orderDto);
+                result = JsonConvert.SerializeObject(orderResponse, Formatting.Indented);
                 return result;
             }
-
-            string orderId = await _orderService.SaveOrder(request.Order);
-            OrderDto orderDto = await _orderService.GetOrder(orderId);  
-
-            if (orderDto == null)
+            catch (Exception e)
             {
-                WebMessageBase response = new WebMessageBase("get_order");
+                WebMessageBase response = new WebMessageBase();
                 response.Status = RequestStatus.FAIL;
-                response.Message = "Order with ID: " + request.Order.Id + " not found";
-                result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                response.Message = "Make order request error.";
+                string result = JsonConvert.SerializeObject(response, Formatting.Indented);
                 return result;
             }
-
-            OrderRequestResponse orderResponse = new OrderRequestResponse("save_order", orderDto);
-            result = JsonConvert.SerializeObject(orderResponse, Formatting.Indented);
-            return result;
         }
     }
 }

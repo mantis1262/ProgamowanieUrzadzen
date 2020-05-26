@@ -1,6 +1,7 @@
-﻿using Logic.Events;
+﻿using Logic.Observer;
 using Logic.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 
@@ -8,19 +9,19 @@ namespace Logic.Services
 {
     public class CyclicDiscountService : IDisposable
     {
-        Random _rnd = new Random();
+        public DiscountCreator Provider;
+
         private IDisposable _timerSubscription = null;
 
         public double MaxDiscount { get; private set; }
 
         public TimeSpan Period { get; private set; }
 
-        public event EventHandler<DiscountEvent> Handler = delegate { };
-
-        public CyclicDiscountService(double maxDiscount, TimeSpan period)
+        public CyclicDiscountService(double maxDiscount, TimeSpan period, DiscountCreator discountCreator)
         {
             MaxDiscount = maxDiscount;
             Period = period;
+            Provider = discountCreator;
         }
 
         public void Start()
@@ -31,8 +32,7 @@ namespace Logic.Services
 
         private void GiveDiscount()
         {
-            double randomNumber = _rnd.NextDouble() * MaxDiscount;
-            Handler?.Invoke(this, new DiscountEvent(randomNumber));
+            Provider.Discount(MaxDiscount);
         }
 
         public void Dispose()

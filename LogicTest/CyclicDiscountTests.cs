@@ -5,7 +5,7 @@ using System.Linq;
 using Logic.Services;
 using Data.Model;
 using Logic.Dto;
-using Logic.Events;
+using Logic.Observer;
 using System.Reactive.Linq;
 
 namespace LogicTest

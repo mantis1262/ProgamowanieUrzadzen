@@ -1,6 +1,6 @@
-﻿using Logic;
+using Logic;
 using Logic.Dto;
-using Logic.Events;
+using Logic.Observer;
 using Logic.Requests;
 using Logic.Services;
 using Presenation;
@@ -18,6 +18,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Diagnostics;
+using System.Security.Policy;
 
 namespace Presenation.ViewModel
 {
@@ -42,10 +43,6 @@ namespace Presenation.ViewModel
         private ObservableCollection<Customer> _searchCustomers;
         private ObservableCollection<OrderSummary> _searchOrders;
         private WebSocketClient _webSocketClient;
-
-        private CyclicDiscountService _cyclicActionService;
-        private IObservable<EventPattern<DiscountEvent>> _tickObservable;
-        private IDisposable _observer;
 
         public Product CurrentBasketProduct 
         { 
@@ -250,6 +247,7 @@ namespace Presenation.ViewModel
             _webSocketClient.OnMessage.Subscribe(ReceiveMessage);
             _webSocketClient.Connect("ws://localhost/sklep/");
             _webSocketClient.GetMerchandisesRequest();
+            _webSocketClient.SubscribeDiscount();
         }
 
         public void ReceiveMessage(string message)
@@ -327,7 +325,57 @@ namespace Presenation.ViewModel
                         ShowInfoPopupWindow(clientId + " make order " + response.Order.Id + " on total value: " + response.Order.TotalBruttoPrice);
                         break;
                     }
+                case "discount":
+                    {
+                        try
+                        {
+                            ProcessDiscountMessage(message);
+                        } catch (Exception e)
+                        {
+                            Debug.WriteLine("Discount error");
+                        }
+                        break;
+                    }
             }
+        }
+
+        private void ProcessDiscountMessage(string message)
+        {
+            SubscriptionRequestResponse response = JsonConvert.DeserializeObject<SubscriptionRequestResponse>(message);
+            List<Product> responseProducts = response.discountEvent.Merchandises.FromDto();
+            ProductsForBasket.Clear();
+
+            foreach (Product product in responseProducts)
+            {
+                ProductsForBasket.Add(product);
+            }
+
+            if(_basketEntries.Count > 0)
+            {
+                List<Entry> temp = _basketEntries.ToList<Entry>();
+                _basketEntries.Clear();
+
+                foreach (Entry entry in temp)
+                {
+                    foreach (Product product in responseProducts)
+                    {
+                        if (entry.Code == product.Id)
+                        {
+                            entry.NettoPrice = product.NettoPrice;
+                            entry.BruttoPrice = CalcHelper.GetBruttoPrice(entry.NettoPrice, entry.Vat);
+                            entry.TotalBruttoPrice = CalcHelper.GetTotalBrutto(entry.BruttoPrice, entry.Amount);
+                            break;
+                        }
+                    }
+                    _basketEntries.Add(entry);
+                }
+                TotalBruttoPrice = 0;
+                foreach (Entry entry in _basketEntries)
+                  TotalBruttoPrice += entry.TotalBruttoPrice;
+        }
+
+            RaisePropertyChanged("ProductsForBasket");
+            ShowInfoPopupWindow("Products have been updated. Discount percentage: " + Math.Round(response.discountEvent.Discount, 2).ToString());
         }
 
         public RelayCommand AddProductToBasketCommand

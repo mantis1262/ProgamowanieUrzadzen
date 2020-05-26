@@ -29,7 +29,7 @@
                         <ColumnDefinition Width="23*"/>
                         <ColumnDefinition Width="938*"/>
                     </Grid.ColumnDefinitions>
-                    <ListView HorizontalAlignment="Left" Height="190" VerticalAlignment="Top" Width="788" Grid.ColumnSpan="4" Margin="0,25,0,0" Grid.RowSpan="2" SelectionMode="Single" ItemsSource="{Binding ProductsForBasket}" SelectedItem="{Binding CurrentBasketProduct}">
+                    <ListView HorizontalAlignment="Left" Height="190" VerticalAlignment="Top" Width="788" Grid.ColumnSpan="4" Margin="0,25,0,0" Grid.RowSpan="2" SelectionMode="Single" ItemsSource="{Binding ProductsForBasket, Mode=TwoWay}" SelectedItem="{Binding CurrentBasketProduct}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Code" Width="60" DisplayMemberBinding="{Binding Id}"/>
@@ -37,7 +37,7 @@
                                 <GridViewColumn Header="Description" Width="355" DisplayMemberBinding="{Binding Description}"/>
                                 <GridViewColumn Header="Type" Width="50" DisplayMemberBinding="{Binding Type}"/>
                                 <GridViewColumn Header="Unit" Width="50" DisplayMemberBinding="{Binding Unit}"/>
-                                <GridViewColumn Header="Netto" Width="70" DisplayMemberBinding="{Binding NettoPrice}"/>
+                                <GridViewColumn Header="Netto" Width="70"  DisplayMemberBinding="{Binding NettoPrice, StringFormat=F }"/>
                                 <GridViewColumn Header="Vat" Width="50" DisplayMemberBinding="{Binding Vat}"/>
                             </GridView>
                         </ListView.View>
@@ -47,7 +47,7 @@
                     <Button Command="{Binding ClearBasketCommand}" Content="Clear" Grid.Column="3" HorizontalAlignment="Left" Margin="243.4,178.8,0,0" VerticalAlignment="Top" Width="75" Grid.Row="1"/>
                     <Button Command="{Binding ConfirmBasketCommand}" Content="Confirm" Grid.Column="3" HorizontalAlignment="Left" Margin="339.4,178.8,0,0" VerticalAlignment="Top" Width="75" Grid.Row="1"/>
                     <Label Content="Total brutto:" Grid.Column="3" HorizontalAlignment="Left" Margin="579.4,198.8,0,0" VerticalAlignment="Top" Grid.Row="1" />
-                    <Label Content="{Binding TotalBruttoPrice, Mode=TwoWay}" Grid.Column="3" HorizontalAlignment="Left" Margin="658.4,198.8,0,0" VerticalAlignment="Top" RenderTransformOrigin="3.512,0.406" Width="56" Grid.Row="1" />
+                    <Label Content="{Binding TotalBruttoPrice, StringFormat=F}" Grid.Column="3" HorizontalAlignment="Left" Margin="658.4,198.8,0,0" VerticalAlignment="Top" RenderTransformOrigin="3.512,0.406" Width="56" Grid.Row="1" />
                     <Label Content="Products" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <Label Content="Basket" Grid.Column="1" HorizontalAlignment="Left" Margin="0.6,198.8,0,0" VerticalAlignment="Top" Grid.Row="1"/>
                     <ListView Grid.ColumnSpan="4" HorizontalAlignment="Left" Height="221" Margin="0,223.8,0,0" VerticalAlignment="Top" Width="788" Grid.Row="1" SelectionMode="Single" ItemsSource="{Binding BasketEntries}" SelectedItem="{Binding CurrentBasketEntry}">
@@ -62,11 +62,11 @@
                                 <GridViewColumn Header="Description" Width="130" DisplayMemberBinding="{Binding Description}"/>
                                 <GridViewColumn Header="Type" Width="60" DisplayMemberBinding="{Binding Type}"/>
                                 <GridViewColumn Header="Unit" Width="60" DisplayMemberBinding="{Binding Unit}"/>
-                                <GridViewColumn Header="Netto" Width="70" DisplayMemberBinding="{Binding NettoPrice}"/>
+                                <GridViewColumn Header="Netto" Width="70" DisplayMemberBinding="{Binding NettoPrice, StringFormat=F}"/>
                                 <GridViewColumn Header="Vat" Width="70" DisplayMemberBinding="{Binding Vat}"/>
-                                <GridViewColumn Header="Brutto" Width="70" DisplayMemberBinding="{Binding BruttoPrice}"/>
+                                <GridViewColumn Header="Brutto" Width="70" DisplayMemberBinding="{Binding BruttoPrice, StringFormat=F}"/>
                                 <GridViewColumn Header="Amount" Width="60" DisplayMemberBinding="{Binding Amount}"/>
-                                <GridViewColumn Header="Total brutto" Width="100" DisplayMemberBinding="{Binding TotalBruttoPrice}"/>
+                                <GridViewColumn Header="Total brutto" Width="100" DisplayMemberBinding="{Binding TotalBruttoPrice, StringFormat=F}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
