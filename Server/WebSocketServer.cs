@@ -204,6 +204,7 @@ namespace Server
                     if (subscription.Websocket.Equals(webSocket))
                     {
                         subscription.Unsubscriber.Dispose();
+                        break;
                     }
                 }
                 
