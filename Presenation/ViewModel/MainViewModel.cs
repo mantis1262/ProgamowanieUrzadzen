@@ -351,7 +351,7 @@ namespace Presenation.ViewModel
             }
 
             RaisePropertyChanged("ProductsForBasket");
-            ShowInfoPopupWindow("Products have been updated. Discount percentage: " + response.discountEvent.Discount.ToString());
+            ShowInfoPopupWindow("Products have been updated. Discount percentage: " + Math.Round(response.discountEvent.Discount, 2).ToString());
         }
 
         public RelayCommand AddProductToBasketCommand
