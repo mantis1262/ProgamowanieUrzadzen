@@ -1,4 +1,4 @@
-﻿using Logic;
+using Logic;
 using Logic.Dto;
 using Logic.Observer;
 using Logic.Requests;
@@ -349,6 +349,30 @@ namespace Presenation.ViewModel
             {
                 ProductsForBasket.Add(product);
             }
+
+            if(_basketEntries.Count > 0)
+            {
+                List<Entry> temp = _basketEntries.ToList<Entry>();
+                _basketEntries.Clear();
+
+                foreach (Entry entry in temp)
+                {
+                    foreach (Product product in responseProducts)
+                    {
+                        if (entry.Code == product.Id)
+                        {
+                            entry.NettoPrice = product.NettoPrice;
+                            entry.BruttoPrice = CalcHelper.GetBruttoPrice(entry.NettoPrice, entry.Vat);
+                            entry.TotalBruttoPrice = CalcHelper.GetTotalBrutto(entry.BruttoPrice, entry.Amount);
+                            break;
+                        }
+                    }
+                    _basketEntries.Add(entry);
+                }
+                TotalBruttoPrice = 0;
+                foreach (Entry entry in _basketEntries)
+                  TotalBruttoPrice += entry.TotalBruttoPrice;
+        }
 
             RaisePropertyChanged("ProductsForBasket");
             ShowInfoPopupWindow("Products have been updated. Discount percentage: " + Math.Round(response.discountEvent.Discount, 2).ToString());
