@@ -345,16 +345,22 @@ namespace Presenation.ViewModel
         private void discount(string message)
         {
             SubscriptionRequestResponse response = JsonConvert.DeserializeObject<SubscriptionRequestResponse>(message);
-            Double discountValue = response.discountEvent.Discount;
-            List<Product> tempProduct = ProductsForBasket.ToList();
-            ProductsForBasket.Clear();
+            double discountValue = response.discountEvent.Discount;
 
-            foreach (Product product in tempProduct)
+            foreach (Product product in _productsForBasket)
             {
-                product.NettoPrice -= product.NettoPrice * discountValue;
-                ProductsForBasket.Add(product);
+                product.NettoPrice = product.NettoPrice - product.NettoPrice * discountValue;
+                Debug.WriteLine(product.NettoPrice);
             }
-            Debug.WriteLine("product discount sucess. Discount value: " + discountValue.ToString());
+
+            List<Product> tempProduct = _productsForBasket.ToList();
+            _productsForBasket.Clear();
+            foreach (Product product in tempProduct)
+                _productsForBasket.Add(product);
+
+
+            RaisePropertyChanged("ProductsForBasket");
+                Debug.WriteLine("product discount sucess. Discount value: " + discountValue.ToString());
         }
 
         public RelayCommand AddProductToBasketCommand
