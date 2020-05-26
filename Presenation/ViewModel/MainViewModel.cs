@@ -24,6 +24,7 @@ namespace Presenation.ViewModel
 {
     internal class MainViewModel : ViewModelBase
     {
+        #region Fields
         private Product _currentBasketProduct;
         private Entry _currentBasketEntry;
         private Entry _currentSearchEntry;
@@ -45,7 +46,9 @@ namespace Presenation.ViewModel
         private WebSocketClient _webSocketClient;
         private bool _subStatusBool;
         private string _subStatus = "OFF";
+        #endregion
 
+        #region Properties
         public Product CurrentBasketProduct 
         { 
             get => _currentBasketProduct; 
@@ -236,7 +239,51 @@ namespace Presenation.ViewModel
                 RaisePropertyChanged();
             }
         }
+        #endregion
 
+        #region Commands
+        public RelayCommand AddProductToBasketCommand
+        {
+            get; private set;
+        }
+
+        public RelayCommand RemoveProductFromBasketCommand
+        {
+            get; private set;
+        }
+
+        public RelayCommand ClearBasketCommand
+        {
+            get; private set;
+        }
+
+        public RelayCommand ConfirmBasketCommand
+        {
+            get; private set;
+        }
+
+        public RelayCommand SearchOrderCommand
+        {
+            get; private set;
+        }
+
+        public RelayCommand SearchCustomerCommand
+        {
+            get; private set;
+        }
+
+        public RelayCommand ConfirmCommand
+        {
+            get; private set;
+        }
+
+        public RelayCommand SubscriptionCommand
+        {
+            get; private set;
+        }
+        #endregion
+
+        #region Constructor
         public MainViewModel()
         {
             _currentBasketProduct = null;
@@ -261,108 +308,145 @@ namespace Presenation.ViewModel
             _webSocketClient.Connect("ws://localhost/sklep/");
             _webSocketClient.GetMerchandisesRequest();
         }
+        #endregion
 
+        #region MessagesProcessing
         public void ReceiveMessage(string message)
         {
-            WebMessageBase request = JsonConvert.DeserializeObject<WebMessageBase>(message);
-            Console.WriteLine("[{0}] Client received response: {1} , status: {2}", DateTime.Now.ToString("HH:mm:ss.fff"), request.Tag, request.Status);
-            string outp = String.Empty;
-
-            if (request.Status == RequestStatus.FAIL)
+            try
             {
-                ShowErrorPopupWindow(request.Message);
-                return;
-            }
+                WebMessageBase request = JsonConvert.DeserializeObject<WebMessageBase>(message);
+                Debug.WriteLine("[{0}] Client received response: {1} , status: {2}", DateTime.Now.ToString("HH:mm:ss.fff"), request.Tag, request.Status);
+                string outp = String.Empty;
 
-            switch (request.Tag)
-            {
-                case "get_customer":
-                    {
-                        GetCustomerResponse response = JsonConvert.DeserializeObject<GetCustomerResponse>(message);
-                        CustomerDto customerDto = response.Customer;
-                        Customer customer = customerDto.FromDto();
-                        CustomerId = customer.Id;
-                        CustomerName = customer.Name;
-                        CustomerAddress = customer.Address;
-                        CustomerPhone = customer.PhoneNumber.ToString();
-                        CustomerNip = customer.Nip;
-                        CustomerPesel = customer.Pesel;
+                if (request.Status == RequestStatus.FAIL)
+                {
+                    ShowErrorPopupWindow(request.Message);
+                    return;
+                }
 
-                        ShowInfoPopupWindow("Loaded customer info");
-                        break;
-                    }
-                case "get_merchandises":
-                    {
-                        GetMerchandisesResponse response = JsonConvert.DeserializeObject<GetMerchandisesResponse>(message);
-                        List<MerchandiseDto> merchandisesDto = response.Merchandises;
-                        List<Product> products = merchandisesDto.FromDto();
-                        _productsForBasket.Clear();
-                        foreach (Product product in products)
+                switch (request.Tag)
+                {
+                    case "get_customer":
                         {
-                            _productsForBasket.Add(product);
+                            ProcessGetCustomerResponse(message);
+                            break;
                         }
-                        _productsForBasket = new ObservableCollection<Product>(products);
-
-                        ShowInfoPopupWindow("Loaded product");
-                        break;
-                    }      
-                case "get_order":
-                    {
-                        OrderRequestResponse response = JsonConvert.DeserializeObject<OrderRequestResponse>(message);
-                        Customer customer = response.Order.ClientInfo.FromDto();
-                        OrderSummary orderSummary = response.Order.FromDto();
-                        List<Entry> entries = response.Order.Entries.FromDto();
-
-                        _searchCustomers.Clear();
-                        _searchOrders.Clear();
-                        _searchEntries.Clear();
-                        _searchCustomers.Add(customer);
-                        _searchOrders.Add(orderSummary);
-
-                        foreach (Entry entry in entries)
+                    case "get_merchandises":
                         {
-                            _searchEntries.Add(entry);
+                            ProcessGetMerchandiseResponse(message);
+                            break;
                         }
-
-                        ShowInfoPopupWindow("Loaded order");
-                        break;
-                    }
-                case "save_order":
-                    {
-                        OrderRequestResponse response = JsonConvert.DeserializeObject<OrderRequestResponse>(message);
-                        string clientId = response.Order.ClientInfo.Id;
-                        CustomerId = clientId;
-                        _basketEntries.Clear();
-
-                        ShowInfoPopupWindow(clientId + " make order " + response.Order.Id + " on total value: " + response.Order.TotalBruttoPrice);
-                        break;
-                    }
-                case "subscription":
-                    {
-                        _subStatusBool = true;
-                        _subStatus = "ON";
-                        RaisePropertyChanged("SubStatus");
-                        break;
-                    }
-                case "unsubscription":
-                    {
-                        _subStatusBool = false;
-                        _subStatus = "OFF";
-                        RaisePropertyChanged("SubStatus");
-                        break;
-                    }
-                case "discount":
-                    {
-                        try
+                    case "get_order":
+                        {
+                            ProcessGetOrderResponse(message);
+                            break;
+                        }
+                    case "save_order":
+                        {
+                            ProcessSaveOrderResponse(message);
+                            break;
+                        }
+                    case "subscription":
+                        {
+                            ProcessSubscribeResponse();
+                            break;
+                        }
+                    case "unsubscription":
+                        {
+                            ProcessUnsubscribeResponse();
+                            break;
+                        }
+                    case "discount":
                         {
                             ProcessDiscountMessage(message);
-                        } catch (Exception e)
-                        {
-                            Debug.WriteLine("Discount error");
+                            break;
                         }
-                        break;
-                    }
+                }
             }
+            catch(Exception e)
+            {
+                ShowErrorPopupWindow("Error: " + e.Message);
+            }
+        }
+
+        private void ProcessGetCustomerResponse(string message)
+        {
+            GetCustomerResponse response = JsonConvert.DeserializeObject<GetCustomerResponse>(message);
+            CustomerDto customerDto = response.Customer;
+            Customer customer = customerDto.FromDto();
+            CustomerId = customer.Id;
+            CustomerName = customer.Name;
+            CustomerAddress = customer.Address;
+            CustomerPhone = customer.PhoneNumber.ToString();
+            CustomerNip = customer.Nip;
+            CustomerPesel = customer.Pesel;
+
+            ShowInfoPopupWindow("Loaded customer info");
+        }
+
+        private void ProcessGetMerchandiseResponse(string message)
+        {
+            GetMerchandisesResponse response = JsonConvert.DeserializeObject<GetMerchandisesResponse>(message);
+            List<MerchandiseDto> merchandisesDto = response.Merchandises;
+            List<Product> products = merchandisesDto.FromDto();
+            _productsForBasket.Clear();
+            foreach (Product product in products)
+            {
+                _productsForBasket.Add(product);
+            }
+            _productsForBasket = new ObservableCollection<Product>(products);
+
+            ShowInfoPopupWindow("Loaded product");
+        }
+
+        private void ProcessGetOrderResponse(string message)
+        {
+            OrderRequestResponse response = JsonConvert.DeserializeObject<OrderRequestResponse>(message);
+            Customer customer = response.Order.ClientInfo.FromDto();
+            OrderSummary orderSummary = response.Order.FromDto();
+            List<Entry> entries = response.Order.Entries.FromDto();
+
+            _searchCustomers.Clear();
+            _searchOrders.Clear();
+            _searchEntries.Clear();
+            _searchCustomers.Add(customer);
+            _searchOrders.Add(orderSummary);
+
+            foreach (Entry entry in entries)
+            {
+                _searchEntries.Add(entry);
+            }
+
+            ShowInfoPopupWindow("Loaded order");
+        }
+
+        private void ProcessSaveOrderResponse(string message)
+        {
+            OrderRequestResponse response = JsonConvert.DeserializeObject<OrderRequestResponse>(message);
+            string clientId = response.Order.ClientInfo.Id;
+            CustomerId = clientId;
+            _basketEntries.Clear();
+
+            ShowInfoPopupWindow(clientId + " make order " + response.Order.Id + " on total value: " + Math.Round(response.Order.TotalBruttoPrice, 2));
+        }
+
+        private void ProcessSubscribeResponse()
+        {
+            _subStatusBool = true;
+            _subStatus = "ON";
+            RaisePropertyChanged("SubStatus");
+
+            ShowInfoPopupWindow("Subscribed discounts !");
+        }
+
+        private void ProcessUnsubscribeResponse()
+        {
+            _subStatusBool = false;
+            _subStatus = "OFF";
+            RaisePropertyChanged("SubStatus");
+
+            ShowInfoPopupWindow("Unsubscribed discounts !");
         }
 
         private void ProcessDiscountMessage(string message)
@@ -403,47 +487,9 @@ namespace Presenation.ViewModel
             RaisePropertyChanged("ProductsForBasket");
             ShowInfoPopupWindow("Products have been updated. Discount percentage: " + Math.Round(response.discountEvent.Discount, 2).ToString());
         }
+        #endregion
 
-        public RelayCommand AddProductToBasketCommand
-        {
-            get; private set;
-        }
-
-        public RelayCommand RemoveProductFromBasketCommand
-        {
-            get; private set;
-        }
-
-        public RelayCommand ClearBasketCommand
-        {
-            get; private set;
-        }
-
-        public RelayCommand ConfirmBasketCommand
-        {
-            get; private set;
-        }
-
-        public RelayCommand SearchOrderCommand
-        {
-            get; private set;
-        }
-
-        public RelayCommand SearchCustomerCommand
-        {
-            get; private set;
-        }
-
-        public RelayCommand ConfirmCommand
-        {
-            get; private set;
-        }
-
-        public RelayCommand SubscriptionCommand
-        {
-            get; private set;
-        }
-
+        #region ButtonsAction
         public void AddProductToBasket()
         {
             
@@ -577,11 +623,13 @@ namespace Presenation.ViewModel
             }
             else
             {
-                _webSocketClient.UnSubscribeDiscount();
+                _webSocketClient.UnsubscribeDiscount();
             }
 
         }
+        #endregion
 
+        #region MessageLog
         internal Func<string, string, MessageBoxButton, MessageBoxImage, MessageBoxResult> MessageBoxShowDelegate { get; set; } = MessageBox.Show;
 
         private void ShowErrorPopupWindow(string mesg)
@@ -592,6 +640,12 @@ namespace Presenation.ViewModel
         private void ShowInfoPopupWindow(string mesg)
         {
             MessageBoxShowDelegate(mesg, "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        #endregion
+
+        public override void Dispose()
+        {
+            _webSocketClient.Dispose();
         }
     }
 }

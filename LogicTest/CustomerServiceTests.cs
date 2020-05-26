@@ -23,9 +23,9 @@ namespace LogicTest
         public async Task GetSaveCustomerTest()
         {
             CustomerService customerService = new CustomerService();
-            CustomerDto customerDto = new CustomerDto("0","Jan Kowalski", "Pierwszy 1/3", 123456789, "1234567890", "12345678900");
+            CustomerDto customerDto = new CustomerDto("","Jan Kowalski", "Pierwszy 1/3", 123456789, "1234567890", "12345678900");
             await customerService.SaveCustomer(customerDto);
-            CustomerDto gotCustomerDto = await customerService.GetCustomer("0");
+            CustomerDto gotCustomerDto = await customerService.GetCustomer("CLIENT_1");
             Assert.IsNotNull(gotCustomerDto);
         }
     }

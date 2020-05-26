@@ -41,6 +41,7 @@ namespace Server
             }
         }
 
+        #region MessagesProcessing
         private async void ProcessRequest(HttpListenerContext httpListenerContext)
         {
             WebSocketContext webSocketContext = null;
@@ -55,7 +56,7 @@ namespace Server
             {
                 httpListenerContext.Response.StatusCode = 500;
                 httpListenerContext.Response.Close();
-                Console.WriteLine("Wyjątek {0}", e);
+                Console.WriteLine("Exeption: {0}", e);
                 return;
             }
 
@@ -98,7 +99,7 @@ namespace Server
         private async Task<string> ProcessData(string rawData, string ipAddress, WebSocket webSocket)
         {
             WebMessageBase request = JsonConvert.DeserializeObject<WebMessageBase>(rawData);
-            Console.WriteLine("[{0}] Serwer otrzymał zapytanie: \"{1}\" od {2}, status: {3}", DateTime.Now.ToString("HH:mm:ss.fff"), request.Tag, ipAddress, request.Status);
+            Console.WriteLine("[{0}] Sever got request: \"{1}\" from {2}, status: {3}", DateTime.Now.ToString("HH:mm:ss.fff"), request.Tag, ipAddress, request.Status);
 
             string output = String.Empty;
             switch (request.Tag)
@@ -136,7 +137,7 @@ namespace Server
                 case "unsubscription":
                     {
                         WebMessageBase unSubRequest = JsonConvert.DeserializeObject<WebMessageBase>(rawData);
-                        output = await ProcessUnSubscriptionRequest(unSubRequest, webSocket);
+                        output = await ProcessUnsubscriptionRequest(unSubRequest, webSocket);
                         break;
                     }
             }
@@ -167,7 +168,7 @@ namespace Server
             {
                 WebMessageBase response = new WebMessageBase();
                 response.Status = RequestStatus.FAIL;
-                response.Message = "Get customer request error.";
+                response.Message = "Could not get customer.";
                 string result = JsonConvert.SerializeObject(response, Formatting.Indented);
                 return result;
             }
@@ -189,13 +190,13 @@ namespace Server
             {
                 WebMessageBase response = new WebMessageBase();
                 response.Status = RequestStatus.FAIL;
-                response.Message = "Subscription request error.";
+                response.Message = "Subscribe request error.";
                 string result = JsonConvert.SerializeObject(response, Formatting.Indented);
                 return result;
             }
         }
 
-        private async Task<string> ProcessUnSubscriptionRequest(WebMessageBase request, WebSocket webSocket)
+        private async Task<string> ProcessUnsubscriptionRequest(WebMessageBase request, WebSocket webSocket)
         {
             try
             {
@@ -210,7 +211,7 @@ namespace Server
                 
                 WebMessageBase response = new WebMessageBase("unsubscription");
                 response.Status = RequestStatus.SUCCESS;
-                response.Message = "Subsctipte request completed.";
+                response.Message = "Unsubscribe request completed.";
                 string result = JsonConvert.SerializeObject(response, Formatting.Indented);
                 return result;
 
@@ -219,7 +220,7 @@ namespace Server
             {
                 WebMessageBase response = new WebMessageBase();
                 response.Status = RequestStatus.FAIL;
-                response.Message = "Subsctipte request error.";
+                response.Message = "Unsubscribe request error.";
                 string result = JsonConvert.SerializeObject(response, Formatting.Indented);
                 return result;
             }
@@ -267,7 +268,7 @@ namespace Server
             {
                 WebMessageBase response = new WebMessageBase();
                 response.Status = RequestStatus.FAIL;
-                response.Message = "Get order request error.";
+                response.Message = "Could not get order !";
                 string result = JsonConvert.SerializeObject(response, Formatting.Indented);
                 return result;
             }
@@ -320,5 +321,6 @@ namespace Server
                 return result;
             }
         }
+        #endregion
     }
 }

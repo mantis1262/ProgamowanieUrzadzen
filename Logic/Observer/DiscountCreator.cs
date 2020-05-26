@@ -1,10 +1,8 @@
 ﻿using Logic.Dto;
 using Logic.Interfaces;
-using Logic.Observer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Logic.Observer
 {
@@ -30,7 +28,6 @@ namespace Logic.Observer
             }
             return new Unsubscriber(observers, observer);
         }
-
 
         public class Unsubscriber : IDisposable
         {

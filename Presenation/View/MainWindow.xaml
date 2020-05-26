@@ -125,11 +125,11 @@
                                 <GridViewColumn Header="Description" Width="130" DisplayMemberBinding="{Binding Description}"/>
                                 <GridViewColumn Header="Type" Width="60" DisplayMemberBinding="{Binding Type}"/>
                                 <GridViewColumn Header="Unit" Width="60" DisplayMemberBinding="{Binding Unit}"/>
-                                <GridViewColumn Header="Netto" Width="70" DisplayMemberBinding="{Binding NettoPrice}"/>
+                                <GridViewColumn Header="Netto" Width="70" DisplayMemberBinding="{Binding NettoPrice, StringFormat=F}"/>
                                 <GridViewColumn Header="Vat" Width="70" DisplayMemberBinding="{Binding Vat}"/>
-                                <GridViewColumn Header="Brutto" Width="70" DisplayMemberBinding="{Binding BruttoPrice}"/>
+                                <GridViewColumn Header="Brutto" Width="70" DisplayMemberBinding="{Binding BruttoPrice, StringFormat=F}"/>
                                 <GridViewColumn Header="Amount" Width="60" DisplayMemberBinding="{Binding Amount}"/>
-                                <GridViewColumn Header="Total brutto" Width="100" DisplayMemberBinding="{Binding TotalBruttoPrice}"/>
+                                <GridViewColumn Header="Total brutto" Width="100" DisplayMemberBinding="{Binding TotalBruttoPrice, StringFormat=F}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -138,7 +138,7 @@
                             <GridView>
                                 <GridViewColumn Header="ID" Width="100" DisplayMemberBinding="{Binding Id}"/>
                                 <GridViewColumn Header="Status" Width="150" DisplayMemberBinding="{Binding Status}"/>
-                                <GridViewColumn Header="Total brutto" Width="160" DisplayMemberBinding="{Binding TotalBrutto}"/>
+                                <GridViewColumn Header="Total brutto" Width="160" DisplayMemberBinding="{Binding TotalBrutto, StringFormat=F}"/>
                                 <GridViewColumn Header="Submitted" Width="190" DisplayMemberBinding="{Binding SubmittedDate}"/>
                                 <GridViewColumn Header="Delivered" Width="190" DisplayMemberBinding="{Binding DeliveredDate}"/>
                             </GridView>
