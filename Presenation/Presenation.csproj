@@ -122,11 +122,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Logic\Logic.csproj">
-      <Project>{2503070e-ae3f-41c0-9c2b-cca94387f207}</Project>
-      <Name>Logic</Name>
+    <ProjectReference Include="..\LogicClient\LogicClient.csproj">
+      <Project>{be437903-f19e-44f1-9b86-e49de0d76c00}</Project>
+      <Name>LogicClient</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

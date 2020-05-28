@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogicTest", "LogicTest\Logi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{EE7B514A-B3D6-4682-B3EE-EF8560F6B0DB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogicClient", "LogicClient\LogicClient.csproj", "{BE437903-F19E-44F1-9B86-E49DE0D76C00}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataClient", "DataClient\DataClient.csproj", "{201BA811-4532-4764-A848-D48C375F21FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{EE7B514A-B3D6-4682-B3EE-EF8560F6B0DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE7B514A-B3D6-4682-B3EE-EF8560F6B0DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE7B514A-B3D6-4682-B3EE-EF8560F6B0DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE437903-F19E-44F1-9B86-E49DE0D76C00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE437903-F19E-44F1-9B86-E49DE0D76C00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE437903-F19E-44F1-9B86-E49DE0D76C00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE437903-F19E-44F1-9B86-E49DE0D76C00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{201BA811-4532-4764-A848-D48C375F21FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{201BA811-4532-4764-A848-D48C375F21FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{201BA811-4532-4764-A848-D48C375F21FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{201BA811-4532-4764-A848-D48C375F21FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

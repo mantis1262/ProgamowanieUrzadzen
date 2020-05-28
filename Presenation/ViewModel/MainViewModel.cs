@@ -1,8 +1,6 @@
 ﻿using Logic;
 using Logic.Dto;
-using Logic.Observer;
 using Logic.Requests;
-using Logic.Services;
 using Presenation;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
