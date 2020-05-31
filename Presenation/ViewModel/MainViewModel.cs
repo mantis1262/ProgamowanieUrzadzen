@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Diagnostics;
 using System.Security.Policy;
+using Logic.Services;
 
 namespace Presenation.ViewModel
 {
@@ -41,7 +42,7 @@ namespace Presenation.ViewModel
         private ObservableCollection<Entry> _searchEntries;
         private ObservableCollection<Customer> _searchCustomers;
         private ObservableCollection<OrderSummary> _searchOrders;
-        private WebSocketClient _webSocketClient;
+        private ClientWebSocetServices _clientWebSocetServices;
         private bool _subStatusBool;
         private string _subStatus = "OFF";
         #endregion
@@ -301,10 +302,11 @@ namespace Presenation.ViewModel
             SearchOrderCommand = new RelayCommand(SearchOrder);
             SubscriptionCommand = new RelayCommand(SubscriptionStatusChange);
 
-            _webSocketClient = new WebSocketClient();
-            _webSocketClient.OnMessage.Subscribe(ReceiveMessage);
-            _webSocketClient.Connect("ws://localhost/sklep/");
-            _webSocketClient.GetMerchandisesRequest();
+
+            _clientWebSocetServices = new ClientWebSocetServices();
+            _clientWebSocetServices.WebSocketClients.OnMessage.Subscribe(ReceiveMessage);
+            _clientWebSocetServices.WebSocketClients.Connect("ws://localhost/sklep/");
+            _clientWebSocetServices.GetMerchandisesRequest();
         }
         #endregion
 
@@ -577,11 +579,11 @@ namespace Presenation.ViewModel
                 {
                     Customer customer = new Customer(_customerId, _customerName, _customerAddress, phone, _customerNip, _customerPesel);
                     List<Entry> basketEntries = _basketEntries.ToList();
-                    List<EntryDto> basketEntriesDto = basketEntries.ToDto();
+                    List<EntryDto> basketEntriesDto = Mapper.ToDto(basketEntries);
                     OrderSummary orderSummary = new OrderSummary();
                     orderSummary.TotalBrutto = CalcHelper.GetTotalBrutto(basketEntriesDto);
                     OrderDto orderDto = orderSummary.ToDto(customer, basketEntries);
-                    _webSocketClient.MakeOrderRequest(orderDto);
+                    _clientWebSocetServices.MakeOrderRequest(orderDto);
                 }
             }
             else
@@ -594,7 +596,7 @@ namespace Presenation.ViewModel
         {
             if (!string.IsNullOrEmpty(_customerId) && !string.IsNullOrWhiteSpace(_customerId))
             {
-                _webSocketClient.GetCustomerRequest(_customerId);
+                _clientWebSocetServices.GetCustomerRequest(_customerId);
             }
         }
 
@@ -604,7 +606,7 @@ namespace Presenation.ViewModel
             {
                 if(!string.IsNullOrEmpty(_searchOrderCode) && !string.IsNullOrWhiteSpace(_searchOrderCode))
                 {
-                    _webSocketClient.GetOrderRequest(_searchOrderCode);
+                    _clientWebSocetServices.GetOrderRequest(_searchOrderCode);
                 }
             }
             catch(Exception e)
@@ -617,11 +619,11 @@ namespace Presenation.ViewModel
         {
             if (!_subStatusBool)
             {
-                _webSocketClient.SubscribeDiscount();
+                _clientWebSocetServices.SubscribeDiscount();
             }
             else
             {
-                _webSocketClient.UnsubscribeDiscount();
+                _clientWebSocetServices.UnsubscribeDiscount();
             }
 
         }
@@ -643,7 +645,7 @@ namespace Presenation.ViewModel
 
         public override void Dispose()
         {
-            _webSocketClient.Dispose();
+            _clientWebSocetServices.WebSocketClients.Dispose();
         }
     }
 }
