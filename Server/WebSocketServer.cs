@@ -29,6 +29,11 @@ namespace Server
 
             _orderService = new OrderService(true);
 
+            await ReqestLoop(server);
+        }
+
+        public async Task ReqestLoop(HttpListener server)
+        {
             while (true)
             {
                 HttpListenerContext httpListenerContext = await server.GetContextAsync();
