@@ -8,21 +8,29 @@ using Logic.Dto;
 using Logic.Observer;
 using System.Reactive.Linq;
 using Logic.Interfaces;
+using Moq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace LogicTest
 {
     [TestClass]
     public class CyclicDiscountTests
     {
-        [TestMethod]
-        public void TimerTest()
+        Mock<DiscountCreator> _discountCreator;
+        CyclicDiscountService _timer;
+
+        [TestInitialize]
+        public void InitTest()
         {
-            IMerchandiseService merchandiseService = new MerchandiseService();
-            DiscountCreator discountCreator = new DiscountCreator(merchandiseService);
-            CyclicDiscountService _timer = new CyclicDiscountService(10, TimeSpan.FromSeconds(1), discountCreator);
-            
-            Assert.IsNotNull(merchandiseService);
-            Assert.IsNotNull(discountCreator);
+            Mock<IMerchandiseService> merchandiseService = new Mock<IMerchandiseService>();
+
+             _discountCreator = new Mock<DiscountCreator>(merchandiseService.Object);
+             _timer = new CyclicDiscountService(10, TimeSpan.FromSeconds(1), _discountCreator.Object);
+        }
+        [TestMethod]
+        public void CreateTest()
+        {
+            Assert.IsNotNull(_discountCreator);
             Assert.IsNotNull(_timer);
         }
     }
