@@ -12,7 +12,7 @@ using System.Windows;
 
 namespace Data
 {
-    public class WebSocketClient: IDisposable
+    public class WebSocketClient : IDisposable
     {
         private UTF8Encoding _encoding = new UTF8Encoding();
         private ClientWebSocket _webSocket = null;
