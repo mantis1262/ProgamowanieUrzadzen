@@ -79,7 +79,6 @@
     <Compile Include="Model\OrderSummary.cs" />
     <Compile Include="Model\Product.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\WebSocketClient.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -122,11 +121,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Logic\Logic.csproj">
-      <Project>{2503070e-ae3f-41c0-9c2b-cca94387f207}</Project>
-      <Name>Logic</Name>
+    <ProjectReference Include="..\DataClient\DataClient.csproj">
+      <Project>{201BA811-4532-4764-A848-D48C375F21FC}</Project>
+      <Name>DataClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LogicClient\LogicClient.csproj">
+      <Project>{be437903-f19e-44f1-9b86-e49de0d76c00}</Project>
+      <Name>LogicClient</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
