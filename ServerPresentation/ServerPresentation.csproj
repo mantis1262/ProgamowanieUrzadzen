@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{EE7B514A-B3D6-4682-B3EE-EF8560F6B0DB}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Server</RootNamespace>
-    <AssemblyName>Server</AssemblyName>
+    <RootNamespace>ServerPresentation</RootNamespace>
+    <AssemblyName>ServerPresentation</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -76,9 +76,19 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommunicationManager.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Mapper.cs" />
+    <Compile Include="MessageResolver.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Subscription.cs" />
+    <Compile Include="WebSocketConnection.cs" />
     <Compile Include="WebSocketServer.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -98,10 +108,20 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Communication\Communication.csproj">
+      <Project>{59b18e7a-fb83-4dae-9b9c-371b9c11c420}</Project>
+      <Name>Communication</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ServerLogic\ServerLogic.csproj">
       <Project>{1cd70c34-559b-46c3-a250-25bd8b822cea}</Project>
       <Name>ServerLogic</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ServerLogic.Requests
+namespace Communication.Model
 {
-    public enum RequestStatus
+    public enum MessageStatus
     {
         SUCCESS,
         FAIL

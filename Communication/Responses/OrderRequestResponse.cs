@@ -1,22 +1,23 @@
-﻿using ServerLogic.Dto;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Communication;
+using Communication.Model;
 
-namespace ServerLogic.Requests
+namespace Communication.Responses
 {
     [Serializable]
     public class OrderRequestResponse : WebMessageBase
     {
         [JsonProperty("order")]
-        public OrderDto Order;
+        public OrderModel Order;
 
         public OrderRequestResponse() : base()
         {
         }
 
-        public OrderRequestResponse(string tag, OrderDto order) : base(tag)
+        public OrderRequestResponse(string tag, OrderModel order) : base(tag)
         {
             Order = order;
         }

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ServerLogic.Requests
+namespace Communication.Model
 {
     [Serializable]
     public class WebMessageBase
@@ -12,7 +12,7 @@ namespace ServerLogic.Requests
         public string Tag { get; set; }
 
         [JsonProperty("status")]
-        public RequestStatus Status = RequestStatus.SUCCESS;
+        public MessageStatus Status = MessageStatus.SUCCESS;
 
         [JsonProperty("message")]
         public string Message = "";

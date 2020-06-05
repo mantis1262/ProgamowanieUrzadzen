@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ServerLogic.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,11 +9,22 @@ namespace ServerPresentation
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            WebSocketServer webSocketServer = new WebSocketServer();
-            webSocketServer.Start("http://localhost:80/sklep/");
-            Console.ReadKey();
+            Action<string> logger = message => Console.WriteLine(message);
+
+            try
+            {
+                using (CommunicationManager communicationManager = new CommunicationManager(Int32.Parse(Properties.Resources.PortNumber), new OrderService(true), logger))
+                {
+                    await communicationManager.InitServerAsync();
+                    Console.ReadLine();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception thrown by the application: {ex}");
+            }
         }
     }
 }
