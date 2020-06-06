@@ -65,7 +65,6 @@ namespace ClientData.Communication
                         count += result.Count;
                     }
                     string _message = Encoding.UTF8.GetString(buffer, 0, count);
-                    _log(_message);
                     OnMessage?.Invoke(_message);
                 }
             }

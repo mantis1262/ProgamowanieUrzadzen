@@ -172,7 +172,7 @@ namespace ServerPresentation
 
                 if (clientDto == null)
                 {
-                    WebMessageBase response = new WebMessageBase("save_order");
+                    WebMessageBase response = new WebMessageBase("make_order");
                     response.Status = MessageStatus.FAIL;
                     response.Message = "Client with ID: " + clientID + " not found";
                     result = JsonConvert.SerializeObject(response, Formatting.Indented);
@@ -184,14 +184,14 @@ namespace ServerPresentation
 
                 if (orderDto == null)
                 {
-                    WebMessageBase response = new WebMessageBase("save_order");
+                    WebMessageBase response = new WebMessageBase("make_order");
                     response.Status = MessageStatus.FAIL;
                     response.Message = "Order with ID: " + request.Order.Id + " not found";
                     result = JsonConvert.SerializeObject(response, Formatting.Indented);
                     return result;
                 }
 
-                OrderRequestResponse orderResponse = new OrderRequestResponse("save_order", orderDto.FromDto());
+                OrderRequestResponse orderResponse = new OrderRequestResponse("make_order", orderDto.FromDto());
                 result = JsonConvert.SerializeObject(orderResponse, Formatting.Indented);
                 return result;
             }

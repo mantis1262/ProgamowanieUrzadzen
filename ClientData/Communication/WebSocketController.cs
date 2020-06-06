@@ -106,6 +106,11 @@ namespace ClientData.Communication
 
                 switch (request.Tag)
                 {
+                    case "connection_established":
+                        {
+                            await Task.Factory.StartNew(() => ProcessConnectionResponse());
+                            break;
+                        }
                     case "get_customer":
                         {
                             await ProcessGetCustomerResponse(message);
@@ -121,19 +126,19 @@ namespace ClientData.Communication
                             await  ProcessGetOrderResponse(message);
                             break;
                         }
-                    case "save_order":
+                    case "make_order":
                         {
-                            await  ProcessSaveOrderResponse(message);
+                            await Task.Factory.StartNew(() => ProcessSaveOrderResponse(message));
                             break;
                         }
                     case "subscription":
                         {
-                            await  ProcessSubscribeResponse();
+                            await Task.Factory.StartNew(() => ProcessSubscribeResponse());
                             break;
                         }
                     case "unsubscription":
                         {
-                            await  ProcessUnsubscribeResponse();
+                            await Task.Factory.StartNew(() => ProcessUnsubscribeResponse());
                             break;
                         }
                     case "discount":
@@ -147,6 +152,11 @@ namespace ClientData.Communication
             {
                 _log("Error: " + e.Message);
             }
+        }
+
+        private void ProcessConnectionResponse()
+        {
+            _messageChain.OnNext("connection_established");
         }
 
         private async Task ProcessGetCustomerResponse(string message)
@@ -175,20 +185,20 @@ namespace ClientData.Communication
             _messageChain.OnNext("get_order");
         }
 
-        private async Task ProcessSaveOrderResponse(string message)
+        private void ProcessSaveOrderResponse(string message)
         {
             OrderRequestResponse response = JsonConvert.DeserializeObject<OrderRequestResponse>(message);
             string clientId = response.Order.ClientInfo.Id;
             string orderId = response.Order.Id;
-            _messageChain.OnNext("save_order:");
+            _messageChain.OnNext("make_order:" + clientId + ":" + orderId);
         }
 
-        private async Task ProcessSubscribeResponse()
+        private void ProcessSubscribeResponse()
         {
             
         }
 
-        private async Task ProcessUnsubscribeResponse()
+        private void ProcessUnsubscribeResponse()
         {
             
         }

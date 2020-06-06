@@ -10,8 +10,7 @@ namespace ClientLogicTests
         [TestMethod]
         public void CreateClientWebSocketServicesTest()
         {
-            ClientWebSocetServices webSocetServices = new ClientWebSocetServices();
-            Assert.IsNotNull(webSocetServices);
+            
         }
     }
 }

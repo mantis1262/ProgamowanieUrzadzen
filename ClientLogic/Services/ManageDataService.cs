@@ -23,17 +23,17 @@ namespace ClientLogic.Services
         public ManageDataService(Action<string> logger, string uri)
         {
             _dataRepository = new Repository();
-            communicationService = new CommunicationService(_dataRepository, _log, uri, messageChain);
             _log = logger;
             messageChain = new Subject<string>();
+            communicationService = new CommunicationService(_dataRepository, _log, uri, messageChain);
         }
 
         public ManageDataService(IRepository dataRepository, Action<string> logger, string uri)
         {
             _dataRepository = dataRepository;
+            messageChain = new Subject<string>();
             communicationService = new CommunicationService(_dataRepository, _log, uri, messageChain);
             _log = logger;
-            messageChain = new Subject<string>();
         }
 
         public async Task StartServer()

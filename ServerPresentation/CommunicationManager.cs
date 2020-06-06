@@ -1,4 +1,6 @@
-﻿using ServerLogic.Services;
+﻿using Communication.Model;
+using Newtonsoft.Json;
+using ServerLogic.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +41,9 @@ namespace ServerPresentation
             _sockets.Add(ws);
             InitMessageHandler(ws);
             InitErrorHandler(ws);
-            await WriteAsync(ws, "Connected");
+            WebMessageBase response = new WebMessageBase("connection_established");
+            string result = JsonConvert.SerializeObject(response, Formatting.Indented);
+            await WriteAsync(ws, result);
         }
 
         private void InitErrorHandler(WebSocketConnection ws)

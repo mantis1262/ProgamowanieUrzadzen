@@ -300,8 +300,8 @@ namespace ClientPresentation.ViewModel
             SearchOrderCommand = new RelayCommand(SearchOrder);
             SubscriptionCommand = new RelayCommand(SubscriptionStatusChange);
 
-            _manageDataService = new ManageDataService(ProcessLog, _uriPeer);
-            _manageDataService.messageChain.Subscribe(ReceiveMessage);
+            _manageDataService = new ManageDataService((mesg) => Logs.ProcessLog(mesg), _uriPeer);
+            _manageDataService.messageChain.Subscribe(async (mesg) => await ReceiveMessage(mesg));
             Task.Factory.StartNew(async () => 
             {
                 await _manageDataService.communicationService.CreateConnection();
@@ -311,7 +311,7 @@ namespace ClientPresentation.ViewModel
         #endregion
 
         #region MessagesProcessing
-        public void ReceiveMessage(string message)
+        public async Task ReceiveMessage(string message)
         {
             try
             {
@@ -320,52 +320,57 @@ namespace ClientPresentation.ViewModel
 
                 if (message.StartsWith("ERROR:"))
                 {
-                    ProcessLog(message);
+                    Logs.ProcessLog(message);
                     return;
                 }
 
                 switch (message)
                 {
+                    case "connection_established":
+                        {
+                            await Task.Factory.StartNew(() => Logs.ProcessLog("Connection established"));
+                            break;
+                        }
                     case "get_customer":
                         {
-                            Task.Factory.StartNew(async () => await RefreshCustomerMesg());
+                            await RefreshCustomerMesg();
                             break;
                         }
                     case "get_merchandises":
                         {
-                            Task.Factory.StartNew(async () => await RefreshMerchandisesMesg());
+                            await RefreshMerchandisesMesg();
                             break;
                         }
                     case "get_order":
                         {
-                            Task.Factory.StartNew(async () => await RefreshOrderMesg());
+                            await RefreshOrderMesg();
                             break;
                         }
                     case "subscription":
                         {
-                            Task.Factory.StartNew(() => SubscribeMesg());
+                            await Task.Factory.StartNew(() => SubscribeMesg());
                             break;
                         }
                     case "unsubscription":
                         {
-                            Task.Factory.StartNew(() => UnsubscribeMesg());
+                            await Task.Factory.StartNew(() => UnsubscribeMesg());
                             break;
                         }
                 }
 
-                if (message.StartsWith("save_order"))
+                if (message.StartsWith("make_order"))
                 {
-                    Task.Factory.StartNew(() => SaveOrderMesg(message));
+                    await Task.Factory.StartNew(() => SaveOrderMesg(message));
                 }
 
                 if (message.StartsWith("discount"))
                 {
-                    Task.Factory.StartNew(() => ProcessDiscountMessage(message));
+                    await Task.Factory.StartNew(() => ProcessDiscountMessage(message));
                 }
             }
             catch(Exception e)
             {
-                ShowErrorPopupWindow("Error: " + e.Message);
+                Logs.ProcessLog("ERROR: " + e.Message);
             }
         }
 
@@ -380,20 +385,20 @@ namespace ClientPresentation.ViewModel
             CustomerNip = customer.Nip;
             CustomerPesel = customer.Pesel;
 
-            ShowInfoPopupWindow("Loaded customer info");
+            Logs.ProcessLog("Loaded customer info");
         }
 
         private async Task RefreshMerchandisesMesg()
         {
             IList<MerchandiseDto> merchandisesDto = await _manageDataService.GetMerchandises();
             List<Product> products = merchandisesDto.ToList().FromDto();
-            ProductsForBasket.Clear();
+            _productsForBasket = new ObservableCollection<Product>();
             foreach (Product product in products)
             {
                 ProductsForBasket.Add(product);
             }
-
-            ShowInfoPopupWindow("Loaded product");
+            RaisePropertyChanged("ProductsForBasket");
+            Logs.ProcessLog("Loaded product");
         }
 
         private async Task RefreshOrderMesg()
@@ -414,7 +419,7 @@ namespace ClientPresentation.ViewModel
                 _searchEntries.Add(entry);
             }
 
-            ShowInfoPopupWindow("Loaded order");
+            Logs.ProcessLog("Loaded order");
         }
 
         private void SaveOrderMesg(string message)
@@ -423,9 +428,8 @@ namespace ClientPresentation.ViewModel
             string clientId = parts[1];
             string orderId = parts[2];
             CustomerId = clientId;
-            _basketEntries.Clear();
 
-            ShowInfoPopupWindow(clientId + " make order " + orderId);
+            Logs.ProcessLog(clientId + " make order " + orderId);
         }
 
         private void SubscribeMesg()
@@ -434,7 +438,7 @@ namespace ClientPresentation.ViewModel
             _subStatusLabel = "ON";
             RaisePropertyChanged("SubStatus");
 
-            ShowInfoPopupWindow("Subscribed discounts !");
+            Logs.ProcessLog("Subscribed discounts !");
         }
 
         private void UnsubscribeMesg()
@@ -443,7 +447,7 @@ namespace ClientPresentation.ViewModel
             _subStatusLabel = "OFF";
             RaisePropertyChanged("SubStatus");
 
-            ShowInfoPopupWindow("Unsubscribed discounts !");
+            Logs.ProcessLog("Unsubscribed discounts !");
         }
 
         private async Task ProcessDiscountMessage(string message)
@@ -487,7 +491,7 @@ namespace ClientPresentation.ViewModel
                 TotalBruttoPrice = totalBrutto;
         }
 
-            ShowInfoPopupWindow("Products have been updated. Discount percentage: " + Math.Round(discount, 2).ToString());
+            Logs.ProcessLog("Products have been updated. Discount percentage: " + Math.Round(discount, 2).ToString());
         }
         #endregion
 
@@ -502,14 +506,14 @@ namespace ClientPresentation.ViewModel
                 string input = Interaction.InputBox("Enter product amount", "Amount", "");
                 if (!int.TryParse(input, out int amountNum) )
                 {
-                    ShowErrorPopupWindow("Amount cannot be empty");
+                    Logs.ProcessLog("Amount cannot be empty");
                 }
                 else
                 {
                     if (amountNum > 0)
                     {
                         int entryNum = 1;
-                        if (entries.Count > 1)
+                        if (entries.Count >= 1)
                             entryNum = entries.Max(entry => entry.Id) + 1;
 
                         if (foundEntry == null)
@@ -590,7 +594,7 @@ namespace ClientPresentation.ViewModel
             }
             else
             {
-                ShowInfoPopupWindow("Basket cannot be empty");
+                Logs.ProcessLog("Basket cannot be empty");
             }
         }
 
@@ -613,7 +617,7 @@ namespace ClientPresentation.ViewModel
             }
             catch(Exception e)
             {
-                ShowErrorPopupWindow(e.Message);
+                Logs.ProcessLog(e.Message);
             }
         }
 
@@ -628,33 +632,6 @@ namespace ClientPresentation.ViewModel
                 Task.Factory.StartNew(async () => await _manageDataService.communicationService.AskForUnsubscription());
             }
 
-        }
-        #endregion
-
-        #region MessageLog
-        public void ProcessLog(string message)
-        {
-            string errorPrefix = "ERROR:";
-            if (message.StartsWith(errorPrefix))
-            {
-                ShowErrorPopupWindow(message.Substring(errorPrefix.Length));
-            }
-            else
-            {
-                ShowInfoPopupWindow(message);
-            }
-        }
-
-        internal Func<string, string, MessageBoxButton, MessageBoxImage, MessageBoxResult> MessageBoxShowDelegate { get; set; } = MessageBox.Show;
-
-        private void ShowErrorPopupWindow(string mesg)
-        {
-            MessageBoxShowDelegate(mesg, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-
-        private void ShowInfoPopupWindow(string mesg)
-        {
-            MessageBoxShowDelegate(mesg, "Info", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         #endregion
     }

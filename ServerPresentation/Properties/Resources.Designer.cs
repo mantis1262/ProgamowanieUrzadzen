@@ -61,7 +61,7 @@ namespace ServerPresentation.Properties {
         }
         
         /// <summary>
-        /// Wyszukuje zlokalizowany ciąg podobny do ciągu 80.
+        /// Wyszukuje zlokalizowany ciąg podobny do ciągu 8081.
         /// </summary>
         internal static string PortNumber {
             get {
