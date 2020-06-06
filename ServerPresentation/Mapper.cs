@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Communication;
 using Communication.Model;
+using ServerLogic;
 using ServerLogic.Dto;
 
 namespace ServerPresentation
@@ -57,7 +58,7 @@ namespace ServerPresentation
                     entryDto.Merchandise.ToDto(),
                     entryDto.Amount,
                     entryDto.BruttoPrice,
-                    entryDto.TotalBruttoPrice
+                    CalcHelper.GetTotalBrutto(entryDto.BruttoPrice, entryDto.Amount)
                 );
         }
 
@@ -80,7 +81,7 @@ namespace ServerPresentation
                     orderModel.ClientInfo.ToDto(),
                     orderModel.Entries.ToDto(),
                     orderModel.Status,
-                    orderModel.TotalBruttoPrice,
+                    CalcHelper.GetTotalBrutto(orderModel.Entries),
                     orderModel.AcceptanceDate,
                     orderModel.DeliveringDate
                 );
@@ -131,8 +132,7 @@ namespace ServerPresentation
                     entryDto.Id,
                     entryDto.Merchandise.FromDto(),
                     entryDto.Amount,
-                    entryDto.BruttoPrice,
-                    entryDto.TotalBruttoPrice
+                    entryDto.BruttoPrice
                 );
         }
 
@@ -155,7 +155,6 @@ namespace ServerPresentation
                     orderDto.ClientInfo.FromDto(),
                     orderDto.Entries.FromDto(),
                     orderDto.Status,
-                    orderDto.TotalBruttoPrice,
                     orderDto.AcceptanceDate,
                     orderDto.DeliveringDate
                 );

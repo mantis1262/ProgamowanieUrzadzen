@@ -1,15 +1,17 @@
-﻿using System;
+﻿using ClientData.Model;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace ClientData.Interfaces
 {
-    public interface IRepository<T>
+    public interface IRepository
     {
-        IEnumerable<T> Get();
-        T Get(string id);
-        void Add(T entity);
-        void Delete(string id);
-        void Update(string id, T entity);
+        Customer GetCurrentCustomer();
+        IList<Merchandise> GetMerchandises();
+        Order GetCurrentOrder();
+        void RefreshCurrentCustomer(Customer customer);
+        void RefreshMerchandises(IList<Merchandise> merchandises);
+        void RefreshCurrentOrder(Order order);
     }
 }

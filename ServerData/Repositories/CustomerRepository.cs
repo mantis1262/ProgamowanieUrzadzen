@@ -14,6 +14,7 @@ namespace ServerData.Repositories
         {
             _dataContext = new DataContext();
         }
+
         public CustomerRepository(DataContext dataContext)
         {
             _dataContext = dataContext;

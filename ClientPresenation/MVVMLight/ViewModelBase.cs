@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace ClientPresentation
 {
-  internal class ViewModelBase : INotifyPropertyChanged, IDisposable
+  internal class ViewModelBase : INotifyPropertyChanged
   {
     #region INotifyPropertyChanged
     public event PropertyChangedEventHandler PropertyChanged;
@@ -23,7 +23,5 @@ namespace ClientPresentation
       this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
     #endregion
-
-    public virtual void Dispose() { }
   }
 }
