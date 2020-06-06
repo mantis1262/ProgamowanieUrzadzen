@@ -7,6 +7,7 @@ using ServerLogic.Dto;
 using ServerLogic.Interfaces;
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace ServerLogic.Services
 {
@@ -22,8 +23,6 @@ namespace ServerLogic.Services
         public ICustomerService CustomerService => _customerService;
 
         public IMerchandiseService MerchandiseService => _merchandiseService;
-
-        public CyclicDiscountService CyclicDiscountService => _cyclicDiscountService;
 
         public OrderService()
         {
@@ -124,6 +123,21 @@ namespace ServerLogic.Services
                     }
                 }
             }); 
+        }
+
+        public async Task<IDisposable> Subscribe(IObserver<DiscountEvent> observer)
+        {
+            IDisposable result;
+            await Task.Factory.StartNew(() => 
+            {
+                result = _cyclicDiscountService.Provider.Subscribe(observer);
+            });
+            return _cyclicDiscountService.Provider.Subscribe(observer);
+        }
+
+        public async Task<IList<IObserver<DiscountEvent>>> GetSubscribers()
+        {
+            return await Task.Factory.StartNew(() => _cyclicDiscountService.Provider.Observers);
         }
     }
 }

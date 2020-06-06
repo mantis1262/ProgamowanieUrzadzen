@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Communication.Responses;
 using System.Net.WebSockets;
+using ServerLogic.Observer;
 
 namespace ServerPresentation
 {
@@ -210,7 +211,7 @@ namespace ServerPresentation
             try
             {
                 Subscription subscription = new Subscription(webSocketConnections, _log);
-                subscription.Unsubscriber = _orderService.CyclicDiscountService.Provider.Subscribe(subscription);
+                subscription.Unsubscriber = await _orderService.Subscribe(subscription);
                 WebMessageBase response = new WebMessageBase("subscription");
                 response.Status = MessageStatus.SUCCESS;
                 response.Message = "Subscription request completed.";
@@ -233,7 +234,8 @@ namespace ServerPresentation
         {
             try
             {
-                foreach (Subscription subscription in _orderService.CyclicDiscountService.Provider.Observers)
+                IList<IObserver<DiscountEvent>> subs = await _orderService.GetSubscribers();
+                foreach (Subscription subscription in subs)
                 {
                     if (subscription.Websocket.Equals(webSocketConnection))
                     {
