@@ -29,7 +29,9 @@ namespace ServerLogic.Services
         public async Task<CustomerDto> GetCustomer(string id)
         {
             Customer customer = await Task.Factory.StartNew(() => _customerRepository.Get(id));
-            return customer.ToDto();
+            if (customer != null)
+                return customer.ToDto();
+            else return null;
         }
 
         public async Task<string> SaveCustomer(CustomerDto customer)
