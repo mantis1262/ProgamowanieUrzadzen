@@ -15,6 +15,7 @@ using System.Windows;
 using System.Diagnostics;
 using System.Security.Policy;
 using ClientLogic.Services;
+using System.Threading;
 
 namespace ClientPresentation.ViewModel
 {
@@ -43,6 +44,8 @@ namespace ClientPresentation.ViewModel
         private bool _subStatusBool;
         private string _subStatusLabel = "OFF";
         private string _uriPeer = "ws://localhost:8081/";
+        private SynchronizationContext context;
+
         #endregion
 
         #region Properties
@@ -283,6 +286,7 @@ namespace ClientPresentation.ViewModel
         #region Constructor
         public MainViewModel()
         {
+            context = SynchronizationContext.Current;
             _currentBasketProduct = null;
             _currentBasketEntry = null;
             _currentSearchCustomer = null;
@@ -365,7 +369,7 @@ namespace ClientPresentation.ViewModel
 
                 if (message.StartsWith("discount"))
                 {
-                    await Task.Factory.StartNew(() => ProcessDiscountMessage(message));
+                    await ProcessDiscountMessage(message);
                 }
             }
             catch(Exception e)
@@ -453,18 +457,19 @@ namespace ClientPresentation.ViewModel
         private async Task ProcessDiscountMessage(string message)
         {
             IList<MerchandiseDto> merchandisesDto = await _manageDataService.GetMerchandises();
-            List<Product> products = merchandisesDto.ToList().FromDto();
-            ProductsForBasket.Clear();
+             List<Product> products = merchandisesDto.ToList().FromDto();
+            
+           context.Send(x => ProductsForBasket.Clear(), null);
 
             foreach (Product product in products)
             {
-                ProductsForBasket.Add(product);
+                context.Send(x => ProductsForBasket.Add(product), null);
             }
 
             if(BasketEntries.Count > 0)
             {
                 List<Entry> temp = BasketEntries.ToList<Entry>();
-                BasketEntries.Clear();
+                context.Send(x=>BasketEntries.Clear(),null);
 
                 foreach (Entry entry in temp)
                 {
@@ -478,14 +483,14 @@ namespace ClientPresentation.ViewModel
                             break;
                         }
                     }
-                    BasketEntries.Add(entry);
+                    context.Send(x => BasketEntries.Add(entry), null) ;
                 }
                 double totalBrutto = 0;
                 foreach (Entry entry in _basketEntries)
                 {
                     totalBrutto += entry.TotalBruttoPrice;
                 }
-                TotalBruttoPrice = totalBrutto;
+                context.Send(x=>TotalBruttoPrice = totalBrutto,null);
         }
 
             RaisePropertyChanged("BasketEntries");
