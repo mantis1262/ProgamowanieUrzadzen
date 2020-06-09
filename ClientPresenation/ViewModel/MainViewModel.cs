@@ -412,17 +412,19 @@ namespace ClientPresentation.ViewModel
             OrderSummary orderSummary = orderDto.FromDto();
             List<Entry> entries = orderDto.Entries.FromDto();
 
-            _searchCustomers.Clear();
-            _searchOrders.Clear();
-            _searchEntries.Clear();
-            _searchCustomers.Add(customer);
-            _searchOrders.Add(orderSummary);
+            context.OperationStarted();
+            context.Send(x => _searchCustomers.Clear(), null) ;
+            context.Send(x => _searchOrders.Clear(),null);
+            context.Send(x => _searchEntries.Clear(), null);
+            context.Send(x => _searchCustomers.Add(customer), null);
+            context.Send(x => _searchOrders.Add(orderSummary), null);
 
             foreach (Entry entry in entries)
             {
-                _searchEntries.Add(entry);
+                context.Send(x => _searchEntries.Add(entry),null);
             }
 
+            context.OperationCompleted();
             Logs.ProcessLog("Loaded order");
         }
 
@@ -458,7 +460,7 @@ namespace ClientPresentation.ViewModel
         {
             IList<MerchandiseDto> merchandisesDto = await _manageDataService.GetMerchandises();
              List<Product> products = merchandisesDto.ToList().FromDto();
-            
+            context.OperationStarted();
            context.Send(x => ProductsForBasket.Clear(), null);
 
             foreach (Product product in products)
@@ -491,10 +493,13 @@ namespace ClientPresentation.ViewModel
                     totalBrutto += entry.TotalBruttoPrice;
                 }
                 context.Send(x=>TotalBruttoPrice = totalBrutto,null);
-        }
+            }
 
             RaisePropertyChanged("BasketEntries");
             RaisePropertyChanged("ProductsForBasket");
+
+            context.OperationStarted();
+
 
             Logs.ProcessLog("Products have been updated. " + message );
         }
