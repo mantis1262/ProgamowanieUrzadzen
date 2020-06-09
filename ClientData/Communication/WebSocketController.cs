@@ -195,12 +195,12 @@ namespace ClientData.Communication
 
         private void ProcessSubscribeResponse()
         {
-            
+            _messageChain.OnNext("subscription");
         }
 
         private void ProcessUnsubscribeResponse()
         {
-            
+            _messageChain.OnNext("unsubscription");
         }
 
         private async Task ProcessDiscountMessage(string message)
@@ -209,6 +209,7 @@ namespace ClientData.Communication
             double discount = response.discountData.Discount;
             List<Merchandise> responseProducts = response.discountData.Merchandises.FromCommModel();
             await Task.Factory.StartNew(() => _repository.RefreshMerchandises(responseProducts));
+            _messageChain.OnNext("discount:" + discount);
         }
         #endregion
     }

@@ -452,9 +452,6 @@ namespace ClientPresentation.ViewModel
 
         private async Task ProcessDiscountMessage(string message)
         {
-            string mesgPrefix = "discount:";
-            string discountText = message.Substring(mesgPrefix.Length);
-            double.TryParse(discountText, out double discount);
             IList<MerchandiseDto> merchandisesDto = await _manageDataService.GetMerchandises();
             List<Product> products = merchandisesDto.ToList().FromDto();
             ProductsForBasket.Clear();
@@ -491,7 +488,10 @@ namespace ClientPresentation.ViewModel
                 TotalBruttoPrice = totalBrutto;
         }
 
-            Logs.ProcessLog("Products have been updated. Discount percentage: " + Math.Round(discount, 2).ToString());
+            RaisePropertyChanged("BasketEntries");
+            RaisePropertyChanged("ProductsForBasket");
+
+            Logs.ProcessLog("Products have been updated. " + message );
         }
         #endregion
 
