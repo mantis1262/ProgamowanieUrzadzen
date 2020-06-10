@@ -107,6 +107,7 @@ namespace ServerPresentation
                     catch (Exception e)
                     {
                         _log($"An error occured on server: {e.Message}");
+                        break;
                     }
                 }
             }
