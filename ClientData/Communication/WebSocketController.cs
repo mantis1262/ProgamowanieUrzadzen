@@ -209,7 +209,7 @@ namespace ClientData.Communication
             double discount = response.discountData.Discount;
             List<Merchandise> responseProducts = response.discountData.Merchandises.FromCommModel();
             await Task.Factory.StartNew(() => _repository.RefreshMerchandises(responseProducts));
-            _messageChain.OnNext("discount:" + discount);
+            _messageChain.OnNext("discount: " + Math.Round(discount * 100.0, 2).ToString() + " %");
         }
         #endregion
     }

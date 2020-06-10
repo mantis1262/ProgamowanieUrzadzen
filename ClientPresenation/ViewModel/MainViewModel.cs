@@ -459,9 +459,9 @@ namespace ClientPresentation.ViewModel
         private async Task ProcessDiscountMessage(string message)
         {
             IList<MerchandiseDto> merchandisesDto = await _manageDataService.GetMerchandises();
-             List<Product> products = merchandisesDto.ToList().FromDto();
+            List<Product> products = merchandisesDto.ToList().FromDto();
             context.OperationStarted();
-           context.Send(x => ProductsForBasket.Clear(), null);
+            context.Send(x => ProductsForBasket.Clear(), null);
 
             foreach (Product product in products)
             {
@@ -492,14 +492,13 @@ namespace ClientPresentation.ViewModel
                 {
                     totalBrutto += entry.TotalBruttoPrice;
                 }
-                context.Send(x=>TotalBruttoPrice = totalBrutto,null);
+                context.Send(x=>TotalBruttoPrice = Math.Round(totalBrutto, 2), null);
             }
 
             RaisePropertyChanged("BasketEntries");
             RaisePropertyChanged("ProductsForBasket");
 
             context.OperationStarted();
-
 
             Logs.ProcessLog("Products have been updated. " + message );
         }
@@ -551,6 +550,7 @@ namespace ClientPresentation.ViewModel
                         else
                         {
                             foundEntry.Amount += amountNum;
+                            foundEntry.TotalBruttoPrice = CalcHelper.GetTotalBrutto(foundEntry.BruttoPrice, foundEntry.Amount);
                             List<Entry> temp = _basketEntries.ToList<Entry>();
                             _basketEntries.Clear();
                             foreach (Entry entry in temp)
@@ -575,13 +575,15 @@ namespace ClientPresentation.ViewModel
             TotalBruttoPrice = 0;
             foreach (Entry entry in _basketEntries)
                 TotalBruttoPrice += entry.TotalBruttoPrice;
+            TotalBruttoPrice = Math.Round(TotalBruttoPrice, 2);
+            RaisePropertyChanged("TotalBruttoPrice");
         }
 
         public void ClearBasket()
         {
             _basketEntries.Clear();
             TotalBruttoPrice = 0;
-
+            RaisePropertyChanged("TotalBruttoPrice");
         }
 
         public void ConfirmBasket()

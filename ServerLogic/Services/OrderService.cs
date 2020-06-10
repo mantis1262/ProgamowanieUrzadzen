@@ -94,6 +94,8 @@ namespace ServerLogic.Services
                     {
                         newOrderId = IdGenerator.GetNextOrderId();
                         order.Id = newOrderId;
+                        order.AcceptanceDate = DateTime.Now.Ticks;
+                        order.DeliveringDate = DateTime.Now.AddDays(7).Ticks;
                         Order orderToSave = order.FromDto();
                         _orderRepository.Add(orderToSave);
                     }
