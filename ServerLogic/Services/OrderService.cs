@@ -78,7 +78,9 @@ namespace ServerLogic.Services
         public async Task<OrderDto> GetOrder(string id)
         {
             Order order = await Task.Factory.StartNew(() => _orderRepository.Get(id));
-            return order.ToDto();  
+            if (order != null)
+                return order.ToDto();
+            else return null;
         }
 
         public async Task<string> SaveOrder(OrderDto order)
