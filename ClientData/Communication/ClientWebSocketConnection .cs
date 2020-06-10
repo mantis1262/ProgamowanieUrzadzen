@@ -23,7 +23,7 @@ namespace ClientData.Communication
 
         protected override Task SendTask(string message)
         {
-            return _clientWebSocket.SendAsync(message.GetArraySegment(), WebSocketMessageType.Text, true, CancellationToken.None); ;
+            return _clientWebSocket.SendAsync(message.GetArraySegment(), WebSocketMessageType.Binary, true, CancellationToken.None); ;
         }
 
         public override Task DisconnectAsync()
@@ -40,7 +40,7 @@ namespace ClientData.Communication
         {
             try
             {
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[20000];
                 while (true)
                 {
                     ArraySegment<byte> segment = new ArraySegment<byte>(buffer);
