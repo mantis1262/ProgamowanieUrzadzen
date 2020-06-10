@@ -44,6 +44,7 @@ namespace ServerPresentation
 
             public ServerWebSocketConnection(WebSocket webSocket, IPEndPoint remoteEndPoint, Action<string> logger)
             {
+                _log = logger;
                 WebSocket = webSocket;
                 _remoteEndPoint = remoteEndPoint;
                 Task.Factory.StartNew(() => ServerMessageLoop(webSocket));
