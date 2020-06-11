@@ -131,12 +131,12 @@ namespace ServerLogic.Services
 
         public async Task<IDisposable> Subscribe(IObserver<DiscountEvent> observer)
         {
-            IDisposable result;
+            IDisposable result = null;
             await Task.Factory.StartNew(() => 
             {
                 result = _cyclicDiscountService.Provider.Subscribe(observer);
             });
-            return _cyclicDiscountService.Provider.Subscribe(observer);
+            return result;
         }
 
         public async Task<IList<IObserver<DiscountEvent>>> GetSubscribers()

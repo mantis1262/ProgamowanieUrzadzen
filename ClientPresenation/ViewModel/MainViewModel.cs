@@ -44,7 +44,7 @@ namespace ClientPresentation.ViewModel
         private bool _subStatusBool;
         private string _subStatusLabel = "OFF";
         private string _uriPeer = "ws://localhost:8081/";
-        private SynchronizationContext context;
+        private SynchronizationContext _context;
 
         #endregion
 
@@ -286,7 +286,7 @@ namespace ClientPresentation.ViewModel
         #region Constructor
         public MainViewModel()
         {
-            context = SynchronizationContext.Current;
+            _context = SynchronizationContext.Current;
             _currentBasketProduct = null;
             _currentBasketEntry = null;
             _currentSearchCustomer = null;
@@ -412,19 +412,19 @@ namespace ClientPresentation.ViewModel
             OrderSummary orderSummary = orderDto.FromDto();
             List<Entry> entries = orderDto.Entries.FromDto();
 
-            context.OperationStarted();
-            context.Send(x => _searchCustomers.Clear(), null) ;
-            context.Send(x => _searchOrders.Clear(),null);
-            context.Send(x => _searchEntries.Clear(), null);
-            context.Send(x => _searchCustomers.Add(customer), null);
-            context.Send(x => _searchOrders.Add(orderSummary), null);
+            _context.OperationStarted();
+            _context.Send(x => _searchCustomers.Clear(), null) ;
+            _context.Send(x => _searchOrders.Clear(),null);
+            _context.Send(x => _searchEntries.Clear(), null);
+            _context.Send(x => _searchCustomers.Add(customer), null);
+            _context.Send(x => _searchOrders.Add(orderSummary), null);
 
             foreach (Entry entry in entries)
             {
-                context.Send(x => _searchEntries.Add(entry),null);
+                _context.Send(x => _searchEntries.Add(entry),null);
             }
 
-            context.OperationCompleted();
+            _context.OperationCompleted();
             Logs.ProcessLog("Loaded order");
         }
 
@@ -460,18 +460,18 @@ namespace ClientPresentation.ViewModel
         {
             IList<MerchandiseDto> merchandisesDto = await _manageDataService.GetMerchandises();
             List<Product> products = merchandisesDto.ToList().FromDto();
-            context.OperationStarted();
-            context.Send(x => ProductsForBasket.Clear(), null);
+            _context.OperationStarted();
+            _context.Send(x => ProductsForBasket.Clear(), null);
 
             foreach (Product product in products)
             {
-                context.Send(x => ProductsForBasket.Add(product), null);
+                _context.Send(x => ProductsForBasket.Add(product), null);
             }
 
             if(BasketEntries.Count > 0)
             {
                 List<Entry> temp = BasketEntries.ToList<Entry>();
-                context.Send(x=>BasketEntries.Clear(),null);
+                _context.Send(x=>BasketEntries.Clear(),null);
 
                 foreach (Entry entry in temp)
                 {
@@ -485,20 +485,20 @@ namespace ClientPresentation.ViewModel
                             break;
                         }
                     }
-                    context.Send(x => BasketEntries.Add(entry), null) ;
+                    _context.Send(x => BasketEntries.Add(entry), null) ;
                 }
                 double totalBrutto = 0;
                 foreach (Entry entry in _basketEntries)
                 {
                     totalBrutto += entry.TotalBruttoPrice;
                 }
-                context.Send(x=>TotalBruttoPrice = Math.Round(totalBrutto, 2), null);
+                _context.Send(x=>TotalBruttoPrice = Math.Round(totalBrutto, 2), null);
             }
 
             RaisePropertyChanged("BasketEntries");
             RaisePropertyChanged("ProductsForBasket");
 
-            context.OperationStarted();
+            _context.OperationStarted();
 
             Logs.ProcessLog("Products have been updated. " + message );
         }
@@ -560,6 +560,7 @@ namespace ClientPresentation.ViewModel
                         TotalBruttoPrice = 0;
                         foreach (Entry entry in _basketEntries)
                             TotalBruttoPrice += entry.TotalBruttoPrice;
+                        TotalBruttoPrice = Math.Round(TotalBruttoPrice, 2);
                     }
                 }
             }
@@ -602,6 +603,8 @@ namespace ClientPresentation.ViewModel
                     orderSummary.TotalBrutto = CalcHelper.GetTotalBrutto(basketEntriesDto);
                     OrderDto orderDto = orderSummary.ToDto(customer, basketEntries);
                     Task.Factory.StartNew(async () => await _manageDataService.communicationService.ApplyOrder(orderDto));
+                    BasketEntries.Clear();
+                    TotalBruttoPrice = 0;
                 }
             }
             else

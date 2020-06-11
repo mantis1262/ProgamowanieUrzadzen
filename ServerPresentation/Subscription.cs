@@ -44,7 +44,7 @@ namespace ServerPresentation
 
         public void OnError(Exception error)
         {
-            Console.WriteLine("Discount OnError operation error.");
+            _log("Discount OnError operation error.");
         }
 
         public void OnCompleted()

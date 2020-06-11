@@ -15,11 +15,10 @@ namespace ClientDataTests
     [TestClass()]
     public class RepositoryTest
     {
-
-
         Mock<DataContext> dataContext;
         IRepository repository;
-            [TestInitialize]
+
+        [TestInitialize]
         public void InitTest()
         {
             Customer customer = new Customer("CLIENT_1", "Adam Nowak", "Polska 1/2", 123456789, "1234567890", "123456789000");
@@ -29,8 +28,6 @@ namespace ClientDataTests
 
             dataContext = new Mock<DataContext>(customer, merchandises, order);
             repository = new Repository(dataContext.Object);
-
-
         }
 
         [TestMethod()]
