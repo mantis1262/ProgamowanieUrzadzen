@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="UAModelDesignerSolution.xslt"?>
+<UAModelDesignerSolution xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>Solution1</Name>
+  <Projects>
+    <UAModelDesignerProject ProjectIdentifier="e2f96cd6-6fb2-41e2-8644-91cb4be8c352">
+      <Name>Model_3</Name>
+      <CSVFileName>$(ProjectFileName).csv</CSVFileName>
+      <BuildOutputDirectoryName>$(ProjectFileName)</BuildOutputDirectoryName>
+      <FileName>Model_2</FileName>
+    </UAModelDesignerProject>
+  </Projects>
+</UAModelDesignerSolution>

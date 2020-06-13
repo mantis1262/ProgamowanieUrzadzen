@@ -1,0 +1,202 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="OPCFModelDesign.xslt"?>
+<ModelDesign xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:uax="http://opcfoundation.org/UA/2008/02/Types.xsd" xmlns="http://opcfoundation.org/UA/ModelDesign.xsd">
+  <Namespaces />
+  <ObjectType SymbolicName="CustomerModel">
+    <Children>
+      <Method SymbolicName="CustomerModel" TypeDefinition="CustomerModel">
+        <InputArguments>
+          <Argument Name="id" DataType="string" />
+          <Argument Name="name" DataType="string" />
+          <Argument Name="address" DataType="string" />
+          <Argument Name="phoneNumber" DataType="int" />
+          <Argument Name="nip" DataType="string" />
+          <Argument Name="pesel" DataType="string" />
+        </InputArguments>
+      </Method>
+      <Method SymbolicName="CustomerModel" TypeDefinition="CustomerModel" />
+      <Property SymbolicName="Id" TypeDefinition="string" />
+      <Property SymbolicName="Name" TypeDefinition="string" />
+      <Property SymbolicName="Address" TypeDefinition="string" />
+      <Property SymbolicName="PhoneNumber" TypeDefinition="string" />
+      <Property SymbolicName="Nip" TypeDefinition="string" />
+      <Property SymbolicName="Pesel" TypeDefinition="String" />
+    </Children>
+    <ClassName />
+  </ObjectType>
+  <ObjectType SymbolicName="DiscountData">
+    <Children>
+      <Property SymbolicName="Time" TypeDefinition="DateTime" />
+      <Property SymbolicName="Discount" TypeDefinition="Double" />
+      <Method SymbolicName="DiscountData" TypeDefinition="DiscountData">
+        <InputArguments>
+          <Argument Name="discount" DataType="double" />
+          <Argument Name="merchanise" DataType="MerchandiseModel" ValueRank="Array" ArrayDimensions="1" />
+        </InputArguments>
+      </Method>
+      <Property SymbolicName="Merchandise" TypeDefinition="MerchandiseModel" />
+    </Children>
+  </ObjectType>
+  <ObjectType SymbolicName="EntryModel">
+    <Children>
+      <Property SymbolicName="Id" TypeDefinition="int" />
+      <Property SymbolicName="Merchanise" TypeDefinition="MerchaniseModel" />
+      <Property SymbolicName="Amount" TypeDefinition="int" />
+      <Property SymbolicName="BruttoPrice" TypeDefinition="double" />
+      <Method SymbolicName="EntryModel" TypeDefinition="EntryModel" />
+      <Method SymbolicName="EntryModel" TypeDefinition="EntryModel">
+        <InputArguments>
+          <Argument Name="id" DataType="int" />
+          <Argument Name="merchanise" DataType="MerchandiseModel" />
+          <Argument Name="amount" DataType="int" />
+          <Argument Name="brutto" DataType="double" />
+        </InputArguments>
+      </Method>
+    </Children>
+  </ObjectType>
+  <ObjectType SymbolicName="MerchandiseModel">
+    <Children>
+      <Property SymbolicName="id" TypeDefinition="string" />
+      <Property SymbolicName="Name" TypeDefinition="string" />
+      <Property SymbolicName="Description" />
+      <Property SymbolicName="Type" TypeDefinition="string" />
+      <Property SymbolicName="Unit" TypeDefinition="string" />
+      <Property SymbolicName="NettoPrice" TypeDefinition="double" />
+      <Property SymbolicName="Vat" TypeDefinition="double" />
+      <Method SymbolicName="MerchaniseModel" TypeDefinition="MerchaniseModel" />
+      <Method SymbolicName="MerchaniseModel" TypeDefinition="MerchaniseModel">
+        <InputArguments>
+          <Argument Name="id" DataType="string" />
+          <Argument Name="name" DataType="string" />
+          <Argument Name="desription" DataType="string" />
+          <Argument Name="type" DataType="string" />
+          <Argument Name="unit" DataType="string" />
+          <Argument Name="netto" DataType="double" />
+          <Argument Name="vat" DataType="double" />
+        </InputArguments>
+      </Method>
+    </Children>
+  </ObjectType>
+  <VariableType SymbolicName="MessageStatus" />
+  <ObjectType SymbolicName="OrderModel">
+    <Children>
+      <Property SymbolicName="Id" TypeDefinition="string" />
+      <Property SymbolicName="ClientInfo" TypeDefinition="CustomerModel" />
+      <Property SymbolicName="Entries" TypeDefinition="EntryModel" ArrayDimensions="" />
+      <Property SymbolicName="Status" TypeDefinition="string" />
+      <Property SymbolicName="AcceptanceDate" TypeDefinition="Long" />
+      <Property SymbolicName="DeliveringDate" xmlns:q1="long" TypeDefinition="q1:" />
+      <Method SymbolicName="OrderModel" TypeDefinition="OrderModel" />
+      <Method SymbolicName="OrderModel" TypeDefinition="OrderModel">
+        <InputArguments>
+          <Argument Name="id" DataType="string" />
+          <Argument Name="customer" DataType="CustomerModel" />
+          <Argument Name="Entries" DataType="EntryModel" ValueRank="Array" ArrayDimensions="1" />
+          <Argument Name="status" DataType="string" />
+          <Argument Name="acceptanceDate" DataType="long" />
+          <Argument Name="deliveringDate" DataType="long" />
+        </InputArguments>
+      </Method>
+    </Children>
+  </ObjectType>
+  <ObjectType SymbolicName="WebMessageBase">
+    <Children>
+      <Property SymbolicName="Tag" TypeDefinition="string" />
+      <Variable SymbolicName="status" TypeDefinition="MessageStatus" />
+      <Variable SymbolicName="Message" TypeDefinition="string" />
+      <Method SymbolicName="WebMessageBase" TypeDefinition="WebMessageBase" />
+      <Method SymbolicName="WebMessageBase" TypeDefinition="WebMessageBase">
+        <InputArguments>
+          <Argument Name="tag" DataType="string" />
+        </InputArguments>
+      </Method>
+    </Children>
+  </ObjectType>
+  <ObjectType SymbolicName="GetMerchandiseRequest" BaseType="WebMessageBase">
+    <Children>
+      <Method SymbolicName="GetMerchandiseRequest" TypeDefinition="GetMerchandiseRequest" />
+      <Method SymbolicName="GetMerchandiseRequest" TypeDefinition="GetMerchandiseRequest">
+        <InputArguments>
+          <Argument Name="tag" DataType="string" />
+        </InputArguments>
+      </Method>
+    </Children>
+  </ObjectType>
+  <ObjectType SymbolicName="GetOrderRequest" BaseType="WebMessageBase">
+    <Children>
+      <Property SymbolicName="Order" TypeDefinition="string" />
+      <Method SymbolicName="GetOrderRequest" TypeDefinition="GetOrderRequest" />
+      <Method SymbolicName="GetOrderRequest" TypeDefinition="GetOrderRequest">
+        <InputArguments>
+          <Argument Name="tag" DataType="string" />
+          <Argument Name="order" DataType="string" />
+        </InputArguments>
+      </Method>
+    </Children>
+  </ObjectType>
+  <ObjectType SymbolicName="GetCustomerResponse" BaseType="WebMessageBase">
+    <Children>
+      <Property SymbolicName="Customer" TypeDefinition="CustomerModel" />
+      <Method SymbolicName="GetCustomerModel" TypeDefinition="GetCustomerModel" />
+      <Method SymbolicName="GetCustomerModel" TypeDefinition="GetCustomerModel">
+        <InputArguments>
+          <Argument Name="tag" DataType="string" />
+          <Argument Name="customer" DataType="CustomerModel" />
+        </InputArguments>
+      </Method>
+    </Children>
+  </ObjectType>
+  <ObjectType SymbolicName="GetCustomerRequest" BaseType="WebMessageBase">
+    <Children>
+      <Property SymbolicName="Customer" TypeDefinition="string" />
+      <Method SymbolicName="GetCustomerRequest" TypeDefinition="GetCustomerRequest" />
+      <Method SymbolicName="GetCustomerRequest" TypeDefinition="GetCustomerRequest">
+        <InputArguments>
+          <Argument Name="tag" DataType="string" />
+          <Argument Name="customer" DataType="string" />
+        </InputArguments>
+      </Method>
+    </Children>
+  </ObjectType>
+  <ObjectType SymbolicName="GetMerchadiseResponse" BaseType="WebMessageBase">
+    <Children>
+      <Property SymbolicName="Merchanises" TypeDefinition="MerchaniseModel" />
+      <Method SymbolicName="GetMerchadiseResponse" TypeDefinition="GetMerchadiseResponse" />
+      <Method SymbolicName="GetMerchadiseResponse" TypeDefinition="GetMerchadiseResponse">
+        <InputArguments>
+          <Argument Name="tag" DataType="string" />
+          <Argument Name="merchandises" DataType="MerchandiseModel" ValueRank="Array" ArrayDimensions="1" />
+        </InputArguments>
+      </Method>
+    </Children>
+  </ObjectType>
+  <ObjectType SymbolicName="OrderRequestResponse" BaseType="WebMessageBase">
+    <Children>
+      <Property SymbolicName="Order" TypeDefinition="OrderModel" />
+      <Method SymbolicName="OrderRequestResponse" TypeDefinition="OrderRequestResponse" />
+      <Method SymbolicName="OrderRequestResponse" TypeDefinition="OrderRequestResponse">
+        <InputArguments>
+          <Argument Name="tag" DataType="string" />
+          <Argument Name="order" DataType="OrderModel" />
+        </InputArguments>
+      </Method>
+    </Children>
+  </ObjectType>
+  <ObjectType SymbolicName="SubscriptionMessage" BaseType="WebMessageBase">
+    <Children>
+      <Property SymbolicName="discountData" TypeDefinition="DiscountData" />
+      <Method SymbolicName="SubscriptionMessage" TypeDefinition="SubscriptionMessage" />
+      <Method SymbolicName="SubscriptionMessage" TypeDefinition="SubscriptionMessage">
+        <InputArguments>
+          <Argument Name="tag" DataType="string" />
+        </InputArguments>
+      </Method>
+      <Method SymbolicName="SubscriptionMessage" TypeDefinition="SubscriptionMessage">
+        <InputArguments>
+          <Argument Name="tag" DataType="string" />
+          <Argument Name="discountData" DataType="DiscountData" />
+        </InputArguments>
+      </Method>
+    </Children>
+  </ObjectType>
+</ModelDesign>
