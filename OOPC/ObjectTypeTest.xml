@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="OPCFModelDesign.xslt"?>
+<ModelDesign xmlns:Model="http://cas.eu/UA/CommServer/UnitTests/ObjectTypeTest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:uax="http://opcfoundation.org/UA/2008/02/Types.xsd" xmlns:ua="http://opcfoundation.org/UA/" TargetNamespace="http://cas.eu/UA/CommServer/UnitTests/ObjectTypeTest" xmlns="http://opcfoundation.org/UA/ModelDesign.xsd">
+  <Namespaces>
+    <Namespace Name="cas" Prefix="ObjectTypeTest" XmlPrefix="Model">http://cas.eu/UA/CommServer/UnitTests/ObjectTypeTest</Namespace>
+    <Namespace Name="ua" XmlPrefix="ua">http://opcfoundation.org/UA/</Namespace>
+  </Namespaces>
+  <ObjectType SymbolicName="Model:CoustumerModel">
+    <Children>
+      <Property SymbolicName="Model:Id" DataType="ua:String" />
+      <Property SymbolicName="Model:Name" DataType="ua:String" />
+      <Property SymbolicName="Model:Address" DataType="ua:String" />
+      <Property SymbolicName="Model:PhoneNumber" DataType="ua:Int32" />
+      <Property SymbolicName="Model:Nip" DataType="ua:String" />
+      <Property SymbolicName="Model:Pesel" DataType="ua:String" />
+    </Children>
+  </ObjectType>
+  <ObjectType SymbolicName="Model:DiscountData">
+    <Children>
+      <Property SymbolicName="Model:Time" DataType="ua:DateTime" />
+      <Property SymbolicName="Model:Discount" DataType="ua:Double" />
+      <Property SymbolicName="Model:Merchandises" />
+    </Children>
+  </ObjectType>
+  <ObjectType SymbolicName="Model:EntryModel" StringId="EntryModel">
+    <Children>
+      <Property SymbolicName="Model:Id" DataType="ua:Int32" />
+      <Property SymbolicName="Model:BruttoPrice" DataType="ua:Double" />
+      <Property SymbolicName="Model:MerchandiseModel" />
+      <Property SymbolicName="Model:Amount" DataType="ua:Int32" />
+    </Children>
+  </ObjectType>
+  <ObjectType SymbolicName="Model:MerchandiseModel">
+    <Children>
+      <Property SymbolicName="Model:Id" DataType="ua:String" />
+      <Property SymbolicName="Model:Name" DataType="ua:String" />
+      <Property SymbolicName="Model:Description" DataType="ua:String" />
+      <Property SymbolicName="Model:Type" DataType="ua:String" />
+      <Property SymbolicName="Model:Unit" DataType="ua:String" />
+      <Property SymbolicName="Model:NettoPrice" DataType="ua:Double" />
+      <Property SymbolicName="Model:Vat" DataType="ua:Double" />
+    </Children>
+  </ObjectType>
+  <ObjectType SymbolicName="Model:OrderModel">
+    <Children>
+      <Property SymbolicName="Model:Entries" ArrayDimensions="" />
+      <Property SymbolicName="Model:Id" DataType="ua:String" />
+      <Property SymbolicName="Model:ClientInfo" />
+      <Property SymbolicName="Model:Status" DataType="ua:String" ValueRank="Scalar" />
+      <Property SymbolicName="Model:AcceptanceDate" DataType="ua:Int64" />
+      <Property SymbolicName="Model:DeliveryData" DataType="ua:Int64" />
+    </Children>
+  </ObjectType>
+  <ObjectType SymbolicName="Model:WebMessageBase">
+    <Children>
+      <Property SymbolicName="Model:Tag" DataType="ua:String" />
+      <Property SymbolicName="Model:Status" />
+      <Property SymbolicName="Model:Message" DataType="ua:String" />
+    </Children>
+  </ObjectType>
+  <VariableType SymbolicName="Model:MessageStatus" DataType="ua:String" />
+</ModelDesign>
