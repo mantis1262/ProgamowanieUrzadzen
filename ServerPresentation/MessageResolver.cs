@@ -179,6 +179,7 @@ namespace ServerPresentation
                     return result;
                 }
 
+                request.Order.ClientInfo.Id = clientID;
                 string orderId = await _orderService.SaveOrder(request.Order.ToDto());
                 OrderDto orderDto = await _orderService.GetOrder(orderId);
 
