@@ -1,10 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="OPCFModelDesign.xslt"?>
-<ModelDesign xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:uax="http://opcfoundation.org/UA/2008/02/Types.xsd" xmlns="http://opcfoundation.org/UA/ModelDesign.xsd">
-  <Namespaces />
-  <ObjectType SymbolicName="CustomerModel">
+<ModelDesign xmlns:ComRes="CommunicationResponse.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ComMod="CommunicationModel.xsd" xmlns:ComReq="CommunicationRequest.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:uax="http://opcfoundation.org/UA/2008/02/Types.xsd" xmlns="http://opcfoundation.org/UA/ModelDesign.xsd">
+  <Namespaces>
+    <Namespace Name="Communication.Model" Prefix="Commmunication.Model" XmlNamespace="CommunicationModel.xsd" XmlPrefix="ComMod">CommunicationModel.xsd</Namespace>
+    <Namespace Name="Communication.Reqest" Prefix="Communication,Reqest" XmlNamespace="CommunicationRequest.xsd" XmlPrefix="ComReq">CommunicationRequest.xsd</Namespace>
+    <Namespace Name="Communication.Response" Prefix="Communication.Response" XmlNamespace="CommunicationResponse.xsd" XmlPrefix="ComRes">CommunicationResponse.xsd</Namespace>
+  </Namespaces>
+  <ObjectType SymbolicName="ComMod:CustomerModel">
     <Children>
-      <Method SymbolicName="CustomerModel" TypeDefinition="CustomerModel">
+      <Method SymbolicName="ComMod:CustomerModel" TypeDefinition="ComMod:CustomerModel">
         <InputArguments>
           <Argument Name="id" DataType="string" />
           <Argument Name="name" DataType="string" />
@@ -14,7 +18,7 @@
           <Argument Name="pesel" DataType="string" />
         </InputArguments>
       </Method>
-      <Method SymbolicName="CustomerModel" TypeDefinition="CustomerModel" />
+      <Method SymbolicName="ComMod:CustomerModel" TypeDefinition="CustomerModel" />
       <Property SymbolicName="Id" TypeDefinition="string" />
       <Property SymbolicName="Name" TypeDefinition="string" />
       <Property SymbolicName="Address" TypeDefinition="string" />
@@ -24,7 +28,7 @@
     </Children>
     <ClassName />
   </ObjectType>
-  <ObjectType SymbolicName="DiscountData">
+  <ObjectType SymbolicName="ComMod:DiscountData">
     <Children>
       <Property SymbolicName="Time" TypeDefinition="DateTime" />
       <Property SymbolicName="Discount" TypeDefinition="Double" />
@@ -37,7 +41,7 @@
       <Property SymbolicName="Merchandise" TypeDefinition="MerchandiseModel" />
     </Children>
   </ObjectType>
-  <ObjectType SymbolicName="EntryModel">
+  <ObjectType SymbolicName="ComMod:EntryModel">
     <Children>
       <Property SymbolicName="Id" TypeDefinition="int" />
       <Property SymbolicName="Merchanise" TypeDefinition="MerchaniseModel" />
@@ -54,7 +58,7 @@
       </Method>
     </Children>
   </ObjectType>
-  <ObjectType SymbolicName="MerchandiseModel">
+  <ObjectType SymbolicName="ComMod:MerchandiseModel">
     <Children>
       <Property SymbolicName="id" TypeDefinition="string" />
       <Property SymbolicName="Name" TypeDefinition="string" />
@@ -77,8 +81,8 @@
       </Method>
     </Children>
   </ObjectType>
-  <VariableType SymbolicName="MessageStatus" />
-  <ObjectType SymbolicName="OrderModel">
+  <VariableType SymbolicName="ComMod:MessageStatus" />
+  <ObjectType SymbolicName="ComMod:OrderModel">
     <Children>
       <Property SymbolicName="Id" TypeDefinition="string" />
       <Property SymbolicName="ClientInfo" TypeDefinition="CustomerModel" />
@@ -99,7 +103,7 @@
       </Method>
     </Children>
   </ObjectType>
-  <ObjectType SymbolicName="WebMessageBase">
+  <ObjectType SymbolicName="ComMod:WebMessageBase">
     <Children>
       <Property SymbolicName="Tag" TypeDefinition="string" />
       <Variable SymbolicName="status" TypeDefinition="MessageStatus" />
@@ -112,7 +116,7 @@
       </Method>
     </Children>
   </ObjectType>
-  <ObjectType SymbolicName="GetMerchandiseRequest" BaseType="WebMessageBase">
+  <ObjectType SymbolicName="ComReq:GetMerchandiseRequest" BaseType="ComMod:WebMessageBase">
     <Children>
       <Method SymbolicName="GetMerchandiseRequest" TypeDefinition="GetMerchandiseRequest" />
       <Method SymbolicName="GetMerchandiseRequest" TypeDefinition="GetMerchandiseRequest">
@@ -122,7 +126,7 @@
       </Method>
     </Children>
   </ObjectType>
-  <ObjectType SymbolicName="GetOrderRequest" BaseType="WebMessageBase">
+  <ObjectType SymbolicName="ComReq:GetOrderRequest" BaseType="ComMod:WebMessageBase">
     <Children>
       <Property SymbolicName="Order" TypeDefinition="string" />
       <Method SymbolicName="GetOrderRequest" TypeDefinition="GetOrderRequest" />
@@ -134,7 +138,7 @@
       </Method>
     </Children>
   </ObjectType>
-  <ObjectType SymbolicName="GetCustomerResponse" BaseType="WebMessageBase">
+  <ObjectType SymbolicName="ComRes:GetCustomerResponse" BaseType="ComMod:WebMessageBase">
     <Children>
       <Property SymbolicName="Customer" TypeDefinition="CustomerModel" />
       <Method SymbolicName="GetCustomerModel" TypeDefinition="GetCustomerModel" />
@@ -146,7 +150,7 @@
       </Method>
     </Children>
   </ObjectType>
-  <ObjectType SymbolicName="GetCustomerRequest" BaseType="WebMessageBase">
+  <ObjectType SymbolicName="ComReq:GetCustomerRequest" BaseType="ComMod:WebMessageBase">
     <Children>
       <Property SymbolicName="Customer" TypeDefinition="string" />
       <Method SymbolicName="GetCustomerRequest" TypeDefinition="GetCustomerRequest" />
@@ -158,7 +162,7 @@
       </Method>
     </Children>
   </ObjectType>
-  <ObjectType SymbolicName="GetMerchadiseResponse" BaseType="WebMessageBase">
+  <ObjectType SymbolicName="ComRes:GetMerchadiseResponse" BaseType="ComMod:WebMessageBase">
     <Children>
       <Property SymbolicName="Merchanises" TypeDefinition="MerchaniseModel" />
       <Method SymbolicName="GetMerchadiseResponse" TypeDefinition="GetMerchadiseResponse" />
@@ -170,7 +174,7 @@
       </Method>
     </Children>
   </ObjectType>
-  <ObjectType SymbolicName="OrderRequestResponse" BaseType="WebMessageBase">
+  <ObjectType SymbolicName="ComRes:OrderRequestResponse" BaseType="ComMod:WebMessageBase">
     <Children>
       <Property SymbolicName="Order" TypeDefinition="OrderModel" />
       <Method SymbolicName="OrderRequestResponse" TypeDefinition="OrderRequestResponse" />
@@ -182,7 +186,7 @@
       </Method>
     </Children>
   </ObjectType>
-  <ObjectType SymbolicName="SubscriptionMessage" BaseType="WebMessageBase">
+  <ObjectType SymbolicName="ComRes:SubscriptionMessage" BaseType="ComMod:WebMessageBase">
     <Children>
       <Property SymbolicName="discountData" TypeDefinition="DiscountData" />
       <Method SymbolicName="SubscriptionMessage" TypeDefinition="SubscriptionMessage" />
