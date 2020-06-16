@@ -12,6 +12,7 @@ namespace ClientData.Communication
         private ClientWebSocket _clientWebSocket = null;
         private Uri _peer = null;
         private readonly Action<string> _log;
+        public ClientWebSocket ClientWebSocket { get => _clientWebSocket; }
 
         public ClientWebSocketConnection(ClientWebSocket clientWebSocket, Uri peer, Action<string> log)
         {
