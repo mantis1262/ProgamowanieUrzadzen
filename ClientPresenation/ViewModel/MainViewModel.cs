@@ -308,13 +308,13 @@ namespace ClientPresentation.ViewModel
             _manageDataService.messageChain.Subscribe(async (mesg) => await ReceiveMessage(mesg));
             Task.Factory.StartNew(async () => 
             {
-                await _manageDataService.communicationService.CreateConnection();
-                await _manageDataService.communicationService.AskForMerchandises();
+                await _manageDataService.StartServer();
+                await RefreshMerchandises();
             });
         }
         #endregion
 
-        #region MessagesProcessing
+        #region Requests
         public async Task ReceiveMessage(string message)
         {
             try
@@ -335,37 +335,13 @@ namespace ClientPresentation.ViewModel
                             await Task.Factory.StartNew(() => Logs.ProcessLog("Connection established"));
                             break;
                         }
-                    case "get_customer":
-                        {
-                            await RefreshCustomerMesg();
-                            break;
-                        }
                     case "get_merchandises":
                         {
-                            await RefreshMerchandisesMesg();
-                            break;
-                        }
-                    case "get_order":
-                        {
-                            await RefreshOrderMesg();
-                            break;
-                        }
-                    case "subscription":
-                        {
-                            await Task.Factory.StartNew(() => SubscribeMesg());
-                            break;
-                        }
-                    case "unsubscription":
-                        {
-                            await Task.Factory.StartNew(() => UnsubscribeMesg());
+                            //await RefreshMerchandises();
                             break;
                         }
                 }
 
-                if (message.StartsWith("make_order"))
-                {
-                    await Task.Factory.StartNew(() => SaveOrderMesg(message));
-                }
 
                 if (message.StartsWith("discount"))
                 {
@@ -378,63 +354,62 @@ namespace ClientPresentation.ViewModel
             }
         }
 
-        private async Task RefreshCustomerMesg()
+        private async Task RefreshCustomer()
         {
-            CustomerDto customerDto = await _manageDataService.GetCurrentCustomer();
+            CustomerDto customerDto = await _manageDataService.GetCurrentCustomer(_customerId);
             Customer customer = customerDto.FromDto();
-            CustomerId = customer.Id;
-            CustomerName = customer.Name;
-            CustomerAddress = customer.Address;
-            CustomerPhone = customer.PhoneNumber.ToString();
-            CustomerNip = customer.Nip;
-            CustomerPesel = customer.Pesel;
-
+            _context.OperationStarted();
+            _context.Send(x => CustomerId = customer.Id, null);
+            _context.Send(x => CustomerName = customer.Name, null);
+            _context.Send(x => CustomerAddress = customer.Address, null);
+            _context.Send(x => CustomerPhone = customer.PhoneNumber.ToString(), null);
+            _context.Send(x => CustomerNip = customer.Nip, null);
+            _context.Send(x => CustomerPesel = customer.Pesel, null);
+            _context.OperationCompleted();
             Logs.ProcessLog("Loaded customer info");
         }
 
-        private async Task RefreshMerchandisesMesg()
+        private async Task RefreshMerchandises()
         {
             IList<MerchandiseDto> merchandisesDto = await _manageDataService.GetMerchandises();
             List<Product> products = merchandisesDto.ToList().FromDto();
-            _productsForBasket = new ObservableCollection<Product>();
+            _context.OperationStarted();
+            _context.Send(x => ProductsForBasket.Clear(), null);
             foreach (Product product in products)
             {
-                ProductsForBasket.Add(product);
+                _context.Send(x => ProductsForBasket.Add(product), null);
             }
-            RaisePropertyChanged("ProductsForBasket");
+            _context.OperationCompleted();
             Logs.ProcessLog("Loaded product");
         }
 
-        private async Task RefreshOrderMesg()
+        private async Task RefreshOrder()
         {
-            OrderDto orderDto = await _manageDataService.GetCurrentOrder();
+            OrderDto orderDto = await _manageDataService.GetCurrentOrder(_searchOrderCode);
             Customer customer = orderDto.ClientInfo.FromDto();
             OrderSummary orderSummary = orderDto.FromDto();
             List<Entry> entries = orderDto.Entries.FromDto();
-
             _context.OperationStarted();
-            _context.Send(x => _searchCustomers.Clear(), null) ;
+            _context.Send(x => _searchCustomers.Clear(), null);
             _context.Send(x => _searchOrders.Clear(),null);
             _context.Send(x => _searchEntries.Clear(), null);
             _context.Send(x => _searchCustomers.Add(customer), null);
             _context.Send(x => _searchOrders.Add(orderSummary), null);
-
             foreach (Entry entry in entries)
             {
                 _context.Send(x => _searchEntries.Add(entry),null);
             }
-
             _context.OperationCompleted();
             Logs.ProcessLog("Loaded order");
         }
 
-        private void SaveOrderMesg(string message)
+        private async Task MakeOrder(OrderDto orderDto)
         {
-            string[] parts = message.Split(':');
+            string response = await _manageDataService.MakeOrder(orderDto);
+            string[] parts = response.Split(':');
             string clientId = parts[1];
             string orderId = parts[2];
             CustomerId = clientId;
-
             Logs.ProcessLog(clientId + " make order " + orderId);
         }
 
@@ -602,7 +577,7 @@ namespace ClientPresentation.ViewModel
                     OrderSummary orderSummary = new OrderSummary();
                     orderSummary.TotalBrutto = CalcHelper.GetTotalBrutto(basketEntriesDto);
                     OrderDto orderDto = orderSummary.ToDto(customer, basketEntries);
-                    Task.Factory.StartNew(async () => await _manageDataService.communicationService.ApplyOrder(orderDto));
+                    Task.Factory.StartNew(async () => await MakeOrder(orderDto));
                     BasketEntries.Clear();
                     TotalBruttoPrice = 0;
                 }
@@ -617,7 +592,7 @@ namespace ClientPresentation.ViewModel
         {
             if (!string.IsNullOrEmpty(_customerId) && !string.IsNullOrWhiteSpace(_customerId))
             {
-                Task.Factory.StartNew(async () => await _manageDataService.communicationService.AskForCustomer(_customerId));
+                Task.Factory.StartNew(async () => await RefreshCustomer());
             }
         }
 
@@ -627,7 +602,7 @@ namespace ClientPresentation.ViewModel
             {
                 if(!string.IsNullOrEmpty(_searchOrderCode) && !string.IsNullOrWhiteSpace(_searchOrderCode))
                 {
-                    Task.Factory.StartNew(async () => await _manageDataService.communicationService.AskForOrder(_searchOrderCode));
+                    Task.Factory.StartNew(async () => await RefreshOrder());
                 }
             }
             catch(Exception e)

@@ -84,7 +84,8 @@ namespace ClientData.Communication
                     gotCorrectResponse = true;
                 }
             }
-            return ProcessGetCustomerResponse(message);
+            GetCustomerResponse response = JsonConvert.DeserializeObject<GetCustomerResponse>(message);
+            return response.Customer.FromCommModel();
         }
 
         public async Task<IList<Merchandise>> GetMerchandisesRequest()
@@ -123,7 +124,8 @@ namespace ClientData.Communication
                     gotCorrectResponse = true;
                 }
             }
-            return ProcessGetMerchandiseResponse(message);
+            GetMerchandisesResponse response = JsonConvert.DeserializeObject<GetMerchandisesResponse>(message);
+            return response.Merchandises.FromCommModel();
         }
 
         public async Task<Order> GetOrderRequest(string orderId)
@@ -162,7 +164,8 @@ namespace ClientData.Communication
                     gotCorrectResponse = true;
                 }
             }
-            return ProcessGetOrderResponse(message);
+            OrderRequestResponse response = JsonConvert.DeserializeObject<OrderRequestResponse>(message);
+            return response.Order.FromCommModel();
         }
 
         public async Task<string> MakeOrderRequest(Order order)
@@ -202,7 +205,10 @@ namespace ClientData.Communication
                     gotCorrectResponse = true;
                 }
             }
-            return ProcessSaveOrderResponse(message);
+            OrderRequestResponse response = JsonConvert.DeserializeObject<OrderRequestResponse>(message);
+            string clientId = response.Order.ClientInfo.Id;
+            string orderId = response.Order.Id;
+            return "make_order:" + clientId + ":" + orderId;
         }
 
         public async Task<string> SubscribeDiscount()
@@ -241,7 +247,10 @@ namespace ClientData.Communication
                     gotCorrectResponse = true;
                 }
             }
-            return ProcessSubscribeResponse(message);
+            WebMessageBase response = JsonConvert.DeserializeObject<WebMessageBase>(message);
+            if (response.Status == MessageStatus.SUCCESS)
+                return "Subscribed " + response.Message;
+            else return "Could not subscribe. " + response.Message;
         }
 
         public async Task<string> UnsubscribeDiscount()
@@ -280,7 +289,8 @@ namespace ClientData.Communication
                     gotCorrectResponse = true;
                 }
             }
-            return ProcessUnsubscribeResponse(message);
+            WebMessageBase response = JsonConvert.DeserializeObject<WebMessageBase>(message);
+            return response.Message;
         }
         #endregion
 
@@ -355,54 +365,6 @@ namespace ClientData.Communication
             if (response.Status == MessageStatus.SUCCESS)
                 return "Connection established";
             else return "Could not establish connection";
-        }
-
-        private Customer ProcessGetCustomerResponse(string message)
-        {
-            GetCustomerResponse response = JsonConvert.DeserializeObject<GetCustomerResponse>(message);
-            CustomerModel customerModel = response.Customer;
-            _repository.RefreshCurrentCustomer(customerModel.FromCommModel());
-            return _repository.GetCurrentCustomer();
-        }
-
-        private IList<Merchandise> ProcessGetMerchandiseResponse(string message)
-        {
-            GetMerchandisesResponse response = JsonConvert.DeserializeObject<GetMerchandisesResponse>(message);
-            List<MerchandiseModel> merchandisesModels = response.Merchandises;
-            List<Merchandise> products = merchandisesModels.FromCommModel();
-            _repository.RefreshMerchandises(products);
-            return _repository.GetMerchandises();
-        }
-
-        private Order ProcessGetOrderResponse(string message)
-        {
-            OrderRequestResponse response = JsonConvert.DeserializeObject<OrderRequestResponse>(message);
-            Customer customer = response.Order.ClientInfo.FromCommModel();
-            Order order = response.Order.FromCommModel();
-            _repository.RefreshCurrentOrder(order);
-            return _repository.GetCurrentOrder();
-        }
-
-        private string ProcessSaveOrderResponse(string message)
-        {
-            OrderRequestResponse response = JsonConvert.DeserializeObject<OrderRequestResponse>(message);
-            string clientId = response.Order.ClientInfo.Id;
-            string orderId = response.Order.Id;
-            return "make_order:" + clientId + ":" + orderId;
-        }
-
-        private string ProcessSubscribeResponse(string message)
-        {
-            WebMessageBase response = JsonConvert.DeserializeObject<WebMessageBase>(message);
-            if (response.Status == MessageStatus.SUCCESS)
-                return "Subscribed " + response.Message;
-            else return "Could not subscribe. " + response.Message;
-        }
-
-        private string ProcessUnsubscribeResponse(string message)
-        {
-            WebMessageBase response = JsonConvert.DeserializeObject<WebMessageBase>(message);
-            return response.Message;
         }
 
         private Tuple<IList<Merchandise>, string> ProcessDiscountMessage(string message)

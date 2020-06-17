@@ -1,5 +1,6 @@
 ﻿using ClientData.Communication;
 using ClientData.Interfaces;
+using ClientData.Model;
 using ClientLogic.Dto;
 using ClientLogic.Interfaces;
 using System;
@@ -21,39 +22,39 @@ namespace ClientLogic.Services
             _uri = new Uri(uri);
         }
 
-        public async Task CreateConnection()
+        public async Task<ClientWebSocketConnection> CreateConnection()
         {
-            await _webSocketController.Connect(_uri);
+            return await _webSocketController.Connect(_uri);
         }
 
-        public async Task AskForCustomer(string customerId)
+        public async Task<Customer> AskForCustomer(string customerId)
         {
-            await _webSocketController.GetCustomerRequest(customerId);
+            return await _webSocketController.GetCustomerRequest(customerId);
         }
 
-        public async Task AskForMerchandises()
+        public async Task<IList<Merchandise>> AskForMerchandises()
         {
-            await _webSocketController.GetMerchandisesRequest();
+            return await _webSocketController.GetMerchandisesRequest();
         }
 
-        public async Task AskForOrder(string orderId)
+        public async Task<Order> AskForOrder(string orderId)
         {
-            await _webSocketController.GetOrderRequest(orderId);
+            return await _webSocketController.GetOrderRequest(orderId);
         }
 
-        public async Task ApplyOrder(OrderDto order)
+        public async Task<string> ApplyOrder(OrderDto order)
         {
-            await _webSocketController.MakeOrderRequest(order.FromDto());
+            return await _webSocketController.MakeOrderRequest(order.FromDto());
         }
 
-        public async Task AskForSubscription()
+        public async Task<string> AskForSubscription()
         {
-            await _webSocketController.SubscribeDiscount();
+            return await _webSocketController.SubscribeDiscount();
         }
 
-        public async Task AskForUnsubscription()
+        public async Task<string> AskForUnsubscription()
         {
-            await _webSocketController.UnsubscribeDiscount();
+            return await _webSocketController.UnsubscribeDiscount();
         }
     }
 }
