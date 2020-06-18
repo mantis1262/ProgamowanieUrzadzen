@@ -27,9 +27,9 @@ namespace ClientData.Communication
             return _clientWebSocket.SendAsync(message.GetArraySegment(), WebSocketMessageType.Binary, true, CancellationToken.None); ;
         }
 
-        public override Task DisconnectAsync()
+        public override void DisconnectAsync()
         {
-            return _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Shutdown procedure started", CancellationToken.None);
+            _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Shutdown procedure started", CancellationToken.None).Wait();
         }
 
         public override string ToString()

@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:ClientPresentation.View"
         xmlns:vm="clr-namespace:ClientPresentation.ViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="567.6" Width="1048">
+        Title="MainWindow" Height="567.6" Width="1048"
+        Closing="Window_Closing">
     <Window.Resources>
         <vm:MainViewModel x:Key="UserViewModel" />
     </Window.Resources>

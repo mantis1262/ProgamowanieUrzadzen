@@ -10,7 +10,8 @@ namespace ClientLogic.Interfaces
 {
     public interface ICommunicationService
     {
-        Task<ClientWebSocketConnection> CreateConnection();
+        Task CreateConnection();
+        void CloseConnection();
         Task<Customer> AskForCustomer(string customerId);
         Task<IList<Merchandise>> AskForMerchandises();
         Task<Order> AskForOrder(string orderId);

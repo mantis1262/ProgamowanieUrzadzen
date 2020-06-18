@@ -17,7 +17,7 @@ namespace ClientLogic.Services
         private readonly IRepository _dataRepository;
         private readonly object m_SyncObject = new object();
         private Action<string> _log;
-        public readonly ICommunicationService communicationService;
+        private readonly ICommunicationService communicationService;
         public ISubject<string> messageChain;
 
         public ManageDataService(Action<string> logger, string uri)
@@ -39,6 +39,11 @@ namespace ClientLogic.Services
         public async Task StartServer()
         {
             await communicationService.CreateConnection();
+        }
+
+        public void DisconnectServer()
+        {
+            communicationService.CloseConnection();
         }
 
         public async Task<CustomerDto> GetCurrentCustomer(string customerId)

@@ -19,7 +19,7 @@ using System.Threading;
 
 namespace ClientPresentation.ViewModel
 {
-    internal class MainViewModel : ViewModelBase
+    internal class MainViewModel : ViewModelBase, IDisposable
     {
         #region Fields
         private Product _currentBasketProduct;
@@ -309,7 +309,7 @@ namespace ClientPresentation.ViewModel
             Task.Factory.StartNew(async () => 
             {
                 await _manageDataService.StartServer();
-                await RefreshMerchandises();
+                //await RefreshMerchandises();
             });
         }
         #endregion
@@ -341,7 +341,6 @@ namespace ClientPresentation.ViewModel
                             break;
                         }
                 }
-
 
                 if (message.StartsWith("discount"))
                 {
@@ -615,14 +614,19 @@ namespace ClientPresentation.ViewModel
         {
             if (!_subStatusBool)
             {
-                Task.Factory.StartNew(async () => await _manageDataService.communicationService.AskForSubscription());
+                Task.WaitAll(Task.Factory.StartNew(async () => Logs.ProcessLog(await _manageDataService.MakeSubscription())));
             }
             else
             {
-                Task.Factory.StartNew(async () => await _manageDataService.communicationService.AskForUnsubscription());
+                Task.WaitAll(Task.Factory.StartNew(async () => Logs.ProcessLog(await _manageDataService.CancelSubscription())));
             }
 
         }
         #endregion
+
+        public void Dispose()
+        {
+            _manageDataService.DisconnectServer();
+        }
     }
 }

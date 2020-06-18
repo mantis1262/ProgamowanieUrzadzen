@@ -1,5 +1,7 @@
-﻿using System;
+﻿using ClientPresentation.ViewModel;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +24,11 @@ namespace ClientPresentation.View
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            (FindResource("UserViewModel") as MainViewModel).Dispose();
         }
     }
 }

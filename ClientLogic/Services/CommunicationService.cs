@@ -22,9 +22,14 @@ namespace ClientLogic.Services
             _uri = new Uri(uri);
         }
 
-        public async Task<ClientWebSocketConnection> CreateConnection()
+        public async Task CreateConnection()
         {
-            return await _webSocketController.Connect(_uri);
+            await _webSocketController.Connect(_uri);
+        }
+
+        public void CloseConnection()
+        {
+            _webSocketController.Disconnect();
         }
 
         public async Task<Customer> AskForCustomer(string customerId)
