@@ -38,7 +38,7 @@ namespace ClientData.Communication
 
         public void Disconnect()
         {
-            _clientWebSocket.DisconnectAsync();
+            _clientWebSocket.Disconnect();
         }
 
         public async Task SendMessage(string message)
@@ -66,7 +66,7 @@ namespace ClientData.Communication
                 WebSocketReceiveResult result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
-                    _clientWebSocket.DisconnectAsync();
+                    _clientWebSocket.Disconnect();
                     throw new Exception("Disconnected. Close message");
                 }
                 int count = result.Count;
@@ -74,7 +74,7 @@ namespace ClientData.Communication
                 {
                     if (count >= buffer.Length)
                     {
-                        _clientWebSocket.DisconnectAsync();
+                        _clientWebSocket.Disconnect();
                         throw new Exception("Disconnected. Buffer overloaded");
                     }
                     segment = new ArraySegment<byte>(buffer, count, buffer.Length - count);
@@ -86,6 +86,10 @@ namespace ClientData.Communication
                 if (baseResponse.Tag == "get_customer")
                 {
                     gotCorrectResponse = true;
+                    if (baseResponse.Status != MessageStatus.SUCCESS)
+                    {
+                        throw new Exception(baseResponse.Message);
+                    }
                 }
             }
             GetCustomerResponse response = JsonConvert.DeserializeObject<GetCustomerResponse>(message);
@@ -106,7 +110,7 @@ namespace ClientData.Communication
                 WebSocketReceiveResult result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
-                    _clientWebSocket.DisconnectAsync();
+                    _clientWebSocket.Disconnect();
                     throw new Exception("Disconnected. Close message");
                 }
                 int count = result.Count;
@@ -114,7 +118,7 @@ namespace ClientData.Communication
                 {
                     if (count >= buffer.Length)
                     {
-                        _clientWebSocket.DisconnectAsync();
+                        _clientWebSocket.Disconnect();
                         throw new Exception("Disconnected. Buffer overloaded");
                     }
                     segment = new ArraySegment<byte>(buffer, count, buffer.Length - count);
@@ -126,6 +130,10 @@ namespace ClientData.Communication
                 if (baseResponse.Tag == "get_merchandises")
                 {
                     gotCorrectResponse = true;
+                    if (baseResponse.Status != MessageStatus.SUCCESS)
+                    {
+                        throw new Exception(baseResponse.Message);
+                    }
                 }
             }
             GetMerchandisesResponse response = JsonConvert.DeserializeObject<GetMerchandisesResponse>(message);
@@ -146,7 +154,7 @@ namespace ClientData.Communication
                 WebSocketReceiveResult result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
-                    _clientWebSocket.DisconnectAsync();
+                    _clientWebSocket.Disconnect();
                     throw new Exception("Disconnected. Close message");
                 }
                 int count = result.Count;
@@ -154,7 +162,7 @@ namespace ClientData.Communication
                 {
                     if (count >= buffer.Length)
                     {
-                        _clientWebSocket.DisconnectAsync();
+                        _clientWebSocket.Disconnect();
                         throw new Exception("Disconnected. Buffer overloaded");
                     }
                     segment = new ArraySegment<byte>(buffer, count, buffer.Length - count);
@@ -166,6 +174,10 @@ namespace ClientData.Communication
                 if (baseResponse.Tag == "get_order")
                 {
                     gotCorrectResponse = true;
+                    if (baseResponse.Status != MessageStatus.SUCCESS)
+                    {
+                        throw new Exception(baseResponse.Message);
+                    }
                 }
             }
             OrderRequestResponse response = JsonConvert.DeserializeObject<OrderRequestResponse>(message);
@@ -187,7 +199,7 @@ namespace ClientData.Communication
                 WebSocketReceiveResult result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
-                    _clientWebSocket.DisconnectAsync();
+                    _clientWebSocket.Disconnect();
                     throw new Exception("Disconnected. Close message");
                 }
                 int count = result.Count;
@@ -195,7 +207,7 @@ namespace ClientData.Communication
                 {
                     if (count >= buffer.Length)
                     {
-                        _clientWebSocket.DisconnectAsync();
+                        _clientWebSocket.Disconnect();
                         throw new Exception("Disconnected. Buffer overloaded");
                     }
                     segment = new ArraySegment<byte>(buffer, count, buffer.Length - count);
@@ -207,6 +219,10 @@ namespace ClientData.Communication
                 if (baseResponse.Tag == "make_order")
                 {
                     gotCorrectResponse = true;
+                    if (baseResponse.Status != MessageStatus.SUCCESS)
+                    {
+                        throw new Exception(baseResponse.Message);
+                    }
                 }
             }
             OrderRequestResponse response = JsonConvert.DeserializeObject<OrderRequestResponse>(message);
@@ -229,7 +245,7 @@ namespace ClientData.Communication
                 WebSocketReceiveResult result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
-                    _clientWebSocket.DisconnectAsync();
+                    _clientWebSocket.Disconnect();
                     throw new Exception("Disconnected. Close message");
                 }
                 int count = result.Count;
@@ -237,7 +253,7 @@ namespace ClientData.Communication
                 {
                     if (count >= buffer.Length)
                     {
-                        _clientWebSocket.DisconnectAsync();
+                        _clientWebSocket.Disconnect();
                         throw new Exception("Disconnected. Buffer overloaded");
                     }
                     segment = new ArraySegment<byte>(buffer, count, buffer.Length - count);
@@ -249,6 +265,10 @@ namespace ClientData.Communication
                 if (baseResponse.Tag == "subscription")
                 {
                     gotCorrectResponse = true;
+                    if (baseResponse.Status != MessageStatus.SUCCESS)
+                    {
+                        throw new Exception(baseResponse.Message);
+                    }
                 }
             }
             WebMessageBase response = JsonConvert.DeserializeObject<WebMessageBase>(message);
@@ -271,7 +291,7 @@ namespace ClientData.Communication
                 WebSocketReceiveResult result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
-                    _clientWebSocket.DisconnectAsync();
+                    _clientWebSocket.Disconnect();
                     throw new Exception("Disconnected. Close message");
                 }
                 int count = result.Count;
@@ -279,7 +299,7 @@ namespace ClientData.Communication
                 {
                     if (count >= buffer.Length)
                     {
-                        _clientWebSocket.DisconnectAsync();
+                        _clientWebSocket.Disconnect();
                         throw new Exception("Disconnected. Buffer overloaded");
                     }
                     segment = new ArraySegment<byte>(buffer, count, buffer.Length - count);
@@ -291,6 +311,10 @@ namespace ClientData.Communication
                 if (baseResponse.Tag == "unsubscription")
                 {
                     gotCorrectResponse = true;
+                    if (baseResponse.Status != MessageStatus.SUCCESS)
+                    {
+                        throw new Exception(baseResponse.Message);
+                    }
                 }
             }
             WebMessageBase response = JsonConvert.DeserializeObject<WebMessageBase>(message);

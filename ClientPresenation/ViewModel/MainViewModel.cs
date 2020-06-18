@@ -309,7 +309,7 @@ namespace ClientPresentation.ViewModel
             Task.Factory.StartNew(async () => 
             {
                 await _manageDataService.StartServer();
-                //await RefreshMerchandises();
+                await RefreshMerchandises();
             });
         }
         #endregion
@@ -355,61 +355,90 @@ namespace ClientPresentation.ViewModel
 
         private async Task RefreshCustomer()
         {
-            CustomerDto customerDto = await _manageDataService.GetCurrentCustomer(_customerId);
-            Customer customer = customerDto.FromDto();
-            _context.OperationStarted();
-            _context.Send(x => CustomerId = customer.Id, null);
-            _context.Send(x => CustomerName = customer.Name, null);
-            _context.Send(x => CustomerAddress = customer.Address, null);
-            _context.Send(x => CustomerPhone = customer.PhoneNumber.ToString(), null);
-            _context.Send(x => CustomerNip = customer.Nip, null);
-            _context.Send(x => CustomerPesel = customer.Pesel, null);
-            _context.OperationCompleted();
-            Logs.ProcessLog("Loaded customer info");
+            try
+            {
+                CustomerDto customerDto = await _manageDataService.GetCurrentCustomer(_customerId);
+                Customer customer = customerDto.FromDto();
+                _context.OperationStarted();
+                _context.Send(x => CustomerId = customer.Id, null);
+                _context.Send(x => CustomerName = customer.Name, null);
+                _context.Send(x => CustomerAddress = customer.Address, null);
+                _context.Send(x => CustomerPhone = customer.PhoneNumber.ToString(), null);
+                _context.Send(x => CustomerNip = customer.Nip, null);
+                _context.Send(x => CustomerPesel = customer.Pesel, null);
+                _context.OperationCompleted();
+                Logs.ProcessLog("Loaded customer info");
+            }
+            catch(Exception e)
+            {
+                Logs.ProcessLog("ERROR: " + e.Message);
+            }
+            
         }
 
         private async Task RefreshMerchandises()
         {
-            IList<MerchandiseDto> merchandisesDto = await _manageDataService.GetMerchandises();
-            List<Product> products = merchandisesDto.ToList().FromDto();
-            _context.OperationStarted();
-            _context.Send(x => ProductsForBasket.Clear(), null);
-            foreach (Product product in products)
+            try
             {
-                _context.Send(x => ProductsForBasket.Add(product), null);
+                IList<MerchandiseDto> merchandisesDto = await _manageDataService.GetMerchandises();
+                List<Product> products = merchandisesDto.ToList().FromDto();
+                _context.OperationStarted();
+                _context.Send(x => ProductsForBasket.Clear(), null);
+                foreach (Product product in products)
+                {
+                    _context.Send(x => ProductsForBasket.Add(product), null);
+                }
+                _context.OperationCompleted();
+                Logs.ProcessLog("Loaded product");
             }
-            _context.OperationCompleted();
-            Logs.ProcessLog("Loaded product");
+            catch (Exception e)
+            {
+                Logs.ProcessLog("ERROR: " + e.Message);
+            }
         }
 
         private async Task RefreshOrder()
         {
-            OrderDto orderDto = await _manageDataService.GetCurrentOrder(_searchOrderCode);
-            Customer customer = orderDto.ClientInfo.FromDto();
-            OrderSummary orderSummary = orderDto.FromDto();
-            List<Entry> entries = orderDto.Entries.FromDto();
-            _context.OperationStarted();
-            _context.Send(x => _searchCustomers.Clear(), null);
-            _context.Send(x => _searchOrders.Clear(),null);
-            _context.Send(x => _searchEntries.Clear(), null);
-            _context.Send(x => _searchCustomers.Add(customer), null);
-            _context.Send(x => _searchOrders.Add(orderSummary), null);
-            foreach (Entry entry in entries)
+            try
             {
-                _context.Send(x => _searchEntries.Add(entry),null);
+                OrderDto orderDto = await _manageDataService.GetCurrentOrder(_searchOrderCode);
+                Customer customer = orderDto.ClientInfo.FromDto();
+                OrderSummary orderSummary = orderDto.FromDto();
+                List<Entry> entries = orderDto.Entries.FromDto();
+                _context.OperationStarted();
+                _context.Send(x => _searchCustomers.Clear(), null);
+                _context.Send(x => _searchOrders.Clear(), null);
+                _context.Send(x => _searchEntries.Clear(), null);
+                _context.Send(x => _searchCustomers.Add(customer), null);
+                _context.Send(x => _searchOrders.Add(orderSummary), null);
+                foreach (Entry entry in entries)
+                {
+                    _context.Send(x => _searchEntries.Add(entry), null);
+                }
+                _context.OperationCompleted();
+                Logs.ProcessLog("Loaded order");
             }
-            _context.OperationCompleted();
-            Logs.ProcessLog("Loaded order");
+            catch (Exception e)
+            {
+                Logs.ProcessLog("ERROR: " + e.Message);
+            }
         }
 
         private async Task MakeOrder(OrderDto orderDto)
         {
-            string response = await _manageDataService.MakeOrder(orderDto);
-            string[] parts = response.Split(':');
-            string clientId = parts[1];
-            string orderId = parts[2];
-            CustomerId = clientId;
-            Logs.ProcessLog(clientId + " make order " + orderId);
+            try
+            {
+                string response = await _manageDataService.MakeOrder(orderDto);
+                string[] parts = response.Split(':');
+                string clientId = parts[1];
+                string orderId = parts[2];
+                CustomerId = clientId;
+                Logs.ProcessLog(clientId + " make order " + orderId);
+            }
+            catch (Exception e)
+            {
+                Logs.ProcessLog("ERROR: " + e.Message);
+            }
         }
 
         private void SubscribeMesg()
@@ -417,7 +446,6 @@ namespace ClientPresentation.ViewModel
             _subStatusBool = true;
             _subStatusLabel = "ON";
             RaisePropertyChanged("SubStatus");
-
             Logs.ProcessLog("Subscribed discounts !");
         }
 
@@ -426,55 +454,61 @@ namespace ClientPresentation.ViewModel
             _subStatusBool = false;
             _subStatusLabel = "OFF";
             RaisePropertyChanged("SubStatus");
-
             Logs.ProcessLog("Unsubscribed discounts !");
         }
 
         private async Task ProcessDiscountMessage(string message)
         {
-            IList<MerchandiseDto> merchandisesDto = await _manageDataService.GetMerchandises();
-            List<Product> products = merchandisesDto.ToList().FromDto();
-            _context.OperationStarted();
-            _context.Send(x => ProductsForBasket.Clear(), null);
-
-            foreach (Product product in products)
+            try
             {
-                _context.Send(x => ProductsForBasket.Add(product), null);
-            }
+                IList<MerchandiseDto> merchandisesDto = await _manageDataService.GetMerchandises();
+                List<Product> products = merchandisesDto.ToList().FromDto();
+                _context.OperationStarted();
+                _context.Send(x => ProductsForBasket.Clear(), null);
 
-            if(BasketEntries.Count > 0)
-            {
-                List<Entry> temp = BasketEntries.ToList<Entry>();
-                _context.Send(x=>BasketEntries.Clear(),null);
-
-                foreach (Entry entry in temp)
+                foreach (Product product in products)
                 {
-                    foreach (Product product in products)
+                    _context.Send(x => ProductsForBasket.Add(product), null);
+                }
+
+                if (BasketEntries.Count > 0)
+                {
+                    List<Entry> temp = BasketEntries.ToList<Entry>();
+                    _context.Send(x => BasketEntries.Clear(), null);
+
+                    foreach (Entry entry in temp)
                     {
-                        if (entry.Code == product.Id)
+                        foreach (Product product in products)
                         {
-                            entry.NettoPrice = product.NettoPrice;
-                            entry.BruttoPrice = CalcHelper.GetBruttoPrice(entry.NettoPrice, entry.Vat);
-                            entry.TotalBruttoPrice = CalcHelper.GetTotalBrutto(entry.BruttoPrice, entry.Amount);
-                            break;
+                            if (entry.Code == product.Id)
+                            {
+                                entry.NettoPrice = product.NettoPrice;
+                                entry.BruttoPrice = CalcHelper.GetBruttoPrice(entry.NettoPrice, entry.Vat);
+                                entry.TotalBruttoPrice = CalcHelper.GetTotalBrutto(entry.BruttoPrice, entry.Amount);
+                                break;
+                            }
                         }
+                        _context.Send(x => BasketEntries.Add(entry), null);
                     }
-                    _context.Send(x => BasketEntries.Add(entry), null) ;
+                    double totalBrutto = 0;
+                    foreach (Entry entry in _basketEntries)
+                    {
+                        totalBrutto += entry.TotalBruttoPrice;
+                    }
+                    _context.Send(x => TotalBruttoPrice = Math.Round(totalBrutto, 2), null);
                 }
-                double totalBrutto = 0;
-                foreach (Entry entry in _basketEntries)
-                {
-                    totalBrutto += entry.TotalBruttoPrice;
-                }
-                _context.Send(x=>TotalBruttoPrice = Math.Round(totalBrutto, 2), null);
+
+                RaisePropertyChanged("BasketEntries");
+                RaisePropertyChanged("ProductsForBasket");
+
+                _context.OperationStarted();
+
+                Logs.ProcessLog("Products have been updated. " + message);
             }
-
-            RaisePropertyChanged("BasketEntries");
-            RaisePropertyChanged("ProductsForBasket");
-
-            _context.OperationStarted();
-
-            Logs.ProcessLog("Products have been updated. " + message );
+            catch (Exception e)
+            {
+                Logs.ProcessLog("ERROR: " + e.Message);
+            }
         }
         #endregion
 

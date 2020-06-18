@@ -19,7 +19,7 @@ namespace ClientData.Communication
             _clientWebSocket = clientWebSocket;
             _peer = peer;
             _log = log;
-            Task.Factory.StartNew(() => ClientMessageLoop());
+            //Task.Factory.StartNew(() => ClientMessageLoop());
         }
 
         protected override Task SendTask(string message)
@@ -27,7 +27,7 @@ namespace ClientData.Communication
             return _clientWebSocket.SendAsync(message.GetArraySegment(), WebSocketMessageType.Binary, true, CancellationToken.None); ;
         }
 
-        public override void DisconnectAsync()
+        public override void Disconnect()
         {
             _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Shutdown procedure started", CancellationToken.None).Wait();
         }

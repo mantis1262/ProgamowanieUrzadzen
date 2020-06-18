@@ -20,6 +20,6 @@ namespace ClientData.Communication
 
         protected abstract Task SendTask(string message);
 
-        public abstract void DisconnectAsync();
+        public abstract void Disconnect();
     }
 }
