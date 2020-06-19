@@ -19,9 +19,11 @@ namespace ClientData.Communication
     public class WebSocketController
     {
         private ClientWebSocketConnection _clientWebSocket;
+        private ClientWebSocketConnection _clientDiscountWebSocket;
         private IRepository _repository;
         private Action<string> _log;
         private ISubject<string> _messageChain;
+        private CancellationToken _timeOut = CancellationToken.None;
 
         public WebSocketController(IRepository repository, Action<string> logger, ISubject<string> mesgChain)
         {
@@ -34,11 +36,18 @@ namespace ClientData.Communication
         {
             _clientWebSocket = (ClientWebSocketConnection)await WebSocketClient.Connect(peer, _log);
             _clientWebSocket.OnMessage = message => OnInvokeMessage(message);
+            _clientDiscountWebSocket = (ClientWebSocketConnection)await WebSocketClient.Connect(peer, _log, true);
+            _clientDiscountWebSocket.OnMessage = message => OnInvokeMessage(message);
         }
 
         public void Disconnect()
         {
             _clientWebSocket.Disconnect();
+            if (_clientDiscountWebSocket != null)
+            {
+                if (_clientDiscountWebSocket.ClientWebSocket.State == WebSocketState.Open)
+                    _clientDiscountWebSocket.Disconnect();
+            }         
         }
 
         public async Task SendMessage(string message)
@@ -63,7 +72,7 @@ namespace ClientData.Communication
             string message = "";
             while (!gotCorrectResponse)
             {
-                WebSocketReceiveResult result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
+                WebSocketReceiveResult result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, _timeOut).Result;
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
                     _clientWebSocket.Disconnect();
@@ -78,7 +87,7 @@ namespace ClientData.Communication
                         throw new Exception("Disconnected. Buffer overloaded");
                     }
                     segment = new ArraySegment<byte>(buffer, count, buffer.Length - count);
-                    result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
+                    result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, _timeOut).Result;
                     count += result.Count;
                 }
                 message = Encoding.UTF8.GetString(buffer, 0, count);
@@ -107,7 +116,7 @@ namespace ClientData.Communication
             string message = "";
             while (!gotCorrectResponse)
             {
-                WebSocketReceiveResult result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
+                WebSocketReceiveResult result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, _timeOut).Result;
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
                     _clientWebSocket.Disconnect();
@@ -122,7 +131,7 @@ namespace ClientData.Communication
                         throw new Exception("Disconnected. Buffer overloaded");
                     }
                     segment = new ArraySegment<byte>(buffer, count, buffer.Length - count);
-                    result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
+                    result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, _timeOut).Result;
                     count += result.Count;
                 }
                 message = Encoding.UTF8.GetString(buffer, 0, count);
@@ -151,7 +160,7 @@ namespace ClientData.Communication
             string message = "";
             while (!gotCorrectResponse)
             {
-                WebSocketReceiveResult result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
+                WebSocketReceiveResult result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, _timeOut).Result;
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
                     _clientWebSocket.Disconnect();
@@ -166,7 +175,7 @@ namespace ClientData.Communication
                         throw new Exception("Disconnected. Buffer overloaded");
                     }
                     segment = new ArraySegment<byte>(buffer, count, buffer.Length - count);
-                    result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
+                    result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, _timeOut).Result;
                     count += result.Count;
                 }
                 message = Encoding.UTF8.GetString(buffer, 0, count);
@@ -196,7 +205,7 @@ namespace ClientData.Communication
             string message = "";
             while (!gotCorrectResponse)
             {
-                WebSocketReceiveResult result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
+                WebSocketReceiveResult result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, _timeOut).Result;
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
                     _clientWebSocket.Disconnect();
@@ -211,7 +220,7 @@ namespace ClientData.Communication
                         throw new Exception("Disconnected. Buffer overloaded");
                     }
                     segment = new ArraySegment<byte>(buffer, count, buffer.Length - count);
-                    result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
+                    result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, _timeOut).Result;
                     count += result.Count;
                 }
                 message = Encoding.UTF8.GetString(buffer, 0, count);
@@ -236,16 +245,16 @@ namespace ClientData.Communication
             byte[] buffer = new byte[20000];
             ArraySegment<byte> segment = new ArraySegment<byte>(buffer);
             WebMessageBase request = new WebMessageBase("subscription");
-            string requestJson = JsonConvert.SerializeObject(request, Formatting.Indented);
-            await _clientWebSocket.SendAsync(requestJson);
+            string requestJson = JsonConvert.SerializeObject(request, Formatting.Indented); 
+            await _clientDiscountWebSocket.SendAsync(requestJson);
             bool gotCorrectResponse = false;
-            string message = "";
+            string mesg = "";
             while (!gotCorrectResponse)
             {
-                WebSocketReceiveResult result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
+                WebSocketReceiveResult result = _clientDiscountWebSocket.ClientWebSocket.ReceiveAsync(segment, _timeOut).Result;
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
-                    _clientWebSocket.Disconnect();
+                    _clientDiscountWebSocket.Disconnect();
                     throw new Exception("Disconnected. Close message");
                 }
                 int count = result.Count;
@@ -253,15 +262,15 @@ namespace ClientData.Communication
                 {
                     if (count >= buffer.Length)
                     {
-                        _clientWebSocket.Disconnect();
+                        _clientDiscountWebSocket.Disconnect();
                         throw new Exception("Disconnected. Buffer overloaded");
                     }
                     segment = new ArraySegment<byte>(buffer, count, buffer.Length - count);
-                    result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
+                    result = _clientDiscountWebSocket.ClientWebSocket.ReceiveAsync(segment, _timeOut).Result;
                     count += result.Count;
                 }
-                message = Encoding.UTF8.GetString(buffer, 0, count);
-                WebMessageBase baseResponse = JsonConvert.DeserializeObject<WebMessageBase>(message);
+                mesg = Encoding.UTF8.GetString(buffer, 0, count);
+                WebMessageBase baseResponse = JsonConvert.DeserializeObject<WebMessageBase>(mesg);
                 if (baseResponse.Tag == "subscription")
                 {
                     gotCorrectResponse = true;
@@ -271,54 +280,20 @@ namespace ClientData.Communication
                     }
                 }
             }
-            WebMessageBase response = JsonConvert.DeserializeObject<WebMessageBase>(message);
+            _clientDiscountWebSocket.ActiveMessageLoop = true;
+            WebMessageBase response = JsonConvert.DeserializeObject<WebMessageBase>(mesg);
             if (response.Status == MessageStatus.SUCCESS)
-                return "Subscribed " + response.Message;
+                return response.Message;
             else return "Could not subscribe. " + response.Message;
         }
 
         public async Task<string> UnsubscribeDiscount()
         {
-            byte[] buffer = new byte[20000];
-            ArraySegment<byte> segment = new ArraySegment<byte>(buffer);
             WebMessageBase request = new WebMessageBase("unsubscription");
             string requestJson = JsonConvert.SerializeObject(request, Formatting.Indented);
-            await _clientWebSocket.SendAsync(requestJson);
-            bool gotCorrectResponse = false;
-            string message = "";
-            while (!gotCorrectResponse)
-            {
-                WebSocketReceiveResult result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
-                if (result.MessageType == WebSocketMessageType.Close)
-                {
-                    _clientWebSocket.Disconnect();
-                    throw new Exception("Disconnected. Close message");
-                }
-                int count = result.Count;
-                while (!result.EndOfMessage)
-                {
-                    if (count >= buffer.Length)
-                    {
-                        _clientWebSocket.Disconnect();
-                        throw new Exception("Disconnected. Buffer overloaded");
-                    }
-                    segment = new ArraySegment<byte>(buffer, count, buffer.Length - count);
-                    result = _clientWebSocket.ClientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
-                    count += result.Count;
-                }
-                message = Encoding.UTF8.GetString(buffer, 0, count);
-                WebMessageBase baseResponse = JsonConvert.DeserializeObject<WebMessageBase>(message);
-                if (baseResponse.Tag == "unsubscription")
-                {
-                    gotCorrectResponse = true;
-                    if (baseResponse.Status != MessageStatus.SUCCESS)
-                    {
-                        throw new Exception(baseResponse.Message);
-                    }
-                }
-            }
-            WebMessageBase response = JsonConvert.DeserializeObject<WebMessageBase>(message);
-            return response.Message;
+            _clientDiscountWebSocket.ActiveMessageLoop = false;
+            await _clientDiscountWebSocket.SendAsync(requestJson);
+            return "unsubscription";
         }
         #endregion
 
@@ -337,32 +312,20 @@ namespace ClientData.Communication
                     return;
                 }
 
-                switch (request.Tag)
+                if (request.Tag == "unsubscription")
                 {
-                    case "connection_established":
-                        {
-                            _messageChain.OnNext(ProcessConnectionResponse(message));
-                            break;
-                        }
-                    case "discount":
-                        {
-                            _messageChain.OnNext(ProcessDiscountMessage(message));
-                            break;
-                        }
+                    _messageChain.OnNext("unsubscription");
+                }
+
+                if (request.Tag == "discount")
+                {
+                    _messageChain.OnNext(ProcessDiscountMessage(message));
                 }
             }
             catch (Exception e)
             {
                 _log("Error: " + e.Message);
             }
-        }
-
-        private string ProcessConnectionResponse(string message)
-        {
-            WebMessageBase response = JsonConvert.DeserializeObject<WebMessageBase>(message);
-            if (response.Status == MessageStatus.SUCCESS)
-                return "Connection established";
-            else return "Could not establish connection";
         }
 
         private string ProcessDiscountMessage(string message)

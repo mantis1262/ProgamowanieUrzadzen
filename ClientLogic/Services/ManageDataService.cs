@@ -77,6 +77,11 @@ namespace ClientLogic.Services
             return merchandisesDto;
         }
 
+        public IList<MerchandiseDto> GetLocalMerchandises()
+        {
+            return _dataRepository.GetMerchandises().ToList().ToDto();
+        }
+
         public async Task<OrderDto> GetCurrentOrder(string orderId)
         {
             Order orderResponse = await communicationService.AskForOrder(orderId);
@@ -100,7 +105,7 @@ namespace ClientLogic.Services
 
         public async Task<string> MakeSubscription()
         {
-            return await communicationService.AskForUnsubscription();
+            return await communicationService.AskForSubscription();
         }
 
         public async Task<string> CancelSubscription()

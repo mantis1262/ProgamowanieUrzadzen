@@ -9,7 +9,7 @@ namespace ClientData.Communication
 {
     public static class WebSocketClient
     {
-        public static async Task<WebSocketConnection> Connect(Uri peer, Action<string> log)
+        public static async Task<WebSocketConnection> Connect(Uri peer, Action<string> log, bool messageLoop = false)
         {
             ClientWebSocket clientWebSocket = new ClientWebSocket();
             await clientWebSocket.ConnectAsync(peer, CancellationToken.None);
@@ -17,7 +17,7 @@ namespace ClientData.Communication
             {
                 case WebSocketState.Open:
                     log($"Opening WebSocket connection to remote server {peer}");
-                    WebSocketConnection socket = new ClientWebSocketConnection(clientWebSocket, peer, log);
+                    WebSocketConnection socket = new ClientWebSocketConnection(clientWebSocket, peer, log, messageLoop);
                     return socket;
 
                 default:

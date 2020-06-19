@@ -305,7 +305,7 @@ namespace ClientPresentation.ViewModel
             SubscriptionCommand = new RelayCommand(SubscriptionStatusChange);
 
             _manageDataService = new ManageDataService((mesg) => Logs.ProcessLog(mesg), _uriPeer);
-            _manageDataService.messageChain.Subscribe(async (mesg) => await ReceiveMessage(mesg));
+            _manageDataService.messageChain.Subscribe((mesg) => ReceiveMessage(mesg));
             Task.Factory.StartNew(async () => 
             {
                 await _manageDataService.StartServer();
@@ -315,7 +315,7 @@ namespace ClientPresentation.ViewModel
         #endregion
 
         #region Requests
-        public async Task ReceiveMessage(string message)
+        public void ReceiveMessage(string message)
         {
             try
             {
@@ -328,23 +328,20 @@ namespace ClientPresentation.ViewModel
                     return;
                 }
 
-                switch (message)
+                if (message.Contains("unsubscription"))
                 {
-                    case "connection_established":
-                        {
-                            await Task.Factory.StartNew(() => Logs.ProcessLog("Connection established"));
-                            break;
-                        }
-                    case "get_merchandises":
-                        {
-                            //await RefreshMerchandises();
-                            break;
-                        }
+                    if (!message.Contains("ERROR"))
+                    {
+                        _subStatusBool = false;
+                        _subStatusLabel = "OFF";
+                        RaisePropertyChanged("SubStatus");
+                    }
+                    Logs.ProcessLog("Unsubscribed discounts");
                 }
 
                 if (message.StartsWith("discount"))
                 {
-                    await ProcessDiscountMessage(message);
+                    ProcessDiscountMessage(message);
                 }
             }
             catch(Exception e)
@@ -441,27 +438,22 @@ namespace ClientPresentation.ViewModel
             }
         }
 
-        private void SubscribeMesg()
+        private void SubscribeMesg(string mesg)
         {
-            _subStatusBool = true;
-            _subStatusLabel = "ON";
-            RaisePropertyChanged("SubStatus");
-            Logs.ProcessLog("Subscribed discounts !");
+            if (!mesg.Contains("ERROR"))
+            {
+                _subStatusBool = true;
+                _subStatusLabel = "ON";
+                RaisePropertyChanged("SubStatus");
+            }
+            Logs.ProcessLog(mesg);
         }
 
-        private void UnsubscribeMesg()
-        {
-            _subStatusBool = false;
-            _subStatusLabel = "OFF";
-            RaisePropertyChanged("SubStatus");
-            Logs.ProcessLog("Unsubscribed discounts !");
-        }
-
-        private async Task ProcessDiscountMessage(string message)
+        private void ProcessDiscountMessage(string message)
         {
             try
             {
-                IList<MerchandiseDto> merchandisesDto = await _manageDataService.GetMerchandises();
+                IList<MerchandiseDto> merchandisesDto = _manageDataService.GetLocalMerchandises();
                 List<Product> products = merchandisesDto.ToList().FromDto();
                 _context.OperationStarted();
                 _context.Send(x => ProductsForBasket.Clear(), null);
@@ -648,11 +640,11 @@ namespace ClientPresentation.ViewModel
         {
             if (!_subStatusBool)
             {
-                Task.WaitAll(Task.Factory.StartNew(async () => Logs.ProcessLog(await _manageDataService.MakeSubscription())));
+                Task.Factory.StartNew(async () => SubscribeMesg(await _manageDataService.MakeSubscription())).Wait();
             }
             else
             {
-                Task.WaitAll(Task.Factory.StartNew(async () => Logs.ProcessLog(await _manageDataService.CancelSubscription())));
+                Task.Factory.StartNew(async () => await _manageDataService.CancelSubscription()).Wait();
             }
 
         }

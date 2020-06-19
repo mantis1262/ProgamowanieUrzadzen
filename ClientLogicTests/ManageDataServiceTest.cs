@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using ClientData;
 using ClientData.Model;
 using ClientData.Respositories;
+using ClientLogic;
 using ClientLogic.Dto;
 using ClientLogic.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -23,19 +24,19 @@ namespace LogicClientTest
         }
 
         [TestMethod]
-        public async Task GetCustomerTest()
+        public void GetCustomerTest()
         {
             DataContext dataContext = new DataContext();
             Customer customer = new Customer("CLIENT_1", "Jan Kowalski", "Pierwszy 1/3", 123456789, "1234567890", "12345678900");
             dataContext.CurrentCustomer = customer;
             Repository repository = new Repository(dataContext);
             ManageDataService manageDataService = new ManageDataService(repository, (mesg) => { }, _uriPeer);
-            //Assert.IsNotNull(await manageDataService.GetCurrentCustomer());
-            //Assert.AreEqual((await manageDataService.GetCurrentCustomer()).Id, customer.Id);
+            Assert.IsNotNull(repository.GetCurrentCustomer());
+            Assert.AreEqual(repository.GetCurrentCustomer().Id, customer.Id);
         }
 
         [TestMethod]
-        public async Task GetMerchandisesTest()
+        public void GetMerchandisesTest()
         {
             DataContext dataContext = new DataContext();
             Merchandise merchandise1 = new Merchandise("0", "Jajao", "Produkt wiejski", ArticleType.GROCERIES, ArticleUnit.PACK, 13.20, 0.01);
@@ -46,8 +47,8 @@ namespace LogicClientTest
             dataContext.Merchandises = merchandises;
             Repository repository = new Repository(dataContext);
             ManageDataService manageDataService = new ManageDataService(repository, (mesg) => { }, _uriPeer);
-            Assert.IsNotNull(await manageDataService.GetMerchandises());
-            Assert.AreEqual((await manageDataService.GetMerchandises()).Count, 2);
+            Assert.IsNotNull(manageDataService.GetLocalMerchandises());
+            Assert.AreEqual(manageDataService.GetLocalMerchandises().Count, 2);
         }
 
         [TestMethod]
@@ -78,9 +79,9 @@ namespace LogicClientTest
             dataContext.CurrentOrder = order;
             Repository repository = new Repository(dataContext);
             ManageDataService manageDataService = new ManageDataService(repository, (mesg) => { }, _uriPeer);
-            //Assert.IsNotNull(await manageDataService.GetCurrentOrder());
-            //OrderDto orderDto = await manageDataService.GetCurrentOrder();
-            //Assert.AreEqual(orderDto.Entries.Count, 2);
+            Assert.IsNotNull(repository.GetCurrentOrder());
+            OrderDto orderDto = repository.GetCurrentOrder().ToDto();
+            Assert.AreEqual(orderDto.Entries.Count, 2);
         }
     }
 }
