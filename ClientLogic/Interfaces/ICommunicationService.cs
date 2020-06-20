@@ -1,4 +1,6 @@
-﻿using ClientLogic.Dto;
+﻿using ClientData.Communication;
+using ClientData.Model;
+using ClientLogic.Dto;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,11 +11,12 @@ namespace ClientLogic.Interfaces
     public interface ICommunicationService
     {
         Task CreateConnection();
-        Task AskForCustomer(string customerId);
-        Task AskForMerchandises();
-        Task AskForOrder(string orderId);
-        Task ApplyOrder(OrderDto order);
-        Task AskForSubscription();
-        Task AskForUnsubscription();
+        void CloseConnection();
+        Task<Customer> AskForCustomer(string customerId);
+        Task<IList<Merchandise>> AskForMerchandises();
+        Task<Order> AskForOrder(string orderId);
+        Task<string> ApplyOrder(OrderDto order);
+        Task<string> AskForSubscription();
+        Task<string> AskForUnsubscription();
     }
 }

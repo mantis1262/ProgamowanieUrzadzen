@@ -27,15 +27,22 @@ namespace ServerPresentation
             _log = log;
         }
 
-        public async void OnNext(DiscountEvent value)
+        public void OnNext(DiscountEvent value)
         {
             try
             {
-                DiscountData discountData = new DiscountData(value.Discount, value.Merchandises.FromDto());
-                SubscriptionMessage response = new SubscriptionMessage("discount", discountData);
-                response.Status = MessageStatus.SUCCESS;
-                string result = JsonConvert.SerializeObject(response, Formatting.Indented);
-                await _websocketConnection.WebSocket.SendAsync(result.GetArraySegment(), WebSocketMessageType.Binary, true, CancellationToken.None);
+                if (_websocketConnection.WebSocket.State != WebSocketState.Open)
+                {
+                    _unsubscriber.Dispose();
+                }
+                else
+                {
+                    DiscountData discountData = new DiscountData(value.Discount, value.Merchandises.FromDto());
+                    SubscriptionMessage response = new SubscriptionMessage("discount", discountData);
+                    response.Status = MessageStatus.SUCCESS;
+                    string result = JsonConvert.SerializeObject(response, Formatting.Indented);
+                    _websocketConnection.WebSocket.SendAsync(result.GetArraySegment(), WebSocketMessageType.Binary, true, CancellationToken.None).Wait();
+                }   
             } catch (Exception e)
             {
                 _log("Discount OnNext operation error: " + e.Message);

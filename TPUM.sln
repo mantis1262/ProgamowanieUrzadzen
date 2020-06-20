@@ -23,7 +23,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientDataTests", "ClientDa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientLogicTests", "ClientLogicTests\ClientLogicTests.csproj", "{5A87B484-4DB8-454A-9D0A-150E3EDF6FA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Communication", "Communication\Communication.csproj", "{59B18E7A-FB83-4DAE-9B9C-371B9C11C420}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Communication", "Communication\Communication.csproj", "{59B18E7A-FB83-4DAE-9B9C-371B9C11C420}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OPCUA", "OPCUA\OPCUA.csproj", "{8B942614-9528-4D51-B0EB-7368C3207320}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +77,10 @@ Global
 		{59B18E7A-FB83-4DAE-9B9C-371B9C11C420}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59B18E7A-FB83-4DAE-9B9C-371B9C11C420}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59B18E7A-FB83-4DAE-9B9C-371B9C11C420}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B942614-9528-4D51-B0EB-7368C3207320}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B942614-9528-4D51-B0EB-7368C3207320}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B942614-9528-4D51-B0EB-7368C3207320}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B942614-9528-4D51-B0EB-7368C3207320}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

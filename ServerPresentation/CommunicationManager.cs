@@ -33,17 +33,17 @@ namespace ServerPresentation
         public async Task InitServerAsync()
         {
             _log($"Web socket server listening on port: {_websocketPort}");
-            await WebSocketServer.Server(_websocketPort, async _ws => await InitConnectionAsync(_ws), _log);
+            await WebSocketServer.Server(_websocketPort, async _ws => await InitConnection(_ws), _log);
         }
 
-        private async Task InitConnectionAsync(WebSocketConnection ws)
+        private async Task InitConnection(WebSocketConnection ws)
         {
-            _sockets.Add(ws);
-            InitMessageHandler(ws);
-            InitErrorHandler(ws);
-            WebMessageBase response = new WebMessageBase("connection_established");
-            string result = JsonConvert.SerializeObject(response, Formatting.Indented);
-            await WriteAsync(ws, result);
+            await Task.Factory.StartNew(() =>
+            {
+                _sockets.Add(ws);
+                InitMessageHandler(ws);
+                InitErrorHandler(ws);
+            });
         }
 
         private void InitErrorHandler(WebSocketConnection ws)
@@ -56,12 +56,6 @@ namespace ServerPresentation
         {
             _log($"Closing connection to peer: {ws}");
             _sockets.Remove(ws);
-        }
-
-        private async Task WriteAsync(WebSocketConnection ws, string message)
-        {
-            _log($"[Sending message]: {message}");
-            await ws.SendAsync(message);
         }
 
         private void InitMessageHandler(WebSocketConnection ws)

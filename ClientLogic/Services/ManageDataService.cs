@@ -17,7 +17,7 @@ namespace ClientLogic.Services
         private readonly IRepository _dataRepository;
         private readonly object m_SyncObject = new object();
         private Action<string> _log;
-        public readonly ICommunicationService communicationService;
+        private readonly ICommunicationService communicationService;
         public ISubject<string> messageChain;
 
         public ManageDataService(Action<string> logger, string uri)
@@ -41,46 +41,76 @@ namespace ClientLogic.Services
             await communicationService.CreateConnection();
         }
 
-        public async Task<CustomerDto> GetCurrentCustomer()
+        public void DisconnectServer()
         {
-            Customer customer = new Customer();
+            communicationService.CloseConnection();
+        }
+
+        public async Task<CustomerDto> GetCurrentCustomer(string customerId)
+        {
+            Customer customerResponse = await communicationService.AskForCustomer(customerId);
+            CustomerDto customerDto = new CustomerDto();
             await Task.Factory.StartNew(() =>
             {
                 lock (m_SyncObject)
                 {
-                    customer = _dataRepository.GetCurrentCustomer();
+                    _dataRepository.RefreshCurrentCustomer(customerResponse);
+                    customerDto = _dataRepository.GetCurrentCustomer().ToDto();
                 }
 
             });
-            return customer.ToDto();
+            return customerDto;
         }
 
         public async Task<IList<MerchandiseDto>> GetMerchandises()
         {
-            List<Merchandise> merchandises = new List<Merchandise>();
+            IList<Merchandise> merchandisesResponse = await communicationService.AskForMerchandises();
+            List<MerchandiseDto> merchandisesDto = new List<MerchandiseDto>();
             await Task.Factory.StartNew(() =>
             {
                 lock (m_SyncObject)
                 {
-                    merchandises = _dataRepository.GetMerchandises().ToList();
+                    _dataRepository.RefreshMerchandises(merchandisesResponse);
+                    merchandisesDto = _dataRepository.GetMerchandises().ToList().ToDto();
                 }
-
             });
-            return merchandises.ToDto();
+            return merchandisesDto;
         }
 
-        public async Task<OrderDto> GetCurrentOrder()
+        public IList<MerchandiseDto> GetLocalMerchandises()
         {
-            Order order = new Order();
+            return _dataRepository.GetMerchandises().ToList().ToDto();
+        }
+
+        public async Task<OrderDto> GetCurrentOrder(string orderId)
+        {
+            Order orderResponse = await communicationService.AskForOrder(orderId);
+            OrderDto orderDto = new OrderDto();
             await Task.Factory.StartNew(() =>
             {
                 lock (m_SyncObject)
                 {
-                    order = _dataRepository.GetCurrentOrder();
+                    _dataRepository.RefreshCurrentOrder(orderResponse);
+                    orderDto = _dataRepository.GetCurrentOrder().ToDto();
                 }
 
             });
-            return order.ToDto();
+            return orderDto;
+        }
+
+        public async Task<string> MakeOrder(OrderDto order)
+        {
+            return await communicationService.ApplyOrder(order);
+        }
+
+        public async Task<string> MakeSubscription()
+        {
+            return await communicationService.AskForSubscription();
+        }
+
+        public async Task<string> CancelSubscription()
+        {
+            return await communicationService.AskForUnsubscription();
         }
     }
 }

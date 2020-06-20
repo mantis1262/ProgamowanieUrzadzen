@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using System.Runtime.Serialization;
-using ;
+using Opc.Ua;
 
 namespace ObjectTypeTest
 {
@@ -2716,7 +2716,7 @@ namespace ObjectTypeTest
         /// </summary>
         protected override NodeId GetDefaultDataTypeId(NamespaceTable namespaceUris)
         {
-            return Opc.Ua.NodeId.Create(.DataTypes.String, .Namespaces.ua, namespaceUris);
+            return Opc.Ua.NodeId.Create(DataTypes.String, Namespaces.ua, namespaceUris);
         }
 
         /// <summary>

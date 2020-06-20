@@ -85,7 +85,7 @@ namespace ServerPresentation
                         if (_receiveResult.MessageType == WebSocketMessageType.Close)
                         {
                             OnClose?.Invoke();
-                            ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "I am closing", CancellationToken.None);
+                            ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "I am closing", CancellationToken.None).Wait();
                             return;
                         }
                         int count = _receiveResult.Count;
@@ -94,7 +94,7 @@ namespace ServerPresentation
                             if (count >= buffer.Length)
                             {
                                 OnClose?.Invoke();
-                                ws.CloseAsync(WebSocketCloseStatus.InvalidPayloadData, "That's too long", CancellationToken.None);
+                                ws.CloseAsync(WebSocketCloseStatus.InvalidPayloadData, "That's too long", CancellationToken.None).Wait();
                                 return;
                             }
                             _segments = new ArraySegment<byte>(buffer, count, buffer.Length - count);

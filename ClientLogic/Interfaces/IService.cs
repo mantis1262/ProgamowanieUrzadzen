@@ -8,8 +8,8 @@ namespace ClientLogic.Interfaces
 {
     public interface IService
     {
-        Task<CustomerDto> GetCurrentCustomer();
+        Task<CustomerDto> GetCurrentCustomer(string customerId);
         Task<IList<MerchandiseDto>> GetMerchandises();
-        Task<OrderDto> GetCurrentOrder();
+        Task<OrderDto> GetCurrentOrder(string orderId);
     }
 }
